@@ -39,6 +39,9 @@ public class SpaceObject : MonoBehaviour
 	public float Delay = 0;
 	private bool blackHoleHasJumped;
 	private bool isSpritesLoaded;
+	public float UpSpeed = 0.01f;
+	public const float GravitySpeed = 0.01f;
+	public float ToBasketStartTime;
 	public bool IsUnstable { get; set; }
 	public SpaceObjectState State { get; set; }
 	public bool UpdatedField = false;
@@ -48,6 +51,36 @@ public class SpaceObject : MonoBehaviour
 		return AsteroidTypes.Contains(TypeOfObject);
 	}
 
+	private void SendToBasket()
+	{
+		var curPos = Vector3.Lerp(
+			GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y), Game.BasketCoordinate,
+			(Time.time - ToBasketStartTime));
+		curPos.y += 4*Mathf.Sin(Mathf.Clamp01((Time.time - ToBasketStartTime))*Mathf.PI);
+		transform.position = curPos;
+		if (transform.position == Game.BasketCoordinate)
+			Destroy(gameObject);
+	}
+	private void SendToPortal()
+	{
+		var curPos = Vector3.Lerp(
+			GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y), Game.PortalCoordinate,
+			(Time.time - ToBasketStartTime));
+		curPos.y += 4 * Mathf.Sin(Mathf.Clamp01((Time.time - ToBasketStartTime)) * Mathf.PI);
+		transform.position = curPos;
+		if (transform.position == Game.PortalCoordinate)
+			Destroy(gameObject);
+	}
+	private void SendToPot()
+	{
+		var curPos = Vector3.Lerp(
+			GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y), Game.PotCoordinate,
+			(Time.time - ToBasketStartTime));
+		curPos.y += 4 * Mathf.Sin(Mathf.Clamp01((Time.time - ToBasketStartTime)) * Mathf.PI);
+		transform.position = curPos;
+		if (transform.position == Game.PotCoordinate)
+			Destroy(gameObject);
+	}
 	public void DestroyAsteroid()
 	{
 		var bottomBoundX = Math.Max(0, GridPosition.X - 1);
@@ -68,7 +101,8 @@ public class SpaceObject : MonoBehaviour
 				}
 			}
 			GameField.Map[GridPosition.X, GridPosition.Y] = null;
-			Destroy(gameObject);
+			ToBasketStartTime = Time.time;
+			State = SpaceObjectState.Destroying;
 			return;
 		}
 		if (IsFrozen)
@@ -96,7 +130,8 @@ public class SpaceObject : MonoBehaviour
 				}
 			}
 			GameField.Map[GridPosition.X, GridPosition.Y] = null;
-			Destroy(gameObject);
+			ToBasketStartTime = Time.time;
+			State = SpaceObjectState.Destroying;
 			foreach (var ice in iceList)
 			{
 				GameField.Map[ice.X, ice.Y].DestroyAsteroid();				
@@ -138,6 +173,16 @@ public class SpaceObject : MonoBehaviour
 
 	void Update()
 	{
+		if (State == SpaceObjectState.Destroying)
+		{
+			if (TypeOfObject == SpaceObjectType.BlueAsteroid || TypeOfObject == SpaceObjectType.GreenAsteroid)
+				SendToBasket();
+			if (TypeOfObject == SpaceObjectType.RedAsteroid || TypeOfObject == SpaceObjectType.PurpleAsteroid)
+				SendToPot();
+			if (TypeOfObject == SpaceObjectType.YellowAsteroid)
+				SendToPortal();
+			return;
+		}
 		if (State == SpaceObjectState.WaitingForInitialising)
 		{
 			if (Time.time - StartTime > Delay)
@@ -210,35 +255,50 @@ public class SpaceObject : MonoBehaviour
 								   
 		if (IsAsteroid() && !IsFrozen && State !=SpaceObjectState.Moving && GridPosition.Y != Game.MAP_SIZE - 1)
 		{
-			if (GameField.Map[GridPosition.X, GridPosition.Y + 1] == null)
-			{
-				GameField.Drop(GridPosition, new Coordinate(GridPosition.X, GridPosition.Y + 1));
-			}
-			// if downdrop is blocked
-			else if (GridPosition.X > 0 &&
-			         GameField.Map[GridPosition.X - 1, GridPosition.Y + 1] == null)
-			{
-				if ((GameField.Map[GridPosition.X - 1, GridPosition.Y] != null
-				&& (!GameField.Map[GridPosition.X - 1, GridPosition.Y].IsAsteroid() || GameField.Map[GridPosition.X - 1, GridPosition.Y].IsFrozen)) ||
-				(GameField.Map[GridPosition.X - 1, GridPosition.Y] == null && GridPosition.Y > 0 
-				&& GameField.Map[GridPosition.X - 1, GridPosition.Y - 1] != null
-				&& (!GameField.Map[GridPosition.X - 1, GridPosition.Y - 1].IsAsteroid() || GameField.Map[GridPosition.X - 1, GridPosition.Y - 1].IsFrozen)))
-					GameField.Drop(GridPosition, new Coordinate(GridPosition.X - 1, GridPosition.Y + 1));
-			}
-			else if (GridPosition.X < GameField.Map.GetLength(0) - 1 &&
-					 GameField.Map[GridPosition.X + 1, GridPosition.Y + 1] == null)
-			{
-				if ((GameField.Map[GridPosition.X + 1, GridPosition.Y] != null
-				&& (!GameField.Map[GridPosition.X + 1, GridPosition.Y].IsAsteroid() || GameField.Map[GridPosition.X + 1, GridPosition.Y].IsFrozen)) ||
-				(GameField.Map[GridPosition.X + 1, GridPosition.Y] == null && GridPosition.Y > 0
-				&& GameField.Map[GridPosition.X + 1, GridPosition.Y - 1] != null && 
-				(!GameField.Map[GridPosition.X + 1, GridPosition.Y - 1].IsAsteroid() || GameField.Map[GridPosition.X + 1, GridPosition.Y - 1].IsFrozen)))
-					GameField.Drop(GridPosition, new Coordinate(GridPosition.X + 1, GridPosition.Y + 1));
-			}
+			DropAsteroids();
 		}
 
 	}
 
+	private void DropAsteroids()
+	{
+		if (GameField.Map[GridPosition.X, GridPosition.Y + 1] == null)
+		{
+			GameField.Drop(GridPosition, new Coordinate(GridPosition.X, GridPosition.Y + 1));
+		}
+		// if downdrop is blocked
+		else if (GridPosition.X > 0 &&
+				 GameField.Map[GridPosition.X - 1, GridPosition.Y + 1] == null)
+		{
+			for (int i = GridPosition.Y; i >= 0; i--)
+			{
+				if (GameField.Map[GridPosition.X - 1, i] != null
+					&& (!GameField.Map[GridPosition.X - 1, i].IsAsteroid() || GameField.Map[GridPosition.X - 1, i].IsFrozen))
+				{
+					GameField.Drop(GridPosition, new Coordinate(GridPosition.X - 1, GridPosition.Y + 1));
+					break;
+				}
+				if (GameField.Map[GridPosition.X - 1, i] != null && GameField.Map[GridPosition.X - 1, i].IsAsteroid())
+					break;
+			}
+
+		}
+		else if (GridPosition.X < GameField.Map.GetLength(0) - 1 &&
+				 GameField.Map[GridPosition.X + 1, GridPosition.Y + 1] == null)
+		{
+			for (int i = GridPosition.Y; i >= 0; i--)
+			{
+				if (GameField.Map[GridPosition.X + 1, i] != null
+					&& (!GameField.Map[GridPosition.X + 1, i].IsAsteroid() || GameField.Map[GridPosition.X + 1, i].IsFrozen))
+				{
+					GameField.Drop(GridPosition, new Coordinate(GridPosition.X + 1, GridPosition.Y + 1));
+					break;
+				}
+				if (GameField.Map[GridPosition.X + 1, i] != null && GameField.Map[GridPosition.X + 1, i].IsAsteroid())
+					break;
+			}
+		}
+	}
 	private void HandleBlackHole()
 	{
 		if (State == SpaceObjectState.Decreasing)

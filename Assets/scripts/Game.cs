@@ -18,6 +18,9 @@ namespace Assets.scripts
 		private LevelInfo LevelInformation;
 		public static int TurnsLeft;
 		public static Game instance;
+		public static Vector3 BasketCoordinate = new Vector3(-4.0f, -1.59f);
+		public static Vector3 PotCoordinate = new Vector3(-5.53f, -0.36f);
+		public static Vector3 PortalCoordinate = new Vector3(-3.37f, 0.32f);
 		private void Start()
 		{
 			SpaceObjectPrefab = Resources.Load("SpaceObjectPrefab", typeof (GameObject)) as GameObject;

@@ -109,12 +109,30 @@ namespace Assets.scripts
 					if (Map[i, coordinate.Y].TypeOfObject == Map[i + 1, coordinate.Y].TypeOfObject
 					    && Map[i, coordinate.Y].TypeOfObject == Map[i + 2, coordinate.Y].TypeOfObject)
 						return true;
+					if (Map[i, coordinate.Y].IsUnstable &&
+					    Map[i + 1, coordinate.Y].TypeOfObject == Map[i + 2, coordinate.Y].TypeOfObject)
+						return true;
+					if (Map[i + 1, coordinate.Y].IsUnstable &&
+						Map[i, coordinate.Y].TypeOfObject == Map[i + 2, coordinate.Y].TypeOfObject)
+						return true;
+					if (Map[i + 2, coordinate.Y].IsUnstable &&
+						Map[i + 1, coordinate.Y].TypeOfObject == Map[i, coordinate.Y].TypeOfObject)
+						return true;
 				}
 				for (int i = bottomBoundY; i <= topBoundY - 2; i++)
 				{
 					if (Map[coordinate.X, i] == null || Map[coordinate.X, i + 1] == null || Map[coordinate.X ,i + 2] == null) continue;
 					if (Map[coordinate.X, i].TypeOfObject == Map[coordinate.X, i+1].TypeOfObject
 						&& Map[coordinate.X, i].TypeOfObject == Map[coordinate.X, i+2].TypeOfObject)
+						return true;
+					if (Map[coordinate.X, i].IsUnstable &&
+						Map[coordinate.X, i + 1].TypeOfObject == Map[coordinate.X, i + 2].TypeOfObject)
+						return true;
+					if (Map[coordinate.X, i + 1].IsUnstable &&
+						Map[coordinate.X, i].TypeOfObject == Map[coordinate.X, i + 2].TypeOfObject)
+						return true;
+					if (Map[coordinate.X, i + 2].IsUnstable &&
+						Map[coordinate.X, i].TypeOfObject == Map[coordinate.X, i + 1].TypeOfObject)
 						return true;
 				}
 			}
@@ -393,7 +411,7 @@ namespace Assets.scripts
 		public static Vector3 GetVectorFromCoord(int i, int j)
 		{
 			return new Vector3(i*0.92f - Game.MAP_SIZE/2 + 2.6f,
-							Game.MAP_SIZE/2 - j*0.92f - 0.8f, 0);
+							Game.MAP_SIZE/2 - j*0.92f - 0.3f, 0);
 		}
 
 		public static List<char> AsteroidsList = new List<char>()
