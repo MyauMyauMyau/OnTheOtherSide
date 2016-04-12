@@ -187,6 +187,8 @@ namespace Assets.scripts
 			var asteroidsColumnList = new List<Coordinate>();
 			asteroidsColumnList.Add(cell.GridPosition);
 			var unstableIsAdded = false;
+			if (i < Map.GetLength(0) - 1 && Map[i, j].IsUnstable && Map[i + 1, j] != null && Map[i + 1, j].IsAsteroid())
+				i++;
 			while (i < Map.GetLength(0) - 1 && Map[i + 1, j] != null 
 				&& (Map[i + 1, j].TypeOfObject == cell.TypeOfObject || Map[i+1, j].IsUnstable))
 			{
@@ -270,7 +272,9 @@ namespace Assets.scripts
 			var asteroidsColumnList = new List<Coordinate>();
 			asteroidsColumnList.Add(cell.GridPosition);
 			var unstableIsAdded = false;
-			while (j < Map.GetLength(1) - 1 && Map[i, j + 1] != null && 
+			if (j < Game.MAP_SIZE - 1 && Map[i, j].IsUnstable && Map[i , j + 1] != null && Map[i, j + 1].IsAsteroid())
+				j++;
+			while (j < Game.MAP_SIZE - 1 && Map[i, j + 1] != null && 
 				(Map[i, j + 1].TypeOfObject == cell.TypeOfObject || Map[i, j + 1].IsUnstable))
 			{
 				j++;

@@ -46,6 +46,8 @@ public class SpaceObject : MonoBehaviour
 	public SpaceObjectState State { get; set; }
 	public bool UpdatedField = false;
 	public Random rnd = new Random();
+	public Vector3 DestroyRotation;
+	public int DestroyRotationSpeed;
 	public bool IsAsteroid()
 	{
 		return AsteroidTypes.Contains(TypeOfObject);
@@ -58,6 +60,7 @@ public class SpaceObject : MonoBehaviour
 			(Time.time - ToBasketStartTime));
 		curPos.y += 4*Mathf.Sin(Mathf.Clamp01((Time.time - ToBasketStartTime))*Mathf.PI);
 		transform.position = curPos;
+		transform.Rotate(DestroyRotation * Time.deltaTime * DestroyRotationSpeed);
 		if (transform.position == Game.BasketCoordinate)
 			Destroy(gameObject);
 	}
@@ -68,6 +71,7 @@ public class SpaceObject : MonoBehaviour
 			(Time.time - ToBasketStartTime));
 		curPos.y += 4 * Mathf.Sin(Mathf.Clamp01((Time.time - ToBasketStartTime)) * Mathf.PI);
 		transform.position = curPos;
+		transform.Rotate( DestroyRotation * Time.deltaTime*DestroyRotationSpeed);
 		if (transform.position == Game.PortalCoordinate)
 			Destroy(gameObject);
 	}
@@ -78,6 +82,7 @@ public class SpaceObject : MonoBehaviour
 			(Time.time - ToBasketStartTime));
 		curPos.y += 4 * Mathf.Sin(Mathf.Clamp01((Time.time - ToBasketStartTime)) * Mathf.PI);
 		transform.position = curPos;
+		transform.Rotate(DestroyRotation * Time.deltaTime * DestroyRotationSpeed);
 		if (transform.position == Game.PotCoordinate)
 			Destroy(gameObject);
 	}
@@ -140,6 +145,8 @@ public class SpaceObject : MonoBehaviour
 	}
 	public void Initialise(int x, int y, char type, float delay = 0, bool isUnstable = false)
 	{
+		DestroyRotationSpeed = rnd.Next(500);
+		DestroyRotation = (rnd.Next(2) == 0 ? Vector3.back : Vector3.forward);
 		DropSpeed = BaseDropSpeed*2;
 		MoveSpeed = 10f;
 		GrowSpeed = 0.05f;
