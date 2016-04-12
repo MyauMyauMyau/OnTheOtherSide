@@ -18,44 +18,44 @@ namespace Assets.scripts
 		private LevelInfo LevelInformation;
 		public static int TurnsLeft;
 		public static Game instance;
-		public static Vector3 BasketCoordinate = new Vector3(-4.0f, -1.59f);
-		public static Vector3 PotCoordinate = new Vector3(-5.53f, -0.36f);
-		public static Vector3 PortalCoordinate = new Vector3(-3.37f, 0.32f);
+		public static Vector3 BasketCoordinate = new Vector3(-4.2f, -0.8f);
+		public static Vector3 PotCoordinate = new Vector3(-5.53f, 0.8f);
+		public static Vector3 PortalCoordinate = new Vector3(-3.0f, -2.0f);
 		private void Start()
 		{
 			SpaceObjectPrefab = Resources.Load("SpaceObjectPrefab", typeof (GameObject)) as GameObject;
-			SpaceObject.BlueAsteroidSprite = Resources.Load("2-vampir", typeof(Sprite)) as Sprite;
-			SpaceObject.GreenAsteroidSprite = Resources.Load("2-zombak", typeof(Sprite)) as Sprite;
-			SpaceObject.RedAsteroidSprite = Resources.Load("2-pauk", typeof(Sprite)) as Sprite;
-			SpaceObject.PurpleAsteroidSprite = Resources.Load("2-letuchka", typeof(Sprite)) as Sprite;
-			SpaceObject.YellowAsteroidSprite = Resources.Load("2-prizrak", typeof(Sprite)) as Sprite;
+			SpaceObject.VampireSprite = Resources.Load("2-vampir", typeof(Sprite)) as Sprite;
+			SpaceObject.ZombieSprite = Resources.Load("2-zombak", typeof(Sprite)) as Sprite;
+			SpaceObject.SpiderSprite = Resources.Load("2-pauk", typeof(Sprite)) as Sprite;
+			SpaceObject.BatSprite = Resources.Load("2-letuchka", typeof(Sprite)) as Sprite;
+			SpaceObject.GhostSprite = Resources.Load("2-prizrak", typeof(Sprite)) as Sprite;
 			SpaceObject.EmptyCellSprite = Resources.Load("1-pustaiaKLETKA", typeof(Sprite)) as Sprite;
-			SpaceObject.UnstableBlueAsteroidSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
-			SpaceObject.UnstableGreenAsteroidSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
-			SpaceObject.UnstableRedAsteroidSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
-			SpaceObject.UnstablePurpleAsteroidSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
-			SpaceObject.UnstableYellowAsteroidSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
+			SpaceObject.UnstableVampireSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
+			SpaceObject.UnstableZombieSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
+			SpaceObject.UnstableSpiderSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
+			SpaceObject.UnstableBatSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
+			SpaceObject.UnstableGhostSprite = Resources.Load("1-bomba", typeof(Sprite)) as Sprite;
 			SpaceObject.BlackHoleSprite = Resources.Load("3Black_hole_02", typeof(Sprite)) as Sprite;
-			SpaceObject.IceSprite = Resources.Load("1-kokonZAMOROZKA", typeof(Sprite)) as Sprite;
+			SpaceObject.CooconSprite = Resources.Load("1-kokonZAMOROZKA", typeof(Sprite)) as Sprite;
 
 			SpaceObject.SpaceObjectTypesToSprites = new Dictionary<SpaceObjectType, Sprite>
 			{
-				{SpaceObjectType.GreenAsteroid, SpaceObject.GreenAsteroidSprite},
-				{SpaceObjectType.RedAsteroid, SpaceObject.RedAsteroidSprite},
-				{SpaceObjectType.BlueAsteroid, SpaceObject.BlueAsteroidSprite},
-				{SpaceObjectType.PurpleAsteroid, SpaceObject.PurpleAsteroidSprite},
-				{SpaceObjectType.YellowAsteroid, SpaceObject.YellowAsteroidSprite},
+				{SpaceObjectType.Zombie, SpaceObject.ZombieSprite},
+				{SpaceObjectType.Spider, SpaceObject.SpiderSprite},
+				{SpaceObjectType.Vampire, SpaceObject.VampireSprite},
+				{SpaceObjectType.Bat, SpaceObject.BatSprite},
+				{SpaceObjectType.Ghost, SpaceObject.GhostSprite},
 				{SpaceObjectType.EmptyCell, SpaceObject.EmptyCellSprite},
 				{SpaceObjectType.BlackHole, SpaceObject.BlackHoleSprite},
-				{SpaceObjectType.Ice, SpaceObject.IceSprite}
+				{SpaceObjectType.Coocon, SpaceObject.CooconSprite}
 			};
 			SpaceObject.StableToUnstableSprites = new Dictionary<SpaceObjectType, Sprite>
 			{
-				{SpaceObjectType.GreenAsteroid, SpaceObject.UnstableGreenAsteroidSprite},
-				{SpaceObjectType.RedAsteroid, SpaceObject.UnstableRedAsteroidSprite},
-				{SpaceObjectType.BlueAsteroid, SpaceObject.UnstableBlueAsteroidSprite},
-				{SpaceObjectType.PurpleAsteroid, SpaceObject.UnstablePurpleAsteroidSprite},
-				{SpaceObjectType.YellowAsteroid, SpaceObject.UnstableYellowAsteroidSprite},
+				{SpaceObjectType.Zombie, SpaceObject.UnstableZombieSprite},
+				{SpaceObjectType.Spider, SpaceObject.UnstableSpiderSprite},
+				{SpaceObjectType.Vampire, SpaceObject.UnstableVampireSprite},
+				{SpaceObjectType.Bat, SpaceObject.UnstableBatSprite},
+				{SpaceObjectType.Ghost, SpaceObject.UnstableGhostSprite},
 
 			};
 			instance = this;

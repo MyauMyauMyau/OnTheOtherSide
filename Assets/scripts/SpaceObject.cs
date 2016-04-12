@@ -16,19 +16,19 @@ public class SpaceObject : MonoBehaviour
 	public Vector3 Destination { get; set; }
 	public Coordinate PreviousPosition {get; set;}
 	public SpaceObjectType TypeOfObject { get; set;}
-	public static Sprite BlueAsteroidSprite;
-	public static Sprite GreenAsteroidSprite;
-	public static Sprite RedAsteroidSprite;
-	public static Sprite PurpleAsteroidSprite;
-	public static Sprite YellowAsteroidSprite;
+	public static Sprite VampireSprite;
+	public static Sprite ZombieSprite;
+	public static Sprite SpiderSprite;
+	public static Sprite BatSprite;
+	public static Sprite GhostSprite;
 	public static Sprite EmptyCellSprite;
-	public static Sprite UnstableBlueAsteroidSprite;
-	public static Sprite UnstableGreenAsteroidSprite;
-	public static Sprite UnstableRedAsteroidSprite;
-	public static Sprite UnstablePurpleAsteroidSprite;
-	public static Sprite UnstableYellowAsteroidSprite;
+	public static Sprite UnstableVampireSprite;
+	public static Sprite UnstableZombieSprite;
+	public static Sprite UnstableSpiderSprite;
+	public static Sprite UnstableBatSprite;
+	public static Sprite UnstableGhostSprite;
 	public static Sprite BlackHoleSprite;
-	public static Sprite IceSprite;
+	public static Sprite CooconSprite;
 	public const float BaseDropSpeed = 10f;
 	public bool IsTargetForBlackHole;
 	public bool IsFrozen;
@@ -87,7 +87,7 @@ public class SpaceObject : MonoBehaviour
 		var bottomBoundY = Math.Max(0, GridPosition.Y - 1);
 		var topBoundX = Math.Min(Game.MAP_SIZE - 1, GridPosition.X + 1);
 		var topBoundY = Math.Min(Game.MAP_SIZE - 1, GridPosition.Y + 1);
-		if (TypeOfObject == SpaceObjectType.Ice)
+		if (TypeOfObject == SpaceObjectType.Coocon)
 		{
 			for (int i = bottomBoundX; i <= topBoundX; i++)
 			{
@@ -116,7 +116,7 @@ public class SpaceObject : MonoBehaviour
 			for (int i = bottomBoundX; i <= topBoundX; i++)
 			{
 				if (GameField.Map[i, GridPosition.Y] != null &&
-					GameField.Map[i, GridPosition.Y].TypeOfObject == SpaceObjectType.Ice)
+					GameField.Map[i, GridPosition.Y].TypeOfObject == SpaceObjectType.Coocon)
 				{
 					iceList.Add(new Coordinate(i, GridPosition.Y));
 				}
@@ -124,7 +124,7 @@ public class SpaceObject : MonoBehaviour
 			for (int j = bottomBoundY; j <= topBoundY; j++)
 			{
 				if (GameField.Map[GridPosition.X, j] != null &&
-					GameField.Map[GridPosition.X, j].TypeOfObject == SpaceObjectType.Ice)
+					GameField.Map[GridPosition.X, j].TypeOfObject == SpaceObjectType.Coocon)
 				{
 					iceList.Add(new Coordinate(GridPosition.X,j));
 				}
@@ -175,12 +175,14 @@ public class SpaceObject : MonoBehaviour
 	{
 		if (State == SpaceObjectState.Destroying)
 		{
-			if (TypeOfObject == SpaceObjectType.BlueAsteroid || TypeOfObject == SpaceObjectType.GreenAsteroid)
+			if (TypeOfObject == SpaceObjectType.Vampire || TypeOfObject == SpaceObjectType.Zombie)
 				SendToBasket();
-			if (TypeOfObject == SpaceObjectType.RedAsteroid || TypeOfObject == SpaceObjectType.PurpleAsteroid)
+			if (TypeOfObject == SpaceObjectType.Spider || TypeOfObject == SpaceObjectType.Bat)
 				SendToPot();
-			if (TypeOfObject == SpaceObjectType.YellowAsteroid)
+			if (TypeOfObject == SpaceObjectType.Ghost)
 				SendToPortal();
+			if (TypeOfObject == SpaceObjectType.Coocon)
+				Destroy(gameObject);
 			return;
 		}
 		if (State == SpaceObjectState.WaitingForInitialising)
@@ -422,14 +424,14 @@ public class SpaceObject : MonoBehaviour
 
 	public static readonly Dictionary<char, SpaceObjectType> CharsToObjectTypes = new Dictionary<char, SpaceObjectType>
 	{
-		{ 'G', SpaceObjectType.GreenAsteroid},
-		{ 'R', SpaceObjectType.RedAsteroid},
-		{ 'B', SpaceObjectType.BlueAsteroid},
-		{ 'P', SpaceObjectType.PurpleAsteroid},
-		{ 'Y', SpaceObjectType.YellowAsteroid},
+		{ 'G', SpaceObjectType.Zombie},
+		{ 'R', SpaceObjectType.Spider},
+		{ 'B', SpaceObjectType.Vampire},
+		{ 'P', SpaceObjectType.Bat},
+		{ 'Y', SpaceObjectType.Ghost},
 		{ 'H', SpaceObjectType.BlackHole},
 		{ 'E', SpaceObjectType.EmptyCell},
-		{'I', SpaceObjectType.Ice}
+		{'I', SpaceObjectType.Coocon}
 	};
 
 	public static Dictionary<SpaceObjectType, Sprite> SpaceObjectTypesToSprites;
@@ -438,11 +440,11 @@ public class SpaceObject : MonoBehaviour
 
 	private static readonly List<SpaceObjectType> AsteroidTypes = new List<SpaceObjectType>()
 	{
-		SpaceObjectType.GreenAsteroid,
-		SpaceObjectType.RedAsteroid,
-		SpaceObjectType.YellowAsteroid,
-		SpaceObjectType.BlueAsteroid,
-		SpaceObjectType.PurpleAsteroid
+		SpaceObjectType.Zombie,
+		SpaceObjectType.Spider,
+		SpaceObjectType.Ghost,
+		SpaceObjectType.Vampire,
+		SpaceObjectType.Bat
 	};
 
 }

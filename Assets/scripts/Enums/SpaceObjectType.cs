@@ -7,13 +7,13 @@ namespace Assets.scripts
 {
 	public enum SpaceObjectType
 	{
-		BlueAsteroid,
-		RedAsteroid,
-		PurpleAsteroid,
-		YellowAsteroid,
-		GreenAsteroid,
+		Vampire,
+		Spider,
+		Bat,
+		Ghost,
+		Zombie,
 		BlackHole,
-		Ice,
+		Coocon,
 		EmptyCell
 			
 	}
