@@ -40,7 +40,7 @@ namespace Assets.scripts
 			for (int i = 0; i < Map.GetLength(0); i++)
 			{
 				for (int j = 0; j < Map.GetLength(1); j++)
-					if (Map[i,j] != null && Map[i, j].IsAsteroid())
+					if (Map[i,j] != null && Map[i, j].IsMonster())
 						asteroidsCoordinates.Add(new Coordinate(i, j));
 			}
 			while (asteroidsCoordinates.Count != 0)
@@ -61,7 +61,9 @@ namespace Assets.scripts
 				{
 					if (Map[i,j] == null || Map[i+1,j] == null)
 						continue;
-					if (!Map[i,j].IsAsteroid() || !Map[i+1,j].IsAsteroid())
+					if (!Map[i,j].IsMonster() || !Map[i+1,j].IsMonster())
+						continue;
+					if (Map[i, j].IsFrozen || Map[i + 1, j].IsFrozen)
 						continue;
 					var p1 = new Coordinate(i, j);
 					var p2 = new Coordinate(i + 1, j);
@@ -80,7 +82,7 @@ namespace Assets.scripts
 				{
 					if (Map[i, j] == null || Map[i, j+1] == null)
 						continue;
-					if (!Map[i, j].IsAsteroid() || !Map[i, j + 1].IsAsteroid())
+					if (!Map[i, j].IsMonster() || !Map[i, j + 1].IsMonster())
 						continue;
 					var p1 = new Coordinate(i, j);
 					var p2 = new Coordinate(i, j + 1);
@@ -170,10 +172,10 @@ namespace Assets.scripts
 			{
 				for (int j = 0; j < Map.GetLength(1); j++)
 				{
-					if (Map[i, j] == null || !Map[i, j].IsAsteroid())
+					if (Map[i, j] == null || !Map[i, j].IsMonster())
 						continue;
 					CheckColumn(Map[i, j], i, j);
-					if (Map[i,j] == null || !Map[i,j].IsAsteroid())
+					if (Map[i,j] == null || !Map[i,j].IsMonster())
 						continue;
 					CheckRow(Map[i, j], i, j); //checking row here
 				}
@@ -189,7 +191,8 @@ namespace Assets.scripts
 				{
 					if (Map[i, j] != null && Map[i, j].TypeOfObject == type)
 					{
-						Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
+						if (!Map[i, j].IsFrozen)
+							Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
 						Map[i, j].DestroyMonster();
 					}
 				}
@@ -205,9 +208,10 @@ namespace Assets.scripts
 			{
 				for (int j = bottomBoundY; j <= topBoundY; j ++)
 				{
-					if (Map[i, j] != null && Map[i, j].IsAsteroid())
+					if (Map[i, j] != null && Map[i, j].IsMonster())
 					{
-						Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
+						if (!Map[i, j].IsFrozen)
+							Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
 						Map[i, j].DestroyMonster();
 					}
 				}
@@ -220,7 +224,7 @@ namespace Assets.scripts
 			var asteroidsColumnList = new List<Coordinate>();
 			asteroidsColumnList.Add(cell.GridPosition);
 			var unstableIsAdded = false;
-			if (i < Map.GetLength(0) - 1 && Map[i, j].IsUnstable && Map[i + 1, j] != null && Map[i + 1, j].IsAsteroid())
+			if (i < Map.GetLength(0) - 1 && Map[i, j].IsUnstable && Map[i + 1, j] != null && Map[i + 1, j].IsMonster())
 			{
 				asteroidsColumnList.Add(Map[i +1 , j].GridPosition);
 				cell = Map[i + 1, j];
@@ -293,7 +297,7 @@ namespace Assets.scripts
 			}
 			HandleUnstableAsteroids(listToDestroy);
 			foreach (var coordinate in listToDestroy
-				.Where(x => Map[x.X, x.Y] != null && Map[x.X, x.Y].IsAsteroid()))
+				.Where(x => Map[x.X, x.Y] != null && Map[x.X, x.Y].IsMonster()))
 			{
 				Map[coordinate.X, coordinate.Y].DestroyMonster();
 			}
@@ -310,7 +314,7 @@ namespace Assets.scripts
 			var asteroidsColumnList = new List<Coordinate>();
 			asteroidsColumnList.Add(cell.GridPosition);
 			var unstableIsAdded = false;
-			if (j < Game.MAP_SIZE - 1 && Map[i, j].IsUnstable && Map[i, j + 1] != null && Map[i, j + 1].IsAsteroid())
+			if (j < Game.MAP_SIZE - 1 && Map[i, j].IsUnstable && Map[i, j + 1] != null && Map[i, j + 1].IsMonster())
 			{
 				asteroidsColumnList.Add(Map[i, j + 1].GridPosition);
 				cell = Map[i, j + 1];
@@ -382,7 +386,7 @@ namespace Assets.scripts
 			}
 			HandleUnstableAsteroids(listToDestroy);
 			foreach (var coordinate in listToDestroy
-				.Where(x=>Map[x.X, x.Y] != null && Map[x.X, x.Y].IsAsteroid()))
+				.Where(x=>Map[x.X, x.Y] != null && Map[x.X, x.Y].IsMonster()))
 			{
 				Map[coordinate.X, coordinate.Y].DestroyMonster();
 			}
@@ -418,39 +422,6 @@ namespace Assets.scripts
 							listToDestroy.Add(coord);
 					}
 				}
-			}
-		}
-
-		private static void DropAsteroids()
-		{
-			var delay = 0f;
-			var step = 3f / Monster.BaseDropSpeed;
-			Random r = new Random();
-			for (int i = 0; i < Map.GetLength(0); i++)
-			{
-				delay = step/3;
-				for (int j = Map.GetLength(1) - 1; j >= 0; j--)
-				{
-					if (Map[i, j] != null)
-						continue;
-					var depth = j;
-					while ( depth > 0 && Map[i, depth] == null)
-					{
-						depth--;
-					}
-					if (Map[i, 0] == null)
-					{
-						Game.SpaceObjectCreate(i, 0, AsteroidsList.ElementAt(r.Next(5)), delay);
-						delay += step;
-					}
-					if (depth >= 0  && depth != j && Map[i, depth] != null)
-					{
-						Map[i, j] = Map[i, depth];
-						Map[i, depth] = null;
-						Map[i,j].GridPosition = new Coordinate(i, j);
-						Map[i,j].Destination = GetVectorFromCoord(i,j);
-					}
-				}	 
 			}
 		}
 

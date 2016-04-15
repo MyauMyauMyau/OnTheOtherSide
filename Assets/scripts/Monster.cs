@@ -48,7 +48,7 @@ public class Monster : MonoBehaviour
 	public Random rnd = new Random();
 	public Vector3 DestroyRotation;
 	public int DestroyRotationSpeed;
-	public bool IsAsteroid()
+	public bool IsMonster()
 	{
 		return AsteroidTypes.Contains(TypeOfObject);
 	}
@@ -98,7 +98,7 @@ public class Monster : MonoBehaviour
 			{
 				for (int j = bottomBoundY; j <= topBoundY; j++)
 				{
-					if (GameField.Map[i, j] != null && GameField.Map[i, j].IsAsteroid())
+					if (GameField.Map[i, j] != null && GameField.Map[i, j].IsMonster())
 					{
 						GameField.Map[i, j].IsFrozen = true;
 						GameField.Map[i, j].gameObject.transform.GetChild(1).gameObject.SetActive(true);
@@ -262,10 +262,10 @@ public class Monster : MonoBehaviour
 				transform.position = Vector3.MoveTowards(transform.position, Destination, step);
 			}
 		}
-		if (IsAsteroid())
+		if (IsMonster())
 			gameObject.GetComponentInChildren<Light>().enabled = State == MonsterState.Clicked;
 								   
-		if (IsAsteroid() && !IsFrozen && State !=MonsterState.Moving && GridPosition.Y != Game.MAP_SIZE - 1)
+		if (IsMonster() && !IsFrozen && State !=MonsterState.Moving && GridPosition.Y != Game.MAP_SIZE - 1)
 		{
 			DropAsteroids();
 		}
@@ -285,12 +285,12 @@ public class Monster : MonoBehaviour
 			for (int i = GridPosition.Y; i >= 0; i--)
 			{
 				if (GameField.Map[GridPosition.X - 1, i] != null
-					&& (!GameField.Map[GridPosition.X - 1, i].IsAsteroid() || GameField.Map[GridPosition.X - 1, i].IsFrozen))
+					&& (!GameField.Map[GridPosition.X - 1, i].IsMonster() || GameField.Map[GridPosition.X - 1, i].IsFrozen))
 				{
 					GameField.Drop(GridPosition, new Coordinate(GridPosition.X - 1, GridPosition.Y + 1));
 					break;
 				}
-				if (GameField.Map[GridPosition.X - 1, i] != null && GameField.Map[GridPosition.X - 1, i].IsAsteroid())
+				if (GameField.Map[GridPosition.X - 1, i] != null && GameField.Map[GridPosition.X - 1, i].IsMonster())
 					break;
 			}
 
@@ -301,12 +301,12 @@ public class Monster : MonoBehaviour
 			for (int i = GridPosition.Y; i >= 0; i--)
 			{
 				if (GameField.Map[GridPosition.X + 1, i] != null
-					&& (!GameField.Map[GridPosition.X + 1, i].IsAsteroid() || GameField.Map[GridPosition.X + 1, i].IsFrozen))
+					&& (!GameField.Map[GridPosition.X + 1, i].IsMonster() || GameField.Map[GridPosition.X + 1, i].IsFrozen))
 				{
 					GameField.Drop(GridPosition, new Coordinate(GridPosition.X + 1, GridPosition.Y + 1));
 					break;
 				}
-				if (GameField.Map[GridPosition.X + 1, i] != null && GameField.Map[GridPosition.X + 1, i].IsAsteroid())
+				if (GameField.Map[GridPosition.X + 1, i] != null && GameField.Map[GridPosition.X + 1, i].IsMonster())
 					break;
 			}
 		}
@@ -356,7 +356,7 @@ public class Monster : MonoBehaviour
 		{
 			for (int j = 0; j < map.GetLength(1); j++)
 			{
-				if (map[i, j] != null && map[i, j].IsAsteroid() && !unsuitableAsteroids.Contains(map[i, j].TypeOfObject)
+				if (map[i, j] != null && map[i, j].IsMonster() && !unsuitableAsteroids.Contains(map[i, j].TypeOfObject)
 				    &&
 				    ((j < map.GetLength(1) - 1 && map[i, j + 1] != null &&
 					map[i, j].TypeOfObject == map[i, j + 1].TypeOfObject) ||
@@ -406,6 +406,7 @@ public class Monster : MonoBehaviour
 			scaleCopy.y += 0.01f;
 			fireball.transform.position = posCopy;
 			fireball.transform.localScale = scaleCopy;
+			fireball.transform.Rotate(Vector3.back*0.1f);
 			yield return new WaitForSeconds(0.005f);
 		}
 		fireball.SetActive(false);
@@ -440,7 +441,7 @@ public class Monster : MonoBehaviour
 	}
 	void OnMouseDown()
 	{										 
-		if (!Game.IsPlayerBlocked() || !IsAsteroid())
+		if (!Game.IsPlayerBlocked() || !IsMonster())
 			return;
 
 		if (Game.ClickType == ClickState.Electro)
