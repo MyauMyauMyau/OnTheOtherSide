@@ -25,10 +25,17 @@ public class SkillButton : MonoBehaviour
 			if (button.FillAmount >= 1)
 			{
 				button.FillAmount = 1;
+				button.GetComponent<Button>().interactable = true;
 				if (button.Type == SkillButtonType.Fire)
-					button.GetComponent<Button>().image.overrideSprite = ActiveFire;
+				{
+					button.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/fireActiveButton");
+				}
 				if (button.Type == SkillButtonType.Electro)
+				{
+					
 					button.GetComponent<Button>().image.overrideSprite = ActiveElectro;
+				}
+				
 			}
 		}
 	}
@@ -47,6 +54,7 @@ public class SkillButton : MonoBehaviour
 					skillButton.GetComponent<Button>().image.overrideSprite = Electro;
 				Cursor.SetCursor(Game.MainCursor, new Vector2(0, 0), CursorMode.Auto);
 				Game.ClickType = ClickState.Default;
+				skillButton.GetComponent<Button>().interactable = false;
 			}
 		}		
 	}
@@ -63,10 +71,6 @@ public class SkillButton : MonoBehaviour
 	void Update ()
 	{
 		GetComponent<Image>().fillAmount = FillAmount;
-		if (FillAmount >= 1f)
-		{
-			GetComponent<Button>().interactable = true;
-		}
 	}
 
 	void OnClickEvent()

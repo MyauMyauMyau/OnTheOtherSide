@@ -409,7 +409,9 @@ public class Monster : MonoBehaviour
 			fireball.transform.Rotate(Vector3.back*0.1f);
 			yield return new WaitForSeconds(0.005f);
 		}
-		fireball.SetActive(false);
+		fireball.transform.position = new Vector3(-3.47f, 1.84f);
+		fireball.transform.localScale = new Vector3(0.1f, 0.1f, 1f);
+		fireball.SetActive(false);		
 		Game.PlayerIsBlocked = false;
 		SkillButton.Deactivate(SkillButtonType.Fire);
 		GameField.DestroySquare(GridPosition);
@@ -435,9 +437,9 @@ public class Monster : MonoBehaviour
 			yield return new WaitForSeconds(0.1f);
 		}
 		l2.SetActive(false);
-		GameField.DestroyAllOf(TypeOfObject);
 		Game.PlayerIsBlocked = false;
 		SkillButton.Deactivate(SkillButtonType.Electro);
+		GameField.DestroyAllOf(TypeOfObject);
 	}
 	void OnMouseDown()
 	{										 

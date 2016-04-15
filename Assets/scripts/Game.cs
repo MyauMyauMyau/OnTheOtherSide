@@ -55,10 +55,10 @@ namespace Assets.scripts
 		private void Start()
 		{
 			SpaceObjectPrefab = Resources.Load("SpaceObjectPrefab", typeof (GameObject)) as GameObject;
-			SkillButton.ActiveFire = Resources.Load("ButtonsSprites/fireActive") as Sprite;
-			SkillButton.Fire = Resources.Load("ButtonsSprites/fire") as Sprite;
-			SkillButton.ActiveElectro = Resources.Load("ButtonsSprites/electroActive") as Sprite;
-			SkillButton.Electro = Resources.Load("ButtonsSprites/electro") as Sprite;
+			SkillButton.ActiveFire = Resources.Load<Sprite>("ButtonsSprites/fireActiveButton");
+			SkillButton.Fire = Resources.Load<Sprite>("ButtonsSprites/fireLoad");
+			SkillButton.ActiveElectro = Resources.Load<Sprite>("ButtonsSprites/electroActiveButton");
+			SkillButton.Electro = Resources.Load<Sprite>("ButtonsSprites/electroLoad");
 			Monster.VampireSprite = Resources.Load("Sprites/2-vampir", typeof(Sprite)) as Sprite;
 			Monster.ZombieSprite = Resources.Load("Sprites/2-zombak", typeof(Sprite)) as Sprite;
 			Monster.SpiderSprite = Resources.Load("Sprites/2-pauk", typeof(Sprite)) as Sprite;
@@ -131,8 +131,11 @@ namespace Assets.scripts
 			
 			if (Input.GetMouseButton(0))
 			{
-				var rect = new Rect(new Vector2(149f, 53f), new Vector2(235f, 235f));
-				if (ClickType != ClickState.Default && !rect.Contains(Input.mousePosition))
+				var v3 = Input.mousePosition;
+				v3.z = 10.0f;
+				v3 = Camera.main.ScreenToWorldPoint(v3);
+				var rect = new Rect(new Vector2(-1.8f, -3.4f), new Vector2(7.5f, 7.5f));
+				if (ClickType != ClickState.Default && !rect.Contains(v3))
 				{
 					ClickType = ClickState.Default;
 					Cursor.SetCursor(MainCursor, new Vector2(0, 0), CursorMode.Auto);
