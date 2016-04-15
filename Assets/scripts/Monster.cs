@@ -86,7 +86,7 @@ public class Monster : MonoBehaviour
 		if (transform.position == Game.PotCoordinate)
 			Destroy(gameObject);
 	}
-	public void DestroyAsteroid()
+	public void DestroyMonster()
 	{
 		var bottomBoundX = Math.Max(0, GridPosition.X - 1);
 		var bottomBoundY = Math.Max(0, GridPosition.Y - 1);
@@ -138,10 +138,11 @@ public class Monster : MonoBehaviour
 			GameField.Map[GridPosition.X, GridPosition.Y] = null;
 			ToBasketStartTime = Time.time;
 			Game.MonsterCounter[TypeOfObject]++;
+			SkillButton.AddEnergy(TypeOfObject);
 			State = MonsterState.Destroying;
 			foreach (var ice in iceList)
 			{
-				GameField.Map[ice.X, ice.Y].DestroyAsteroid();				
+				GameField.Map[ice.X, ice.Y].DestroyMonster();				
 			}
 		}
 	}
@@ -320,7 +321,8 @@ public class Monster : MonoBehaviour
 			if (scale.x <= 0.1)
 			{
 				State = MonsterState.Growing;
-				GameField.Map[blackHoleTarget.X, blackHoleTarget.Y].IsTargetForBlackHole = false;
+				if (GameField.Map[blackHoleTarget.X, blackHoleTarget.Y] != null) 
+					GameField.Map[blackHoleTarget.X, blackHoleTarget.Y].IsTargetForBlackHole = false;
 				GameField.Jump(GridPosition, blackHoleTarget);
 			}
 			transform.localScale = scale;
@@ -388,9 +390,70 @@ public class Monster : MonoBehaviour
 		}
 	}
 
+	private IEnumerator ThrowFireball()
+	{
+		Game.PlayerIsBlocked = true;
+		var fireball = GameObject.Find("hero").transform.FindChild("Fireball").gameObject;
+		fireball.SetActive(true);
+		var distance = transform.position - fireball.transform.position;
+		var posCopy = fireball.transform.position;
+		var scaleCopy = fireball.transform.localScale;
+		for (int i = 0; i < 50; i++)
+		{
+			posCopy.x += distance.x/50;
+			posCopy.y += distance.y/50;
+			scaleCopy.x += 0.01f;
+			scaleCopy.y += 0.01f;
+			fireball.transform.position = posCopy;
+			fireball.transform.localScale = scaleCopy;
+			yield return new WaitForSeconds(0.005f);
+		}
+		fireball.SetActive(false);
+		Game.PlayerIsBlocked = false;
+		SkillButton.Deactivate(SkillButtonType.Fire);
+		GameField.DestroySquare(GridPosition);
+	}
+	private IEnumerator ThrowLightning()
+	{
+		Game.PlayerIsBlocked = true;
+		var hero = GameObject.Find("hero");
+		var l1 = hero.transform.FindChild("Lightning").gameObject;
+		var l2 = hero.transform.FindChild("Lightning2").gameObject;
+		for (int i = 0; i < 6; i++)
+		{
+			if (l1.activeSelf)
+			{
+				l2.SetActive(true);
+				l1.SetActive(false);
+			}
+			else
+			{
+				l2.SetActive(false);
+				l1.SetActive(true);
+			}
+			yield return new WaitForSeconds(0.1f);
+		}
+		l2.SetActive(false);
+		GameField.DestroyAllOf(TypeOfObject);
+		Game.PlayerIsBlocked = false;
+		SkillButton.Deactivate(SkillButtonType.Electro);
+	}
 	void OnMouseDown()
 	{										 
-		if (GameField.IsAnyMoving() || !IsAsteroid() || IsFrozen)
+		if (!Game.IsPlayerBlocked() || !IsAsteroid())
+			return;
+
+		if (Game.ClickType == ClickState.Electro)
+		{
+			StartCoroutine(ThrowLightning());
+			return;
+		}
+		if (Game.ClickType == ClickState.Fire)
+		{
+			StartCoroutine(ThrowFireball());
+			return;
+		}
+		if (IsFrozen)
 			return;
 		if (State == MonsterState.Default)
 		{

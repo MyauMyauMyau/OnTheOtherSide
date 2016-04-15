@@ -9,6 +9,7 @@ using System.Threading;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Assets.scripts;
+using Assets.scripts.Enums;
 using Random = System.Random;
 
 namespace Assets.scripts
@@ -181,6 +182,38 @@ namespace Assets.scripts
 
 
 
+		public static void DestroyAllOf(MonsterType type)
+		{
+			for (int i = 0; i < Game.MAP_SIZE; i++)
+				for (int j = 0; j < Game.MAP_SIZE; j++)
+				{
+					if (Map[i, j] != null && Map[i, j].TypeOfObject == type)
+					{
+						Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
+						Map[i, j].DestroyMonster();
+					}
+				}
+		}
+
+		public static void DestroySquare(Coordinate coordinate)
+		{
+			var bottomBoundX = Math.Max(0, coordinate.X - 1);
+			var bottomBoundY = Math.Max(0, coordinate.Y - 1);
+			var topBoundX = Math.Min(Game.MAP_SIZE - 1, coordinate.X + 1);
+			var topBoundY = Math.Min(Game.MAP_SIZE - 1, coordinate.Y + 1);
+			for (int i = bottomBoundX; i <= topBoundX; i++)
+			{
+				for (int j = bottomBoundY; j <= topBoundY; j ++)
+				{
+					if (Map[i, j] != null && Map[i, j].IsAsteroid())
+					{
+						Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
+						Map[i, j].DestroyMonster();
+					}
+				}
+			}
+		}
+
 		private static void CheckRow(Monster cell, int i, int j)
 		{
 			var unstableList = new List<Coordinate>();
@@ -210,7 +243,7 @@ namespace Assets.scripts
 			if (asteroidsColumnList.Count >= 5)
 			{
 				var coord = asteroidsColumnList.ElementAt(asteroidsColumnList.Count/2);
-				Map[coord.X, coord.Y].DestroyAsteroid();
+				Map[coord.X, coord.Y].DestroyMonster();
 				listToDestroy.Remove(coord);
 				unstableList.Add(coord);
 				unstableIsAdded = true;
@@ -236,7 +269,7 @@ namespace Assets.scripts
 				if (bufRowList.Count >= 5)
 				{
 					var coord = bufRowList.ElementAt(asteroidsColumnList.Count / 2);
-					Map[coord.X, coord.Y].DestroyAsteroid();
+					Map[coord.X, coord.Y].DestroyMonster();
 					listToDestroy.Remove(coord);
 					unstableList.Add(coord);
 					unstableIsAdded = true;
@@ -250,7 +283,7 @@ namespace Assets.scripts
 					}
 					if (!unstableIsAdded)
 					{
-						Map[asteroid.X, asteroid.Y].DestroyAsteroid();
+						Map[asteroid.X, asteroid.Y].DestroyMonster();
 						listToDestroy.Remove(asteroid);
 						unstableList.Add(asteroid);
 						unstableIsAdded = true;
@@ -262,7 +295,7 @@ namespace Assets.scripts
 			foreach (var coordinate in listToDestroy
 				.Where(x => Map[x.X, x.Y] != null && Map[x.X, x.Y].IsAsteroid()))
 			{
-				Map[coordinate.X, coordinate.Y].DestroyAsteroid();
+				Map[coordinate.X, coordinate.Y].DestroyMonster();
 			}
 			foreach (var coord in unstableList)
 			{
@@ -299,7 +332,7 @@ namespace Assets.scripts
 			if (asteroidsColumnList.Count >= 5)
 			{
 				var coord = asteroidsColumnList.ElementAt(asteroidsColumnList.Count / 2);
-				Map[coord.X, coord.Y].DestroyAsteroid();
+				Map[coord.X, coord.Y].DestroyMonster();
 				listToDestroy.Remove(coord);
 				unstableList.Add(coord);
 				unstableIsAdded = true;
@@ -326,7 +359,7 @@ namespace Assets.scripts
 				if (bufRowList.Count >= 5)
 				{
 					var coord = bufRowList.ElementAt(asteroidsColumnList.Count / 2);
-					Map[coord.X, coord.Y].DestroyAsteroid();
+					Map[coord.X, coord.Y].DestroyMonster();
 					listToDestroy.Remove(coord);
 					unstableList.Add(coord);
 					unstableIsAdded = true;
@@ -339,7 +372,7 @@ namespace Assets.scripts
 					}
 					if (!unstableIsAdded)
 					{
-						Map[asteroid.X, asteroid.Y].DestroyAsteroid();
+						Map[asteroid.X, asteroid.Y].DestroyMonster();
 						listToDestroy.Remove(asteroid);
 						unstableList.Add(asteroid);
 						unstableIsAdded = true;
@@ -351,7 +384,7 @@ namespace Assets.scripts
 			foreach (var coordinate in listToDestroy
 				.Where(x=>Map[x.X, x.Y] != null && Map[x.X, x.Y].IsAsteroid()))
 			{
-				Map[coordinate.X, coordinate.Y].DestroyAsteroid();
+				Map[coordinate.X, coordinate.Y].DestroyMonster();
 			}
 			foreach (var coord in unstableList)
 			{

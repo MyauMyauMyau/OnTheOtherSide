@@ -16,9 +16,13 @@ public class TargetsText : MonoBehaviour {
 	{
 		for (var i = 0; i < Game.LevelInformation.Targets.Count; i++)
 		{
-			var text = "" + Game.MonsterCounter[Monster.CharsToObjectTypes[Game.LevelInformation.Targets.ElementAt(i).Key]] + "/";
-			text += Game.LevelInformation.Targets.ElementAt(i).Value;
+			var currentMonsters = Game.MonsterCounter[Monster.CharsToObjectTypes[Game.LevelInformation.Targets.ElementAt(i).Key]];
+			var totalMonsters = Game.LevelInformation.Targets.ElementAt(i).Value;
+			var text = "" + currentMonsters  + "/";
+			text += totalMonsters;
 			GetComponentsInChildren<Text>()[i].text = text;
+			if (currentMonsters > totalMonsters)
+				GetComponentsInChildren<Text>()[i].color = Color.green;
 		}
 	}
 }

@@ -6,6 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Assets.scripts;
+using Assets.scripts.Enums;
+using UnityEngine.UI;
+
 //using Newtonsoft.Json;
 namespace Assets.scripts
 {
@@ -21,7 +24,10 @@ namespace Assets.scripts
 		public static Vector3 BasketCoordinate = new Vector3(-4.2f, -0.8f);
 		public static Vector3 PotCoordinate = new Vector3(-5.53f, 0.8f);
 		public static Vector3 PortalCoordinate = new Vector3(-3.0f, -2.0f);
-
+		public static Texture2D MainCursor;
+		public static Texture2D FireCursor;
+		public static Texture2D ElectroCursor;
+		public static ClickState ClickType = ClickState.Default;
 		public static Dictionary<MonsterType, int> MonsterCounter = new Dictionary<MonsterType, int>()
 		{
 			{MonsterType.Zombie, 0},
@@ -34,21 +40,25 @@ namespace Assets.scripts
 
 		private void Awake()
 		{
+			
 			//LevelInformation = JsonConvert.DeserializeObject<LevelInfo>(File.ReadAllText("Assets/levels/1.json"));
 			LevelInformation =
 			new LevelInfo { Map = "ZSVBBGBB ZHGGBBHS GBZBGSCS ZGGEEEVG GVZBVZBS ZVZVBZGV GBGSZSGS ZBZBBGBZ" };
 			LevelInformation.Targets = new Dictionary<char, int>()
 			{
-				{ 'Z', 25},
+				{'Z', 25},
 				{'S', 25},
-				{ 'V', 25}
+				{'V', 25}
 			};
-			//new LevelInfo { Map = "GBPY EYGR RYYE GRYR RYGY GPGP RYRB GYGY" };
 			
 		}
 		private void Start()
 		{
 			SpaceObjectPrefab = Resources.Load("SpaceObjectPrefab", typeof (GameObject)) as GameObject;
+			SkillButton.ActiveFire = Resources.Load("ButtonsSprites/fireActive") as Sprite;
+			SkillButton.Fire = Resources.Load("ButtonsSprites/fire") as Sprite;
+			SkillButton.ActiveElectro = Resources.Load("ButtonsSprites/electroActive") as Sprite;
+			SkillButton.Electro = Resources.Load("ButtonsSprites/electro") as Sprite;
 			Monster.VampireSprite = Resources.Load("Sprites/2-vampir", typeof(Sprite)) as Sprite;
 			Monster.ZombieSprite = Resources.Load("Sprites/2-zombak", typeof(Sprite)) as Sprite;
 			Monster.SpiderSprite = Resources.Load("Sprites/2-pauk", typeof(Sprite)) as Sprite;
@@ -62,7 +72,10 @@ namespace Assets.scripts
 			Monster.UnstableGhostSprite = Resources.Load("Sprites/1-bomba", typeof(Sprite)) as Sprite;
 			Monster.BlackHoleSprite = Resources.Load("Sprites/3Black_hole_02", typeof(Sprite)) as Sprite;
 			Monster.CooconSprite = Resources.Load("Sprites/1-kokonZAMOROZKA", typeof(Sprite)) as Sprite;
-
+			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
+			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
+			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;
+			Cursor.SetCursor(MainCursor, new Vector2(0,0), CursorMode.Auto);
 			Monster.TypesToSprites = new Dictionary<MonsterType, Sprite>
 			{
 				{MonsterType.Zombie, Monster.ZombieSprite},
@@ -85,13 +98,23 @@ namespace Assets.scripts
 			};
 			instance = this;
 			TurnsLeft = 10;
+
+
 			GenerateMap();
 
 		}
 
+		public static bool PlayerIsBlocked;
+		public static bool IsPlayerBlocked()
+		{
+			if (GameField.IsAnyMoving() || PlayerIsBlocked)
+				return false;
+			return true;
+		}
 		// Update is called once per frame
 		public void Update()
 		{
+			CheckCursorClick();
 			//if (TurnsLeft == 0)
 				//Debug.Log("Game Is Finished");
 			GameField.CheckUpperBorder();
@@ -100,6 +123,20 @@ namespace Assets.scripts
 				if (!GameField.IsAnyCorrectMove())
 					GameField.Shuffle();
 				GameField.UpdateField();
+			}
+		}
+
+		private void CheckCursorClick()
+		{
+			
+			if (Input.GetMouseButton(0))
+			{
+				var rect = new Rect(new Vector2(149f, 53f), new Vector2(235f, 235f));
+				if (ClickType != ClickState.Default && !rect.Contains(Input.mousePosition))
+				{
+					ClickType = ClickState.Default;
+					Cursor.SetCursor(MainCursor, new Vector2(0, 0), CursorMode.Auto);
+				}	
 			}
 		}
 
