@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.scripts
 {
-	public enum SpaceObjectState
+	public enum MonsterState
 	{
 		Default,
 		Clicked,

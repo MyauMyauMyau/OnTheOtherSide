@@ -5,9 +5,10 @@ using System.Text;
 
 namespace Assets.scripts
 {
-	class LevelInfo
+	public class LevelInfo
 	{
 		public string Map;
-		public int points;
+		public int Points;
+		public Dictionary<char, int> Targets;
 	}
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.scripts
 {
-	public enum SpaceObjectType
+	public enum MonsterType
 	{
 		Vampire,
 		Spider,

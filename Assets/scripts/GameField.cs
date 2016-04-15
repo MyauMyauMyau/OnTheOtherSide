@@ -15,7 +15,7 @@ namespace Assets.scripts
 {
 	public class GameField
 	{
-		public static SpaceObject[,] Map;
+		public static Monster[,] Map;
 		public static Coordinate? ClickedObject;
 		public static float MoveSpeed = 10.0f;
 		public static bool MoveIsFinished = true;
@@ -23,7 +23,7 @@ namespace Assets.scripts
 		public static void CheckUpperBorder()
 		{
 			var delay = 0f;
-			var step = 3f / SpaceObject.BaseDropSpeed;
+			var step = 3f / Monster.BaseDropSpeed;
 			for (int i = 0; i < Map.GetLength(0); i++)
 			{
 				if (Map[i, 0] == null)
@@ -181,14 +181,18 @@ namespace Assets.scripts
 
 
 
-		private static void CheckRow(SpaceObject cell, int i, int j)
+		private static void CheckRow(Monster cell, int i, int j)
 		{
 			var unstableList = new List<Coordinate>();
 			var asteroidsColumnList = new List<Coordinate>();
 			asteroidsColumnList.Add(cell.GridPosition);
 			var unstableIsAdded = false;
 			if (i < Map.GetLength(0) - 1 && Map[i, j].IsUnstable && Map[i + 1, j] != null && Map[i + 1, j].IsAsteroid())
+			{
+				asteroidsColumnList.Add(Map[i +1 , j].GridPosition);
+				cell = Map[i + 1, j];
 				i++;
+			}
 			while (i < Map.GetLength(0) - 1 && Map[i + 1, j] != null 
 				&& (Map[i + 1, j].TypeOfObject == cell.TypeOfObject || Map[i+1, j].IsUnstable))
 			{
@@ -262,18 +266,23 @@ namespace Assets.scripts
 			}
 			foreach (var coord in unstableList)
 			{
-				Game.SpaceObjectCreate(coord.X, coord.Y, SpaceObject.CharsToObjectTypes
+				Game.SpaceObjectCreate(coord.X, coord.Y, Monster.CharsToObjectTypes
 						.First(x => x.Value == cell.TypeOfObject).Key, 0, true);
 			}
 		}
-		private static void CheckColumn(SpaceObject cell, int i, int j)
+		private static void CheckColumn(Monster cell, int i, int j)
 		{
+			
 			var unstableList = new List<Coordinate>();
 			var asteroidsColumnList = new List<Coordinate>();
 			asteroidsColumnList.Add(cell.GridPosition);
 			var unstableIsAdded = false;
-			if (j < Game.MAP_SIZE - 1 && Map[i, j].IsUnstable && Map[i , j + 1] != null && Map[i, j + 1].IsAsteroid())
+			if (j < Game.MAP_SIZE - 1 && Map[i, j].IsUnstable && Map[i, j + 1] != null && Map[i, j + 1].IsAsteroid())
+			{
+				asteroidsColumnList.Add(Map[i, j + 1].GridPosition);
+				cell = Map[i, j + 1];
 				j++;
+			}
 			while (j < Game.MAP_SIZE - 1 && Map[i, j + 1] != null && 
 				(Map[i, j + 1].TypeOfObject == cell.TypeOfObject || Map[i, j + 1].IsUnstable))
 			{
@@ -346,7 +355,7 @@ namespace Assets.scripts
 			}
 			foreach (var coord in unstableList)
 			{
-				Game.SpaceObjectCreate(coord.X, coord.Y, SpaceObject.CharsToObjectTypes
+				Game.SpaceObjectCreate(coord.X, coord.Y, Monster.CharsToObjectTypes
 						.First(x => x.Value == cell.TypeOfObject).Key, 0, true);
 			}
 		}
@@ -382,7 +391,7 @@ namespace Assets.scripts
 		private static void DropAsteroids()
 		{
 			var delay = 0f;
-			var step = 3f / SpaceObject.BaseDropSpeed;
+			var step = 3f / Monster.BaseDropSpeed;
 			Random r = new Random();
 			for (int i = 0; i < Map.GetLength(0); i++)
 			{
@@ -420,9 +429,9 @@ namespace Assets.scripts
 
 		public static List<char> AsteroidsList = new List<char>()
 		{
-			'P',
-			'R',
-			'Y',
+			'Z',
+			'S',
+			'V',
 			'B',
 			'G',
 		}; 
@@ -432,9 +441,9 @@ namespace Assets.scripts
 			for (int i = 0; i < Game.MAP_SIZE; i++)
 				for (int j = 0; j < Game.MAP_SIZE; j++)
 					if (Map[i,j] != null && 
-						(Map[i, j].State == SpaceObjectState.Dropping 
-						|| Map[i, j].State == SpaceObjectState.Moving || Map[i, j].State == SpaceObjectState.Growing
-						|| Map[i, j].State == SpaceObjectState.Decreasing))
+						(Map[i, j].State == MonsterState.Dropping 
+						|| Map[i, j].State == MonsterState.Moving || Map[i, j].State == MonsterState.Growing
+						|| Map[i, j].State == MonsterState.Decreasing))
 							return true;
 			return false;
 		}
