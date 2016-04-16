@@ -63,6 +63,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\scripts\AudioHolder.cs" />
     <Compile Include="Assets\scripts\ButtonLight.cs" />
     <Compile Include="Assets\scripts\Coordinate.cs" />
     <Compile Include="Assets\scripts\Enums\ClickState.cs" />

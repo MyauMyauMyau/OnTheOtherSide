@@ -29,6 +29,9 @@ public class Monster : MonoBehaviour
 	public static Sprite UnstableGhostSprite;
 	public static Sprite BlackHoleSprite;
 	public static Sprite CooconSprite;
+	public static float RemoveStartTime;
+	public static float RemoveEndTime;
+	public static bool RemoveSoundPlaying;
 	public const float BaseDropSpeed = 10f;
 	public bool IsTargetForBlackHole;
 	public bool IsFrozen;
@@ -106,6 +109,7 @@ public class Monster : MonoBehaviour
 		var topBoundY = Math.Min(Game.MAP_SIZE - 1, GridPosition.Y + 1);
 		if (TypeOfObject == MonsterType.Coocon)
 		{
+			AudioHolder.PlayCocoon();
 			for (int i = bottomBoundX; i <= topBoundX; i++)
 			{
 				for (int j = bottomBoundY; j <= topBoundY; j++)
@@ -145,6 +149,7 @@ public class Monster : MonoBehaviour
 		Game.MonsterCounter[TypeOfObject]++;
 		SkillButton.AddEnergy(TypeOfObject);
 		State = MonsterState.Destroying;
+		AudioHolder.PlayRemove();
 		foreach (var ice in iceList)
 		{
 			GameField.Map[ice.X, ice.Y].DestroyMonster();				
@@ -153,6 +158,7 @@ public class Monster : MonoBehaviour
 
 	private void DestroyBomb()
 	{
+		AudioHolder.PlayBomb();
 		GameField.Map[GridPosition.X, GridPosition.Y] = null;
 		State = MonsterState.Destroying;
 		var bottomBoundX = Math.Max(0, GridPosition.X - 2);
@@ -421,6 +427,7 @@ public class Monster : MonoBehaviour
 
 	private IEnumerator ThrowFireball()
 	{
+		AudioHolder.PlayFireBall();
 		Game.PlayerIsBlocked = true;
 		var fireball = GameObject.Find("hero").transform.FindChild("Fireball").gameObject;
 		fireball.SetActive(true);
@@ -444,9 +451,11 @@ public class Monster : MonoBehaviour
 		Game.PlayerIsBlocked = false;
 		SkillButton.Deactivate(SkillButtonType.Fire);
 		GameField.DestroySquare(GridPosition);
+		AudioHolder.PlayMassRemove();
 	}
 	private IEnumerator ThrowLightning()
 	{
+		AudioHolder.PlayElectricity();
 		Game.PlayerIsBlocked = true;
 		var hero = GameObject.Find("hero");
 		var l1 = hero.transform.FindChild("Lightning").gameObject;
@@ -469,6 +478,7 @@ public class Monster : MonoBehaviour
 		Game.PlayerIsBlocked = false;
 		SkillButton.Deactivate(SkillButtonType.Electro);
 		GameField.DestroyAllOf(TypeOfObject);
+		AudioHolder.PlayMassRemove();
 	}
 	void OnMouseDown()
 	{										 
@@ -498,6 +508,7 @@ public class Monster : MonoBehaviour
 			{
 				if (GridPosition.IsNeighbourWith(GameField.ClickedObject.Value))
 				{
+					AudioHolder.PlaySwapMonsters();
 					GameField.Map[GameField.ClickedObject.Value.X, GameField.ClickedObject.Value.Y].State = MonsterState.Default;
 					State = MonsterState.Default;
 					GameField.Swap(GridPosition, GameField.ClickedObject.Value);
