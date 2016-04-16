@@ -7,12 +7,15 @@ public class MainMenu : MonoBehaviour
 
 	public static Camera MainCamera;
 	public static Camera AchievementsCamera;
+	public static Camera LevelCamera;
 	// Use this for initialization
 	void Start()
 	{
 		MainCamera = GameObject.Find("Menu").GetComponentInChildren<Camera>();
 		AchievementsCamera = GameObject.Find("AchievementsMenu").GetComponentInChildren<Camera>();
+		LevelCamera = GameObject.Find("LevelMenu").GetComponentInChildren<Camera>();
 		AchievementsCamera.enabled = false;
+		LevelCamera.enabled = false;
 		Debug.Log("init");
 	}
 
@@ -20,7 +23,7 @@ public class MainMenu : MonoBehaviour
 	{
 		if (MainCamera.enabled && Input.GetKeyDown(KeyCode.Escape))
 			Quit();
-		if (AchievementsCamera.enabled && Input.GetKeyDown(KeyCode.Escape))
+		if ((AchievementsCamera.enabled || LevelCamera.enabled) && Input.GetKeyDown(KeyCode.Escape))
 		{
 			GoToMainMenu();
 		}
@@ -34,6 +37,8 @@ public class MainMenu : MonoBehaviour
 
 	public void Play()
 	{
+		LevelCamera.enabled = false;
+		AchievementsCamera.enabled = false;
 		SceneManager.LoadScene("game");
 	}
 
@@ -46,6 +51,13 @@ public class MainMenu : MonoBehaviour
 	public void GoToMainMenu()
 	{
 		MainCamera.enabled = true;
+		LevelCamera.enabled = false;
 		AchievementsCamera.enabled = false;
+	}
+
+	public void GoToLevelMenu()
+	{
+		LevelCamera.enabled = true;
+		MainCamera.enabled = false;
 	}
 }

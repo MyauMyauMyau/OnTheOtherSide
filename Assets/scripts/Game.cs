@@ -17,6 +17,7 @@ namespace Assets.scripts
 
 		// Use this for initialization
 		public static GameObject SpaceObjectPrefab;
+		public static GameObject BombFirePrefab;
 		public const int MAP_SIZE = 8;
 		public static LevelInfo LevelInformation;
 		public static int TurnsLeft;
@@ -54,6 +55,7 @@ namespace Assets.scripts
 		}
 		private void Start()
 		{
+			BombFirePrefab = Resources.Load("BombFire", typeof(GameObject)) as GameObject;
 			SpaceObjectPrefab = Resources.Load("SpaceObjectPrefab", typeof (GameObject)) as GameObject;
 			SkillButton.ActiveFire = Resources.Load<Sprite>("ButtonsSprites/fireActiveButton");
 			SkillButton.Fire = Resources.Load<Sprite>("ButtonsSprites/fireLoad");

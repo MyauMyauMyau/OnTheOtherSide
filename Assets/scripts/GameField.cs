@@ -310,8 +310,7 @@ namespace Assets.scripts
 		{
 			
 			var unstableList = new List<Coordinate>();
-			var asteroidsColumnList = new List<Coordinate>();
-			asteroidsColumnList.Add(cell.GridPosition);
+			var asteroidsColumnList = new List<Coordinate> {cell.GridPosition};
 			var unstableIsAdded = false;
 			if (j < Game.MAP_SIZE - 1 && Map[i, j].IsUnstable && Map[i, j + 1] != null && Map[i, j + 1].IsMonster())
 			{
@@ -396,32 +395,32 @@ namespace Assets.scripts
 			}
 		}
 
-		private static void HandleUnstableAsteroids(List<Coordinate> listToDestroy)
-		{
-			for (int i = 0; i < listToDestroy.Count; i++)
-			{
-				if (Map[listToDestroy[i].X, listToDestroy[i].Y] != null && Map[listToDestroy[i].X, listToDestroy[i].Y].IsUnstable)
-				{
-					var bottomBoundX = Math.Max(0, listToDestroy[i].X - 2);
-					var bottomBoundY = Math.Max(0, listToDestroy[i].Y - 2);
-					var topBoundX = Math.Min(Map.GetLength(0) - 1, listToDestroy[i].X + 2);
-					var topBoundY = Math.Min(Map.GetLength(1) - 1, listToDestroy[i].Y + 2);
+		//private static void HandleUnstableAsteroids(List<Coordinate> listToDestroy)
+		//{
+		//	for (int i = 0; i < listToDestroy.Count; i++)
+		//	{
+		//		if (Map[listToDestroy[i].X, listToDestroy[i].Y] != null && Map[listToDestroy[i].X, listToDestroy[i].Y].IsUnstable)
+		//		{
+		//			var bottomBoundX = Math.Max(0, listToDestroy[i].X - 2);
+		//			var bottomBoundY = Math.Max(0, listToDestroy[i].Y - 2);
+		//			var topBoundX = Math.Min(Map.GetLength(0) - 1, listToDestroy[i].X + 2);
+		//			var topBoundY = Math.Min(Map.GetLength(1) - 1, listToDestroy[i].Y + 2);
 					
-					for (int x = bottomBoundX; x <= topBoundX; x++)
-					{
-						var coord = new Coordinate(x, listToDestroy[i].Y);
-						if (!listToDestroy.Contains(coord))
-							listToDestroy.Add(coord);
-					}
-					for (int y = bottomBoundY; y <= topBoundY; y++)
-					{
-						var coord = new Coordinate(listToDestroy[i].X, y);
-						if (!listToDestroy.Contains(coord))
-							listToDestroy.Add(coord);
-					}
-				}
-			}
-		}
+		//			for (int x = bottomBoundX; x <= topBoundX; x++)
+		//			{
+		//				var coord = new Coordinate(x, listToDestroy[i].Y);
+		//				if (!listToDestroy.Contains(coord))
+		//					listToDestroy.Add(coord);
+		//			}
+		//			for (int y = bottomBoundY; y <= topBoundY; y++)
+		//			{
+		//				var coord = new Coordinate(listToDestroy[i].X, y);
+		//				if (!listToDestroy.Contains(coord))
+		//					listToDestroy.Add(coord);
+		//			}
+		//		}
+		//	}
+		//}
 
 		public static Vector3 GetVectorFromCoord(int i, int j)
 		{

@@ -15,7 +15,7 @@ public class AudioHolder : MonoBehaviour
 	public AudioClip Remove;
 	public AudioClip SwapMonster;
 	public AudioClip Win;
-	public  static AudioHolder instance;
+	public static AudioHolder instance;
 	// Use this for initialization
 	void Start ()
 	{
@@ -73,6 +73,6 @@ public class AudioHolder : MonoBehaviour
 	}
 	public static void PlayCocoon()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.Cocoon);
+		instance.GetComponent<AudioSource>().PlayOneShot(instance.Cocoon, 0.25f);
 	}
 }

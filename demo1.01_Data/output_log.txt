@@ -14,23 +14,27 @@ Platform assembly: C:\Users\user\Documents\UnityProjects\OnOtherSide Saga\demo1.
 Loading C:\Users\user\Documents\UnityProjects\OnOtherSide Saga\demo1.01_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
 Platform assembly: C:\Users\user\Documents\UnityProjects\OnOtherSide Saga\demo1.01_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading C:\Users\user\Documents\UnityProjects\OnOtherSide Saga\demo1.01_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-- Completed reload, in  0.410 seconds
+- Completed reload, in  0.432 seconds
 Platform assembly: C:\Users\user\Documents\UnityProjects\OnOtherSide Saga\demo1.01_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\user\Documents\UnityProjects\OnOtherSide Saga\demo1.01_Data\Managed\System.dll (this message is harmless)
 desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 0.872376 ms
+UnloadTime: 0.766477 ms
 init
  
 (Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 37)
 
-Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 8.392077 ms
+The referenced script on this Behaviour (Game Object 'AudioHolder') is missing!
+ 
+(Filename:  Line: 1655)
 
-Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 311.
-Total: 0.324225 ms (FindLiveObjects: 0.028457 ms CreateObjectMapping: 0.020993 ms MarkObjects: 0.262179 ms  DeleteObjects: 0.012129 ms)
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 7.643783 ms
+
+Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 322.
+Total: 0.350349 ms (FindLiveObjects: 0.037787 ms CreateObjectMapping: 0.022859 ms MarkObjects: 0.270576 ms  DeleteObjects: 0.017727 ms)
 
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 2d34 -> priority: 1 
+  Thread -> id: 222c -> priority: 1 

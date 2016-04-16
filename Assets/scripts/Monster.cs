@@ -100,7 +100,8 @@ public class Monster : MonoBehaviour
 
 		if (IsUnstable)
 		{
-			DestroyBomb();
+			AudioHolder.PlayBomb();
+			StartCoroutine(DestroyBomb());
 			return;
 		}
 		var bottomBoundX = Math.Max(0, GridPosition.X - 1);
@@ -156,15 +157,30 @@ public class Monster : MonoBehaviour
 		}
 	}
 
-	private void DestroyBomb()
+	private IEnumerator DestroyBomb()
 	{
-		AudioHolder.PlayBomb();
+		GetComponent<SpriteRenderer>().enabled = false;
+		Game.PlayerIsBlocked = true;
+		GameObject boom = ((GameObject)Instantiate(
+		Game.BombFirePrefab, GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y),
+		Quaternion.Euler(new Vector3())));
+		var scale = boom.gameObject.transform.localScale;
+		for (int i = 0; i < 20; i++)
+		{
+			Debug.Log("in cycle");
+			scale.x += 0.03f;
+			scale.y += 0.03f;
+			boom.transform.localScale = scale;
+			yield return new WaitForSeconds(0.005f);
+		}
 		GameField.Map[GridPosition.X, GridPosition.Y] = null;
 		State = MonsterState.Destroying;
 		var bottomBoundX = Math.Max(0, GridPosition.X - 2);
 		var bottomBoundY = Math.Max(0, GridPosition.Y - 2);
 		var topBoundX = Math.Min(Game.MAP_SIZE - 1, GridPosition.X + 2);
 		var topBoundY = Math.Min(Game.MAP_SIZE - 1, GridPosition.Y + 2);
+	
+
 		for (int x = bottomBoundX; x <= topBoundX; x++)
 		{
 			if (x == GridPosition.X)
@@ -179,6 +195,9 @@ public class Monster : MonoBehaviour
 			if (GameField.Map[GridPosition.X, y] != null && GameField.Map[GridPosition.X,y].IsMonster())
 				GameField.Map[GridPosition.X, y].DestroyMonster();
 		}
+
+		DestroyObject(boom);
+		Game.PlayerIsBlocked = false;
 	}
 
 	public void Initialise(int x, int y, char type, float delay = 0, bool isUnstable = false)
@@ -365,7 +384,7 @@ public class Monster : MonoBehaviour
 		transform.Rotate(0f, 0f, -100f*Time.deltaTime);
 		if (Game.TurnsLeft%4 == 0) 
 		{
-			if (!blackHoleHasJumped && !GameField.IsAnyMoving())
+			if (!blackHoleHasJumped && !Game.IsPlayerBlocked())
 				JumpBlackHole();
 		}
 		else
