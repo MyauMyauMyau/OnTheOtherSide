@@ -1,10 +1,21 @@
 fileFormatVersion: 2
-guid: 6fd0babfe44b5f34c8b3c3c2b9c1856b
-timeCreated: 1460826215
+guid: 985dd4dd0ce0d444794cfdb98ac125c7
+timeCreated: 1460835984
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - Bomb: {fileID: 8300000, guid: 472cbcf8c9f5f6a449d45b202f383994, type: 3}
+  - Button: {fileID: 8300000, guid: f37e5fd110fc2b644908c16a5fadaa23, type: 3}
+  - Cocoon: {fileID: 8300000, guid: 4511cc136e51172478ff48383d35e9d5, type: 3}
+  - Electricity: {fileID: 8300000, guid: 18cac83378a4ce445bad2c98573cc137, type: 3}
+  - FireBall: {instanceID: 0}
+  - Lose: {instanceID: 0}
+  - MainTheme: {instanceID: 0}
+  - MassRemove: {instanceID: 0}
+  - Remove: {instanceID: 0}
+  - SwapMonster: {instanceID: 0}
+  - Win: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

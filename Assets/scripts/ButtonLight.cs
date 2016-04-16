@@ -12,11 +12,9 @@ public class ButtonLight : MonoBehaviour {
 
 	void Start()
 	{
-		Debug.Log("en");
 	}
 	private void Update()
 	{
-		Debug.Log("oh"	);
 		if (Time.time > changeTime)
 		{																								
 			GetComponent<Light>().enabled = !GetComponent<Light>().enabled;
