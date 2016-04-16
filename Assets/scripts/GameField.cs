@@ -29,7 +29,7 @@ namespace Assets.scripts
 			{
 				if (Map[i, 0] == null)
 				{
-					Game.SpaceObjectCreate(i, 0, AsteroidsList.ElementAt(Rnd.Next(5)), delay);
+					Game.SpaceObjectCreate(i, 0, MonsterList.ElementAt(Rnd.Next(5)), delay);
 				}
 			}
 		}
@@ -280,7 +280,6 @@ namespace Assets.scripts
 				}
 				if (bufRowList.Count >= 2)
 				{
-					//Debug.Log("yahoo");
 					foreach (var coordinate in bufRowList)
 					{
 						listToDestroy.Add(coordinate);
@@ -295,7 +294,7 @@ namespace Assets.scripts
 				}
 				bufRowList.Clear();
 			}
-			HandleUnstableAsteroids(listToDestroy);
+			//HandleUnstableAsteroids(listToDestroy);
 			foreach (var coordinate in listToDestroy
 				.Where(x => Map[x.X, x.Y] != null && Map[x.X, x.Y].IsMonster()))
 			{
@@ -384,7 +383,7 @@ namespace Assets.scripts
 				}
 				bufRowList.Clear();
 			}
-			HandleUnstableAsteroids(listToDestroy);
+			//HandleUnstableAsteroids(listToDestroy);
 			foreach (var coordinate in listToDestroy
 				.Where(x=>Map[x.X, x.Y] != null && Map[x.X, x.Y].IsMonster()))
 			{
@@ -403,12 +402,11 @@ namespace Assets.scripts
 			{
 				if (Map[listToDestroy[i].X, listToDestroy[i].Y] != null && Map[listToDestroy[i].X, listToDestroy[i].Y].IsUnstable)
 				{
-					Debug.Log("unstable");
 					var bottomBoundX = Math.Max(0, listToDestroy[i].X - 2);
 					var bottomBoundY = Math.Max(0, listToDestroy[i].Y - 2);
 					var topBoundX = Math.Min(Map.GetLength(0) - 1, listToDestroy[i].X + 2);
 					var topBoundY = Math.Min(Map.GetLength(1) - 1, listToDestroy[i].Y + 2);
-					;
+					
 					for (int x = bottomBoundX; x <= topBoundX; x++)
 					{
 						var coord = new Coordinate(x, listToDestroy[i].Y);
@@ -427,11 +425,11 @@ namespace Assets.scripts
 
 		public static Vector3 GetVectorFromCoord(int i, int j)
 		{
-			return new Vector3(i*0.92f - Game.MAP_SIZE/2 + 2.6f,
-							Game.MAP_SIZE/2 - j*0.92f - 0.3f, 0);
+			return new Vector3(i*0.90f - Game.MAP_SIZE/2 + 2.7f,
+							Game.MAP_SIZE/2 - j*0.90f - 0.32f, 0);
 		}
 
-		public static List<char> AsteroidsList = new List<char>()
+		public static List<char> MonsterList = new List<char>()
 		{
 			'Z',
 			'S',

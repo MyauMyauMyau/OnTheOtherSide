@@ -88,6 +88,18 @@ public class Monster : MonoBehaviour
 	}
 	public void DestroyMonster()
 	{
+		if (IsFrozen)
+		{
+			IsFrozen = false;
+			gameObject.transform.GetChild(1).gameObject.SetActive(false);
+			return;
+		}
+
+		if (IsUnstable)
+		{
+			DestroyBomb();
+			return;
+		}
 		var bottomBoundX = Math.Max(0, GridPosition.X - 1);
 		var bottomBoundY = Math.Max(0, GridPosition.Y - 1);
 		var topBoundX = Math.Min(Game.MAP_SIZE - 1, GridPosition.X + 1);
@@ -111,41 +123,58 @@ public class Monster : MonoBehaviour
 			State = MonsterState.Destroying;
 			return;
 		}
-		if (IsFrozen)
+		var iceList = new List<Coordinate>();
+		for (int i = bottomBoundX; i <= topBoundX; i++)
 		{
-			IsFrozen = false;
-			gameObject.transform.GetChild(1).gameObject.SetActive(false);
+			if (GameField.Map[i, GridPosition.Y] != null &&
+				GameField.Map[i, GridPosition.Y].TypeOfObject == MonsterType.Coocon)
+			{
+				iceList.Add(new Coordinate(i, GridPosition.Y));
+			}
 		}
-		else
+		for (int j = bottomBoundY; j <= topBoundY; j++)
 		{
-			var iceList = new List<Coordinate>();
-			for (int i = bottomBoundX; i <= topBoundX; i++)
+			if (GameField.Map[GridPosition.X, j] != null &&
+				GameField.Map[GridPosition.X, j].TypeOfObject == MonsterType.Coocon)
 			{
-				if (GameField.Map[i, GridPosition.Y] != null &&
-					GameField.Map[i, GridPosition.Y].TypeOfObject == MonsterType.Coocon)
-				{
-					iceList.Add(new Coordinate(i, GridPosition.Y));
-				}
+				iceList.Add(new Coordinate(GridPosition.X,j));
 			}
-			for (int j = bottomBoundY; j <= topBoundY; j++)
-			{
-				if (GameField.Map[GridPosition.X, j] != null &&
-					GameField.Map[GridPosition.X, j].TypeOfObject == MonsterType.Coocon)
-				{
-					iceList.Add(new Coordinate(GridPosition.X,j));
-				}
-			}
-			GameField.Map[GridPosition.X, GridPosition.Y] = null;
-			ToBasketStartTime = Time.time;
-			Game.MonsterCounter[TypeOfObject]++;
-			SkillButton.AddEnergy(TypeOfObject);
-			State = MonsterState.Destroying;
-			foreach (var ice in iceList)
-			{
-				GameField.Map[ice.X, ice.Y].DestroyMonster();				
-			}
+		}
+		GameField.Map[GridPosition.X, GridPosition.Y] = null;
+		ToBasketStartTime = Time.time;
+		Game.MonsterCounter[TypeOfObject]++;
+		SkillButton.AddEnergy(TypeOfObject);
+		State = MonsterState.Destroying;
+		foreach (var ice in iceList)
+		{
+			GameField.Map[ice.X, ice.Y].DestroyMonster();				
 		}
 	}
+
+	private void DestroyBomb()
+	{
+		GameField.Map[GridPosition.X, GridPosition.Y] = null;
+		State = MonsterState.Destroying;
+		var bottomBoundX = Math.Max(0, GridPosition.X - 2);
+		var bottomBoundY = Math.Max(0, GridPosition.Y - 2);
+		var topBoundX = Math.Min(Game.MAP_SIZE - 1, GridPosition.X + 2);
+		var topBoundY = Math.Min(Game.MAP_SIZE - 1, GridPosition.Y + 2);
+		for (int x = bottomBoundX; x <= topBoundX; x++)
+		{
+			if (x == GridPosition.X)
+				continue;
+			if (GameField.Map[x, GridPosition.Y] != null && GameField.Map[x, GridPosition.Y].IsMonster())
+				GameField.Map[x, GridPosition.Y].DestroyMonster();
+		}
+		for (int y = bottomBoundY; y <= topBoundY; y++)
+		{
+			if (y == GridPosition.Y)
+				continue;
+			if (GameField.Map[GridPosition.X, y] != null && GameField.Map[GridPosition.X,y].IsMonster())
+				GameField.Map[GridPosition.X, y].DestroyMonster();
+		}
+	}
+
 	public void Initialise(int x, int y, char type, float delay = 0, bool isUnstable = false)
 	{
 		DestroyRotationSpeed = rnd.Next(500);
