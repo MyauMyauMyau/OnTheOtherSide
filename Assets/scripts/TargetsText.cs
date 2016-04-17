@@ -21,7 +21,7 @@ public class TargetsText : MonoBehaviour {
 			var text = "" + currentMonsters  + "/";
 			text += totalMonsters;
 			GetComponentsInChildren<Text>()[i].text = text;
-			if (currentMonsters > totalMonsters)
+			if (currentMonsters >= totalMonsters)
 				GetComponentsInChildren<Text>()[i].color = Color.green;
 		}
 	}

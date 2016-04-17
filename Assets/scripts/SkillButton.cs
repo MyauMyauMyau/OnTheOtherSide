@@ -19,9 +19,9 @@ public class SkillButton : MonoBehaviour
 		foreach (var button in buttons)
 		{
 			if (button.Type == SkillButtonType.Fire && (type == MonsterType.Vampire || type == MonsterType.Zombie))
-				button.FillAmount += 0.02f;
+				button.FillAmount += 0.04f;
 			if (button.Type == SkillButtonType.Electro && type != MonsterType.Vampire && type != MonsterType.Zombie)
-				button.FillAmount += 0.02f;
+				button.FillAmount += 0.03f;
 			if (button.FillAmount >= 1)
 			{
 				button.FillAmount = 1;
@@ -61,7 +61,7 @@ public class SkillButton : MonoBehaviour
 	// Use this for initialization
 	private void Start()
 	{
-		FillAmount = 0.95f;
+		FillAmount = 0.75f;
 		GetComponent<Button>().interactable = false;
 		buttons.Add(this);
 		GetComponent<Button>().onClick.AddListener(OnClickEvent);	

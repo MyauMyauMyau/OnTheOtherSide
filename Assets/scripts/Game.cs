@@ -14,7 +14,6 @@ namespace Assets.scripts
 {
 	public class Game : MonoBehaviour
 	{
-
 		// Use this for initialization
 		public static GameObject SpaceObjectPrefab;
 		public static GameObject BombFirePrefab;
@@ -25,36 +24,96 @@ namespace Assets.scripts
 		public static Vector3 BasketCoordinate = new Vector3(-4.2f, -0.8f);
 		public static Vector3 PotCoordinate = new Vector3(-5.53f, 0.8f);
 		public static Vector3 PortalCoordinate = new Vector3(-3.0f, -2.0f);
+		public static Sprite VampireSkin;
 		public static Texture2D MainCursor;
 		public static Texture2D FireCursor;
 		public static Texture2D ElectroCursor;
 		public static ClickState ClickType = ClickState.Default;
-		public static Dictionary<MonsterType, int> MonsterCounter = new Dictionary<MonsterType, int>()
-		{
-			{MonsterType.Zombie, 0},
-			{MonsterType.Spider, 0},
-			{MonsterType.Vampire, 0},
-			{MonsterType.Bat, 0},
-			{MonsterType.Ghost, 0},
-			{MonsterType.Coocon, 0}
-		}; 
+		public static Dictionary<MonsterType, int> MonsterCounter;
 
+		public static int Level;
 		private void Awake()
 		{
-			
-			//LevelInformation = JsonConvert.DeserializeObject<LevelInfo>(File.ReadAllText("Assets/levels/1.json"));
-			LevelInformation =
-			new LevelInfo { Map = "ZSVBBGBB ZHGGBBHS GBZBGSCS ZGGEEEVG GVZBVZBS ZVZVBZGV GBGSZSGS ZBZBBGBZ" };
-			LevelInformation.Targets = new Dictionary<char, int>()
+			PlayerIsBlocked = false;
+			SkillButton.buttons = new List<SkillButton>();
+			MonsterCounter = new Dictionary<MonsterType, int>()
 			{
-				{'Z', 25},
-				{'S', 25},
-				{'V', 25}
+				{MonsterType.Zombie, 0},
+				{MonsterType.Spider, 0},
+				{MonsterType.Vampire, 0},
+				{MonsterType.Bat, 0},
+				{MonsterType.Ghost, 0},
+				{MonsterType.Coocon, 0}
 			};
-			
+			GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
+			Level = PlayerPrefs.GetInt("CurrentLevel");
+			//LevelInformation = JsonConvert.DeserializeObject<LevelInfo>(File.ReadAllText("Assets/levels/1.json"));
+			if (Level == 1)
+			{
+				LevelInformation = new LevelInfo {Map = "ZSVBBGBB ZHGGBBSS GBZBGSZS ZGGSVGVG GVZBVZBS ZVZVBZGV GBGSZSGS ZBZBBGBZ"};
+				LevelInformation.Targets = new Dictionary<char, int>()
+				{
+					{'Z', 5},
+					{'S', 5},
+					{'V', 5}
+				};
+				TurnsLeft = 5;
+			}
+			if (Level == 2)
+			{
+				LevelInformation = new LevelInfo { Map = "ESVVBGBE EGGBVBSE EBZBGSBE EGGSHSVE EVZBHZBE EVZVBZGE EBGSZSGE EEEEEEEE" };
+				LevelInformation.Targets = new Dictionary<char, int>()
+				{
+					{'G', 30},
+					{'Z', 20},
+				};
+				TurnsLeft = 15;
+			}
+			if (Level == 3)
+			{
+				LevelInformation = new LevelInfo { Map = "ZSVBBGBB ZHGGBBHS GSZEESVS ZGEEEEVG GVEEEEBS ZVZEEZGV GBGSZSGS ZHZBBGBZ" };
+				LevelInformation.Targets = new Dictionary<char, int>()
+				{
+					{'G', 20},
+					{'B', 10},
+					{'S', 20}
+				};
+				TurnsLeft = 15;
+			}
+			if (Level == 4)
+			{
+				LevelInformation = new LevelInfo { Map = "ZSVBBGBB ZSGGBBVS GBZHHSCS SZGHHVGV GVZBVZBS ZVZVBZGV GBGSZSGS ZBZBBCBZ" };
+				LevelInformation.Targets = new Dictionary<char, int>()
+				{
+					{'V', 40},
+					{'Z', 35}
+				};
+				TurnsLeft = 20;
+			}
+			if (Level == 5)
+			{
+				LevelInformation = new LevelInfo { Map = "ECVBBCBE ZBGGVBSS CSZBGSCS ZSGGVBVG GCZHSCBS ZVZVBZGV CBGSZCGS EBZVBGHE" };
+				LevelInformation.Targets = new Dictionary<char, int>()
+				{
+					{'C', 8},
+					{'S', 50},
+				};
+				TurnsLeft = 25;
+			}
+		}
+
+		private void CheckAchievements()
+		{
+			//second character achievement
+			if (MonsterCounter[MonsterType.Vampire] > 49)
+			{
+				PlayerPrefs.SetInt("Achievement1Unlocked", 1);
+			}
+			PlayerPrefs.Save();
 		}
 		private void Start()
 		{
+			VampireSkin = Resources.Load<Sprite>("Sprites/vampireSkin");
 			BombFirePrefab = Resources.Load("BombFire", typeof(GameObject)) as GameObject;
 			SpaceObjectPrefab = Resources.Load("SpaceObjectPrefab", typeof (GameObject)) as GameObject;
 			SkillButton.ActiveFire = Resources.Load<Sprite>("ButtonsSprites/fireActiveButton");
@@ -99,8 +158,11 @@ namespace Assets.scripts
 
 			};
 			instance = this;
-			TurnsLeft = 10;
-
+			
+			if (PlayerPrefs.GetInt("Achievement1Unlocked") == 1)
+			{
+				GameObject.Find("hero").GetComponent<SpriteRenderer>().sprite = VampireSkin;
+			}
 
 			GenerateMap();
 
@@ -116,9 +178,10 @@ namespace Assets.scripts
 		// Update is called once per frame
 		public void Update()
 		{
+			CheckAchievements();
 			CheckCursorClick();
-			//if (TurnsLeft == 0)
-				//Debug.Log("Game Is Finished");
+			if (TurnsLeft == 0)
+				PlayerIsBlocked = true;                        
 			GameField.CheckUpperBorder();
 			if (!GameField.IsAnyMoving())
 			{

@@ -101,7 +101,7 @@ public class Monster : MonoBehaviour
 		if (IsUnstable)
 		{
 			AudioHolder.PlayBomb();
-			StartCoroutine(DestroyBomb());
+			DestroyBomb();
 			return;
 		}
 		var bottomBoundX = Math.Max(0, GridPosition.X - 1);
@@ -157,22 +157,13 @@ public class Monster : MonoBehaviour
 		}
 	}
 
-	private IEnumerator DestroyBomb()
+	
+	private void DestroyBomb()
 	{
 		GetComponent<SpriteRenderer>().enabled = false;
-		Game.PlayerIsBlocked = true;
 		GameObject boom = ((GameObject)Instantiate(
 		Game.BombFirePrefab, GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y),
 		Quaternion.Euler(new Vector3())));
-		var scale = boom.gameObject.transform.localScale;
-		for (int i = 0; i < 20; i++)
-		{
-			Debug.Log("in cycle");
-			scale.x += 0.03f;
-			scale.y += 0.03f;
-			boom.transform.localScale = scale;
-			yield return new WaitForSeconds(0.005f);
-		}
 		GameField.Map[GridPosition.X, GridPosition.Y] = null;
 		State = MonsterState.Destroying;
 		var bottomBoundX = Math.Max(0, GridPosition.X - 2);
@@ -196,8 +187,8 @@ public class Monster : MonoBehaviour
 				GameField.Map[GridPosition.X, y].DestroyMonster();
 		}
 
-		DestroyObject(boom);
-		Game.PlayerIsBlocked = false;
+		
+		
 	}
 
 	public void Initialise(int x, int y, char type, float delay = 0, bool isUnstable = false)
@@ -475,6 +466,7 @@ public class Monster : MonoBehaviour
 	private IEnumerator ThrowLightning()
 	{
 		AudioHolder.PlayElectricity();
+		PlayerPrefs.SetInt("Achievement5Unlocked", 1);
 		Game.PlayerIsBlocked = true;
 		var hero = GameObject.Find("hero");
 		var l1 = hero.transform.FindChild("Lightning").gameObject;

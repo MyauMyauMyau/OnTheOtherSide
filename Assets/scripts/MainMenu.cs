@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -16,7 +17,11 @@ public class MainMenu : MonoBehaviour
 		LevelCamera = GameObject.Find("LevelMenu").GetComponentInChildren<Camera>();
 		AchievementsCamera.enabled = false;
 		LevelCamera.enabled = false;
-		Debug.Log("init");
+		if (PlayerPrefs.GetInt("FromGame") == 1)
+		{
+			PlayerPrefs.SetInt("FromGame", 0);
+			GoToLevelMenu();
+		}
 	}
 
 	void Update()
@@ -31,13 +36,11 @@ public class MainMenu : MonoBehaviour
 	// Update is called once per frame
 	public void Quit()
 	{
-		Debug.Log("q");
 		Application.Quit();
 	}
 
 	public void Play()
 	{
-		LevelCamera.enabled = false;
 		AchievementsCamera.enabled = false;
 		SceneManager.LoadScene("game");
 	}
@@ -59,5 +62,22 @@ public class MainMenu : MonoBehaviour
 	{
 		LevelCamera.enabled = true;
 		MainCamera.enabled = false;
+	}
+
+	public void SwitchSound()
+	{
+		var btn = GameObject.Find("Menu").transform.Find("Canvas").transform.Find("Sound");
+		if (PlayerPrefs.GetInt("Sound") == 0)
+		{
+			PlayerPrefs.SetInt("Sound", 1);
+			btn.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOn");
+		}
+		else
+		{
+			PlayerPrefs.SetInt("Sound", 0);
+			btn.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOff");
+		}
+		GameObject.Find("Menu").GetComponent<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
+		PlayerPrefs.Save();
 	}
 }
