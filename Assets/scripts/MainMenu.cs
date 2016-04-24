@@ -6,17 +6,13 @@ using UnityEngine.UI;
 public class MainMenu : MonoBehaviour
 {
 
-	public static Camera MainCamera;
-	public static Camera AchievementsCamera;
-	public static Camera LevelCamera;
+	public Canvas MainMenuCanvas;
+	public Canvas LevelMenuCanvas;
+	public Button SoundButton;
 	// Use this for initialization
 	void Start()
 	{
-		MainCamera = GameObject.Find("Menu").GetComponentInChildren<Camera>();
-		AchievementsCamera = GameObject.Find("AchievementsMenu").GetComponentInChildren<Camera>();
-		LevelCamera = GameObject.Find("LevelMenu").GetComponentInChildren<Camera>();
-		AchievementsCamera.enabled = false;
-		LevelCamera.enabled = false;
+		LevelMenuCanvas.enabled = false;
 		if (PlayerPrefs.GetInt("FromGame") == 1)
 		{
 			PlayerPrefs.SetInt("FromGame", 0);
@@ -26,12 +22,10 @@ public class MainMenu : MonoBehaviour
 
 	void Update()
 	{
-		if (MainCamera.enabled && Input.GetKeyDown(KeyCode.Escape))
+		if (MainMenuCanvas.enabled && Input.GetKeyDown(KeyCode.Escape))
 			Quit();
-		if ((AchievementsCamera.enabled || LevelCamera.enabled) && Input.GetKeyDown(KeyCode.Escape))
-		{
+		if (!MainMenuCanvas.enabled && Input.GetKeyDown(KeyCode.Escape))
 			GoToMainMenu();
-		}
 	}
 	// Update is called once per frame
 	public void Quit()
@@ -39,43 +33,35 @@ public class MainMenu : MonoBehaviour
 		Application.Quit();
 	}
 
-	public void Play()
-	{
-		AchievementsCamera.enabled = false;
-		SceneManager.LoadScene("game");
-	}
-
-	public void GoToAchievements()
-	{
-		MainCamera.enabled = false;
-		AchievementsCamera.enabled = true;
-	}
-
 	public void GoToMainMenu()
 	{
-		MainCamera.enabled = true;
-		LevelCamera.enabled = false;
-		AchievementsCamera.enabled = false;
+		MainMenuCanvas.enabled = true;
+		LevelMenuCanvas.enabled = false;
 	}
 
 	public void GoToLevelMenu()
 	{
-		LevelCamera.enabled = true;
-		MainCamera.enabled = false;
+		MainMenuCanvas.enabled = false;
+		LevelMenuCanvas.enabled = true;
+	}
+
+	public void Play()
+	{
+		SceneManager.LoadScene("game");
 	}
 
 	public void SwitchSound()
 	{
-		var btn = GameObject.Find("Menu").transform.Find("Canvas").transform.Find("Sound");
+		
 		if (PlayerPrefs.GetInt("Sound") == 0)
 		{
 			PlayerPrefs.SetInt("Sound", 1);
-			btn.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOn");
+			SoundButton.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOn");
 		}
 		else
 		{
 			PlayerPrefs.SetInt("Sound", 0);
-			btn.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOff");
+			SoundButton.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOff");
 		}
 		GameObject.Find("Menu").GetComponent<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
 		PlayerPrefs.Save();

@@ -36,7 +36,7 @@ public class WinLoseController : MonoBehaviour
 		else if (Game.TurnsLeft == 0 && !canvasIsShown)
 		{
 			Game.PlayerIsBlocked = true;
-			if (!GameField.IsAnyMoving())
+			if (!GameField.IsAnyMoving() && !CheckWin())
 			{
 				AudioHolder.PlayLose();
 				ShowCanvas("Поражение!", "Выйти в меню");

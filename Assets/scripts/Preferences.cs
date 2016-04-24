@@ -9,13 +9,6 @@ public class Preferences : MonoBehaviour {
 		{
 			PlayerPrefs.SetInt("Sound", 1);
 			PlayerPrefs.SetInt("LevelUnlocked", 1);
-			PlayerPrefs.SetInt("Achievement1Unlocked", 0);
-			PlayerPrefs.SetInt("Achievement2Unlocked", 0);
-			PlayerPrefs.SetInt("Achievement3Unlocked", 0);
-			PlayerPrefs.SetInt("Achievement4Unlocked", 0);
-			PlayerPrefs.SetInt("Achievement5Unlocked", 0);
-			PlayerPrefs.SetInt("Achievement6Unlocked", 0);
-			PlayerPrefs.SetInt("Achievement7Unlocked", 0);
 			PlayerPrefs.SetInt("FromGame",0);
 			PlayerPrefs.Save();
 		}

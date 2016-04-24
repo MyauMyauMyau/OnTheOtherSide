@@ -14,7 +14,11 @@ namespace Assets.scripts
 		Zombie,
 		BlackHole,
 		Coocon,
-		EmptyCell
-			
+		EmptyCell,
+		Bomb,
+		WaterDiagonal,
+		WaterHorizontal,
+		WaterVertical,
+		Raft			
 	}
 }

@@ -29,7 +29,7 @@ namespace Assets.scripts
 			{
 				if (Map[i, 0] == null)
 				{
-					Game.SpaceObjectCreate(i, 0, MonsterList.ElementAt(Rnd.Next(5)), delay);
+					Game.MonsterCreate(i, 0, MonsterList.ElementAt(Rnd.Next(5)), delay);
 				}
 			}
 		}
@@ -109,33 +109,15 @@ namespace Assets.scripts
 				for (int i = bottomBoundX; i <= topBoundX - 2; i++)
 				{
 					if (Map[i, coordinate.Y] == null || Map[i+1, coordinate.Y] == null || Map[i+2, coordinate.Y] == null) continue;
-					if (Map[i, coordinate.Y].TypeOfObject == Map[i + 1, coordinate.Y].TypeOfObject
-					    && Map[i, coordinate.Y].TypeOfObject == Map[i + 2, coordinate.Y].TypeOfObject)
-						return true;
-					if (Map[i, coordinate.Y].IsUnstable &&
-					    Map[i + 1, coordinate.Y].TypeOfObject == Map[i + 2, coordinate.Y].TypeOfObject)
-						return true;
-					if (Map[i + 1, coordinate.Y].IsUnstable &&
-						Map[i, coordinate.Y].TypeOfObject == Map[i + 2, coordinate.Y].TypeOfObject)
-						return true;
-					if (Map[i + 2, coordinate.Y].IsUnstable &&
-						Map[i + 1, coordinate.Y].TypeOfObject == Map[i, coordinate.Y].TypeOfObject)
+					if (Map[i, coordinate.Y].TypeOfMonster == Map[i + 1, coordinate.Y].TypeOfMonster
+					    && Map[i, coordinate.Y].TypeOfMonster == Map[i + 2, coordinate.Y].TypeOfMonster)
 						return true;
 				}
 				for (int i = bottomBoundY; i <= topBoundY - 2; i++)
 				{
 					if (Map[coordinate.X, i] == null || Map[coordinate.X, i + 1] == null || Map[coordinate.X ,i + 2] == null) continue;
-					if (Map[coordinate.X, i].TypeOfObject == Map[coordinate.X, i+1].TypeOfObject
-						&& Map[coordinate.X, i].TypeOfObject == Map[coordinate.X, i+2].TypeOfObject)
-						return true;
-					if (Map[coordinate.X, i].IsUnstable &&
-						Map[coordinate.X, i + 1].TypeOfObject == Map[coordinate.X, i + 2].TypeOfObject)
-						return true;
-					if (Map[coordinate.X, i + 1].IsUnstable &&
-						Map[coordinate.X, i].TypeOfObject == Map[coordinate.X, i + 2].TypeOfObject)
-						return true;
-					if (Map[coordinate.X, i + 2].IsUnstable &&
-						Map[coordinate.X, i].TypeOfObject == Map[coordinate.X, i + 1].TypeOfObject)
+					if (Map[coordinate.X, i].TypeOfMonster == Map[coordinate.X, i+1].TypeOfMonster
+						&& Map[coordinate.X, i].TypeOfMonster == Map[coordinate.X, i+2].TypeOfMonster)
 						return true;
 				}
 			}
@@ -189,7 +171,7 @@ namespace Assets.scripts
 			for (int i = 0; i < Game.MAP_SIZE; i++)
 				for (int j = 0; j < Game.MAP_SIZE; j++)
 				{
-					if (Map[i, j] != null && Map[i, j].TypeOfObject == type)
+					if (Map[i, j] != null && Map[i, j].TypeOfMonster == type)
 					{
 						if (!Map[i, j].IsFrozen)
 							Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
@@ -198,7 +180,7 @@ namespace Assets.scripts
 				}
 		}
 
-		public static void DestroySquare(Coordinate coordinate)
+		public static void DestroySquare3X3(Coordinate coordinate)
 		{
 			var bottomBoundX = Math.Max(0, coordinate.X - 1);
 			var bottomBoundY = Math.Max(0, coordinate.Y - 1);
@@ -224,14 +206,8 @@ namespace Assets.scripts
 			var asteroidsColumnList = new List<Coordinate>();
 			asteroidsColumnList.Add(cell.GridPosition);
 			var unstableIsAdded = false;
-			if (i < Map.GetLength(0) - 1 && Map[i, j].IsUnstable && Map[i + 1, j] != null && Map[i + 1, j].IsMonster())
-			{
-				asteroidsColumnList.Add(Map[i +1 , j].GridPosition);
-				cell = Map[i + 1, j];
-				i++;
-			}
-			while (i < Map.GetLength(0) - 1 && Map[i + 1, j] != null 
-				&& (Map[i + 1, j].TypeOfObject == cell.TypeOfObject || Map[i+1, j].IsUnstable))
+			while (i < Map.GetLength(0) - 1 && Map[i + 1, j] != null
+				&& (Map[i + 1, j].TypeOfMonster == cell.TypeOfMonster))
 			{
 				i++;
 				asteroidsColumnList.Add(Map[i, j].GridPosition);
@@ -258,14 +234,14 @@ namespace Assets.scripts
 				j = asteroid.Y;
 				i = asteroid.X;
 				while (j < Map.GetLength(0) - 1
-					   && Map[i, j + 1] != null && (Map[i, j + 1].TypeOfObject == cell.TypeOfObject || Map[i,j+1].IsUnstable))
+					   && Map[i, j + 1] != null && (Map[i, j + 1].TypeOfMonster == cell.TypeOfMonster))
 				{
 					j++;
 					bufRowList.Add(Map[i, j].GridPosition);
 				}
 				j = asteroid.Y;
 				while (j > 0
-					   && Map[i, j - 1] != null && (Map[i, j - 1].TypeOfObject == cell.TypeOfObject || Map[i, j - 1].IsUnstable))
+					   && Map[i, j - 1] != null && (Map[i, j - 1].TypeOfMonster == cell.TypeOfMonster))
 				{
 					j--;
 					bufRowList.Add(Map[i, j].GridPosition);
@@ -294,7 +270,6 @@ namespace Assets.scripts
 				}
 				bufRowList.Clear();
 			}
-			//HandleUnstableAsteroids(listToDestroy);
 			foreach (var coordinate in listToDestroy
 				.Where(x => Map[x.X, x.Y] != null && Map[x.X, x.Y].IsMonster()))
 			{
@@ -302,8 +277,7 @@ namespace Assets.scripts
 			}
 			foreach (var coord in unstableList)
 			{
-				Game.SpaceObjectCreate(coord.X, coord.Y, Monster.CharsToObjectTypes
-						.First(x => x.Value == cell.TypeOfObject).Key, 0, true);
+				Game.MonsterCreate(coord.X, coord.Y,'W', 0);
 			}
 		}
 		private static void CheckColumn(Monster cell, int i, int j)
@@ -312,14 +286,8 @@ namespace Assets.scripts
 			var unstableList = new List<Coordinate>();
 			var asteroidsColumnList = new List<Coordinate> {cell.GridPosition};
 			var unstableIsAdded = false;
-			if (j < Game.MAP_SIZE - 1 && Map[i, j].IsUnstable && Map[i, j + 1] != null && Map[i, j + 1].IsMonster())
-			{
-				asteroidsColumnList.Add(Map[i, j + 1].GridPosition);
-				cell = Map[i, j + 1];
-				j++;
-			}
 			while (j < Game.MAP_SIZE - 1 && Map[i, j + 1] != null && 
-				(Map[i, j + 1].TypeOfObject == cell.TypeOfObject || Map[i, j + 1].IsUnstable))
+				(Map[i, j + 1].TypeOfMonster == cell.TypeOfMonster))
 			{
 				j++;
 				asteroidsColumnList.Add(Map[i, j].GridPosition);
@@ -346,14 +314,14 @@ namespace Assets.scripts
 				j = asteroid.Y;
 				i = asteroid.X;
 				while (i < Map.GetLength(0) - 1
-				       && Map[i + 1, j] != null && (Map[i + 1, j].TypeOfObject == cell.TypeOfObject || Map[i + 1, j ].IsUnstable))
+				       && Map[i + 1, j] != null && (Map[i + 1, j].TypeOfMonster == cell.TypeOfMonster))
 				{
 					i++;
 					bufRowList.Add(Map[i, j].GridPosition);
 				}
 				i = asteroid.X;
 				while (i > 0
-				       && Map[i - 1, j] != null && (Map[i - 1, j].TypeOfObject == cell.TypeOfObject || Map[i - 1, j].IsUnstable))
+				       && Map[i - 1, j] != null && (Map[i - 1, j].TypeOfMonster == cell.TypeOfMonster))
 				{
 					i--;
 					bufRowList.Add(Map[i, j].GridPosition);
@@ -382,7 +350,6 @@ namespace Assets.scripts
 				}
 				bufRowList.Clear();
 			}
-			//HandleUnstableAsteroids(listToDestroy);
 			foreach (var coordinate in listToDestroy
 				.Where(x=>Map[x.X, x.Y] != null && Map[x.X, x.Y].IsMonster()))
 			{
@@ -390,38 +357,10 @@ namespace Assets.scripts
 			}
 			foreach (var coord in unstableList)
 			{
-				Game.SpaceObjectCreate(coord.X, coord.Y, Monster.CharsToObjectTypes
-						.First(x => x.Value == cell.TypeOfObject).Key, 0, true);
+				Game.MonsterCreate(coord.X, coord.Y, 
+					'W');
 			}
 		}
-
-		//private static void HandleUnstableAsteroids(List<Coordinate> listToDestroy)
-		//{
-		//	for (int i = 0; i < listToDestroy.Count; i++)
-		//	{
-		//		if (Map[listToDestroy[i].X, listToDestroy[i].Y] != null && Map[listToDestroy[i].X, listToDestroy[i].Y].IsUnstable)
-		//		{
-		//			var bottomBoundX = Math.Max(0, listToDestroy[i].X - 2);
-		//			var bottomBoundY = Math.Max(0, listToDestroy[i].Y - 2);
-		//			var topBoundX = Math.Min(Map.GetLength(0) - 1, listToDestroy[i].X + 2);
-		//			var topBoundY = Math.Min(Map.GetLength(1) - 1, listToDestroy[i].Y + 2);
-					
-		//			for (int x = bottomBoundX; x <= topBoundX; x++)
-		//			{
-		//				var coord = new Coordinate(x, listToDestroy[i].Y);
-		//				if (!listToDestroy.Contains(coord))
-		//					listToDestroy.Add(coord);
-		//			}
-		//			for (int y = bottomBoundY; y <= topBoundY; y++)
-		//			{
-		//				var coord = new Coordinate(listToDestroy[i].X, y);
-		//				if (!listToDestroy.Contains(coord))
-		//					listToDestroy.Add(coord);
-		//			}
-		//		}
-		//	}
-		//}
-
 		public static Vector3 GetVectorFromCoord(int i, int j)
 		{
 			return new Vector3(i*0.90f - Game.MAP_SIZE/2 + 2.7f,

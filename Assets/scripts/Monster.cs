@@ -15,20 +15,20 @@ public class Monster : MonoBehaviour
 	public Coordinate GridPosition { get; set; }
 	public Vector3 Destination { get; set; }
 	public Coordinate PreviousPosition {get; set;}
-	public MonsterType TypeOfObject { get; set;}
+	public MonsterType TypeOfMonster { get; set;}
 	public static Sprite VampireSprite;
 	public static Sprite ZombieSprite;
 	public static Sprite SpiderSprite;
 	public static Sprite BatSprite;
 	public static Sprite GhostSprite;
 	public static Sprite EmptyCellSprite;
-	public static Sprite UnstableVampireSprite;
-	public static Sprite UnstableZombieSprite;
-	public static Sprite UnstableSpiderSprite;
-	public static Sprite UnstableBatSprite;
-	public static Sprite UnstableGhostSprite;
 	public static Sprite BlackHoleSprite;
 	public static Sprite CooconSprite;
+	public static Sprite BombSprite;
+	public static Sprite WaterVSprite;
+	public static Sprite WaterHSprite;
+	public static Sprite WaterDSprite;
+	public static Sprite RaftSprite;
 	public static float RemoveStartTime;
 	public static float RemoveEndTime;
 	public static bool RemoveSoundPlaying;
@@ -38,14 +38,13 @@ public class Monster : MonoBehaviour
 	public float DropSpeed;
 	public float MoveSpeed;
 	public float GrowSpeed;
-	public float StartTime = 0;
-	public float Delay = 0;
+	public float StartTime;
+	public float Delay;
 	private bool blackHoleHasJumped;
 	private bool isSpritesLoaded;
 	public float UpSpeed = 0.01f;
 	public const float GravitySpeed = 0.01f;
 	public float ToBasketStartTime;
-	public bool IsUnstable { get; set; }
 	public MonsterState State { get; set; }
 	public bool UpdatedField = false;
 	public Random rnd = new Random();
@@ -53,7 +52,7 @@ public class Monster : MonoBehaviour
 	public int DestroyRotationSpeed;
 	public bool IsMonster()
 	{
-		return AsteroidTypes.Contains(TypeOfObject);
+		return MonsterTypes.Contains(TypeOfMonster);
 	}
 
 	private void SendToBasket()
@@ -98,7 +97,7 @@ public class Monster : MonoBehaviour
 			return;
 		}
 
-		if (IsUnstable)
+		if (TypeOfMonster == MonsterType.Bomb)
 		{
 			AudioHolder.PlayBomb();
 			DestroyBomb();
@@ -108,7 +107,7 @@ public class Monster : MonoBehaviour
 		var bottomBoundY = Math.Max(0, GridPosition.Y - 1);
 		var topBoundX = Math.Min(Game.MAP_SIZE - 1, GridPosition.X + 1);
 		var topBoundY = Math.Min(Game.MAP_SIZE - 1, GridPosition.Y + 1);
-		if (TypeOfObject == MonsterType.Coocon)
+		if (TypeOfMonster == MonsterType.Coocon)
 		{
 			AudioHolder.PlayCocoon();
 			for (int i = bottomBoundX; i <= topBoundX; i++)
@@ -132,7 +131,7 @@ public class Monster : MonoBehaviour
 		for (int i = bottomBoundX; i <= topBoundX; i++)
 		{
 			if (GameField.Map[i, GridPosition.Y] != null &&
-				GameField.Map[i, GridPosition.Y].TypeOfObject == MonsterType.Coocon)
+				GameField.Map[i, GridPosition.Y].TypeOfMonster == MonsterType.Coocon)
 			{
 				iceList.Add(new Coordinate(i, GridPosition.Y));
 			}
@@ -140,15 +139,15 @@ public class Monster : MonoBehaviour
 		for (int j = bottomBoundY; j <= topBoundY; j++)
 		{
 			if (GameField.Map[GridPosition.X, j] != null &&
-				GameField.Map[GridPosition.X, j].TypeOfObject == MonsterType.Coocon)
+				GameField.Map[GridPosition.X, j].TypeOfMonster == MonsterType.Coocon)
 			{
 				iceList.Add(new Coordinate(GridPosition.X,j));
 			}
 		}
 		GameField.Map[GridPosition.X, GridPosition.Y] = null;
 		ToBasketStartTime = Time.time;
-		Game.MonsterCounter[TypeOfObject]++;
-		SkillButton.AddEnergy(TypeOfObject);
+		Game.MonsterCounter[TypeOfMonster]++;
+		SkillButton.AddEnergy(TypeOfMonster);
 		State = MonsterState.Destroying;
 		AudioHolder.PlayRemove();
 		foreach (var ice in iceList)
@@ -191,30 +190,27 @@ public class Monster : MonoBehaviour
 		
 	}
 
-	public void Initialise(int x, int y, char type, float delay = 0, bool isUnstable = false)
+	public void Initialise(int x, int y, char type, float delay = 0)
 	{
 		DestroyRotationSpeed = rnd.Next(500);
 		DestroyRotation = (rnd.Next(2) == 0 ? Vector3.back : Vector3.forward);
 		DropSpeed = BaseDropSpeed*2;
 		MoveSpeed = 10f;
 		GrowSpeed = 0.05f;
-		IsUnstable = isUnstable;
 		GridPosition = new Coordinate(x,y);
-		TypeOfObject = CharsToObjectTypes[type];
-		if (TypeOfObject == MonsterType.BlackHole)
+		TypeOfMonster = CharsToObjectTypes[type];
+		gameObject.GetComponent<SpriteRenderer>().sprite = TypesToSprites[TypeOfMonster];
+		if (TypeOfMonster == MonsterType.BlackHole)
 		{
 			var light = gameObject.GetComponentInChildren<Light>();
 			light.enabled = true;
 			light.range = 1.33f;
 			light.color = Color.blue;
 		}
-		if (isUnstable)
+		if (TypeOfMonster == MonsterType.Raft)
 		{
-			gameObject.GetComponent<SpriteRenderer>().sprite = StableToUnstableSprites[TypeOfObject];
+			gameObject.GetComponent<SpriteRenderer>().sortingOrder = 2;
 		}
-		else
-			gameObject.GetComponent<SpriteRenderer>().sprite = TypesToSprites[TypeOfObject];
-
 		Destination = GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y);
 		if (delay > 0)
 		{
@@ -230,13 +226,13 @@ public class Monster : MonoBehaviour
 	{
 		if (State == MonsterState.Destroying)
 		{
-			if (TypeOfObject == MonsterType.Vampire || TypeOfObject == MonsterType.Zombie)
+			if (TypeOfMonster == MonsterType.Vampire || TypeOfMonster == MonsterType.Zombie)
 				SendToBasket();
-			if (TypeOfObject == MonsterType.Spider || TypeOfObject == MonsterType.Bat)
+			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat)
 				SendToPot();
-			if (TypeOfObject == MonsterType.Ghost)
+			if (TypeOfMonster == MonsterType.Ghost)
 				SendToPortal();
-			if (TypeOfObject == MonsterType.Coocon)
+			if (TypeOfMonster == MonsterType.Coocon || TypeOfMonster == MonsterType.Bomb)
 				Destroy(gameObject);
 			return;
 		}
@@ -256,33 +252,20 @@ public class Monster : MonoBehaviour
 			&& State != MonsterState.Decreasing)
 		{
 			Vector3 scale = transform.localScale;
-			if (IsUnstable)
-			{
-				scale.x = 1f;
-				scale.y = 1f;
-			}
-			else
-			{
-				scale.x += GrowSpeed;
-				scale.y += GrowSpeed;
-			}
+
+			scale.x += GrowSpeed;
+			scale.y += GrowSpeed;
 			gameObject.transform.localScale = scale;
 			if (gameObject.transform.localScale.x < 0.95)
 				return;
 		}
 		else if (State == MonsterState.Growing)
 			State = MonsterState.Default;
-		if (TypeOfObject == MonsterType.BlackHole)
+		if (TypeOfMonster == MonsterType.BlackHole)
 		{
 			HandleBlackHole();
 		}
-		//if (IsUnstable && rnd.Next(2) == 1)
-		//{
-		//	Vector3 scale = transform.localScale;
-		//	scale.x -= 0.01f;
-		//	scale.y -= 0.01f;
-		//	gameObject.transform.localScale = scale;
-		//}
+		
 		if (State == MonsterState.Moving || State == MonsterState.Dropping)
 		{
 			if (transform.position.Equals(Destination))
@@ -294,8 +277,7 @@ public class Monster : MonoBehaviour
 					else
 					{
 						GameField.MoveIsFinished = true;
-						Game.TurnsLeft--;
-						Game.instance.Update();
+						Game.NextTurn();
 					}
 				}
 				State = MonsterState.Default;
@@ -312,25 +294,26 @@ public class Monster : MonoBehaviour
 								   
 		if (IsMonster() && !IsFrozen && State !=MonsterState.Moving && GridPosition.Y != Game.MAP_SIZE - 1)
 		{
-			DropAsteroids();
+			DropMonsters();
 		}
 
 	}
 
-	private void DropAsteroids()
+	private void DropMonsters()
 	{
-		if (GameField.Map[GridPosition.X, GridPosition.Y + 1] == null)
+		if (GameField.Map[GridPosition.X, GridPosition.Y + 1] == null && WaterField.IsBridgeOrNull(GridPosition.X, GridPosition.Y + 1))
 		{
 			GameField.Drop(GridPosition, new Coordinate(GridPosition.X, GridPosition.Y + 1));
 		}
 		// if downdrop is blocked
 		else if (GridPosition.X > 0 &&
-				 GameField.Map[GridPosition.X - 1, GridPosition.Y + 1] == null)
+				 GameField.Map[GridPosition.X - 1, GridPosition.Y + 1] == null && WaterField.IsBridgeOrNull(GridPosition.X - 1, GridPosition.Y + 1))
 		{
 			for (int i = GridPosition.Y; i >= 0; i--)
 			{
 				if (GameField.Map[GridPosition.X - 1, i] != null
-					&& (!GameField.Map[GridPosition.X - 1, i].IsMonster() || GameField.Map[GridPosition.X - 1, i].IsFrozen))
+					&& (!GameField.Map[GridPosition.X - 1, i].IsMonster() || GameField.Map[GridPosition.X - 1, i].IsFrozen
+					) || !WaterField.IsBridgeOrNull(GridPosition.X - 1, i))
 				{
 					GameField.Drop(GridPosition, new Coordinate(GridPosition.X - 1, GridPosition.Y + 1));
 					break;
@@ -341,12 +324,13 @@ public class Monster : MonoBehaviour
 
 		}
 		else if (GridPosition.X < GameField.Map.GetLength(0) - 1 &&
-				 GameField.Map[GridPosition.X + 1, GridPosition.Y + 1] == null)
+				 GameField.Map[GridPosition.X + 1, GridPosition.Y + 1] == null && WaterField.IsBridgeOrNull(GridPosition.X + 1, GridPosition.Y + 1))
 		{
 			for (int i = GridPosition.Y; i >= 0; i--)
 			{
 				if (GameField.Map[GridPosition.X + 1, i] != null
-					&& (!GameField.Map[GridPosition.X + 1, i].IsMonster() || GameField.Map[GridPosition.X + 1, i].IsFrozen))
+					&& (!GameField.Map[GridPosition.X + 1, i].IsMonster() || GameField.Map[GridPosition.X + 1, i].IsFrozen 
+					) || !WaterField.IsBridgeOrNull(GridPosition.X + 1, i))
 				{
 					GameField.Drop(GridPosition, new Coordinate(GridPosition.X + 1, GridPosition.Y + 1));
 					break;
@@ -388,41 +372,31 @@ public class Monster : MonoBehaviour
 		var map = GameField.Map;
 		var unsuitableAsteroids = new List<MonsterType>();
 		if (GridPosition.X > 0 && map[GridPosition.X - 1, GridPosition.Y] != null)
-			unsuitableAsteroids.Add(map[GridPosition.X - 1, GridPosition.Y].TypeOfObject);
+			unsuitableAsteroids.Add(map[GridPosition.X - 1, GridPosition.Y].TypeOfMonster);
 		if (GridPosition.Y > 0 && map[GridPosition.X, GridPosition.Y - 1] != null)
-			unsuitableAsteroids.Add(map[GridPosition.X, GridPosition.Y - 1].TypeOfObject);
+			unsuitableAsteroids.Add(map[GridPosition.X, GridPosition.Y - 1].TypeOfMonster);
 		if (GridPosition.X < map.GetLength(0) - 1 && map[GridPosition.X + 1, GridPosition.Y] != null)
-			unsuitableAsteroids.Add(map[GridPosition.X + 1, GridPosition.Y].TypeOfObject);
+			unsuitableAsteroids.Add(map[GridPosition.X + 1, GridPosition.Y].TypeOfMonster);
 		if (GridPosition.Y < map.GetLength(1) - 1 && map[GridPosition.X, GridPosition.Y + 1] != null)
-			unsuitableAsteroids.Add(map[GridPosition.X, GridPosition.Y + 1].TypeOfObject);
+			unsuitableAsteroids.Add(map[GridPosition.X, GridPosition.Y + 1].TypeOfMonster);
 		unsuitableAsteroids = unsuitableAsteroids.Distinct().ToList();
 		var coords = new List<Coordinate>();
 		for (int i = 0; i < map.GetLength(0); i++)
 		{
 			for (int j = 0; j < map.GetLength(1); j++)
 			{
-				if (map[i, j] != null && map[i, j].IsMonster() && !unsuitableAsteroids.Contains(map[i, j].TypeOfObject)
+				if (map[i, j] != null && map[i, j].IsMonster() && !unsuitableAsteroids.Contains(map[i, j].TypeOfMonster)
 				    &&
 				    ((j < map.GetLength(1) - 1 && map[i, j + 1] != null &&
-					map[i, j].TypeOfObject == map[i, j + 1].TypeOfObject) ||
+					map[i, j].TypeOfMonster == map[i, j + 1].TypeOfMonster) ||
 					(j > 0 && map[i, j - 1] != null &&
-					map[i, j].TypeOfObject == map[i, j - 1].TypeOfObject) ||
+					map[i, j].TypeOfMonster == map[i, j - 1].TypeOfMonster) ||
 					(i > 0&& map[i - 1,j] != null &&
-					map[i, j].TypeOfObject == map[i - 1, j].TypeOfObject) ||
+					map[i, j].TypeOfMonster == map[i - 1, j].TypeOfMonster) ||
 					 (i < map.GetLength(0) - 1 && map[i + 1, j] != null &&
-					 map[i, j].TypeOfObject == map[i + 1, j].TypeOfObject)))
+					 map[i, j].TypeOfMonster == map[i + 1, j].TypeOfMonster)))
 				{
 					coords.Add(map[i, j].GridPosition);
-					if (map[i, j].IsUnstable)
-					{
-						State = MonsterState.Decreasing;
-						blackHoleTarget = new Coordinate(i,j);
-						if (!GameField.Map[blackHoleTarget.X, blackHoleTarget.Y].IsTargetForBlackHole)
-						{
-							GameField.Map[blackHoleTarget.X, blackHoleTarget.Y].IsTargetForBlackHole = true;
-							return;
-						}
-					}
 				}
 			} 
 		}
@@ -460,7 +434,7 @@ public class Monster : MonoBehaviour
 		fireball.SetActive(false);		
 		Game.PlayerIsBlocked = false;
 		SkillButton.Deactivate(SkillButtonType.Fire);
-		GameField.DestroySquare(GridPosition);
+		GameField.DestroySquare3X3(GridPosition);
 		AudioHolder.PlayMassRemove();
 	}
 	private IEnumerator ThrowLightning()
@@ -488,12 +462,12 @@ public class Monster : MonoBehaviour
 		l2.SetActive(false);
 		Game.PlayerIsBlocked = false;
 		SkillButton.Deactivate(SkillButtonType.Electro);
-		GameField.DestroyAllOf(TypeOfObject);
+		GameField.DestroyAllOf(TypeOfMonster);
 		AudioHolder.PlayMassRemove();
 	}
 	void OnMouseDown()
-	{										 
-		if (!Game.IsPlayerBlocked() || !IsMonster())
+	{
+		if (Game.IsPlayerBlocked() || (!IsMonster() && TypeOfMonster != MonsterType.Bomb))
 			return;
 
 		if (Game.ClickType == ClickState.Electro)
@@ -512,6 +486,11 @@ public class Monster : MonoBehaviour
 		{
 			if (GameField.ClickedObject == null)
 			{
+				if (TypeOfMonster == MonsterType.Bomb)
+				{
+					DestroyMonster();
+					return;
+				}
 				GameField.ClickedObject = GridPosition;
 				State = MonsterState.Clicked;
 			}
@@ -557,20 +536,23 @@ public class Monster : MonoBehaviour
 		{ 'G', MonsterType.Ghost},
 		{ 'H', MonsterType.BlackHole},
 		{ 'E', MonsterType.EmptyCell},
-		{'C', MonsterType.Coocon}
+		{'1', MonsterType.WaterHorizontal },
+		{'2', MonsterType.WaterVertical },
+		{'3', MonsterType.WaterDiagonal },
+		{'C', MonsterType.Coocon},
+		{'W', MonsterType.Bomb },
+		{'R', MonsterType.Raft }
 	};
 
 	public static Dictionary<MonsterType, Sprite> TypesToSprites;
 
-	public static Dictionary<MonsterType, Sprite> StableToUnstableSprites;
-
-	private static readonly List<MonsterType> AsteroidTypes = new List<MonsterType>()
+	private static readonly List<MonsterType> MonsterTypes = new List<MonsterType>()
 	{
 		MonsterType.Zombie,
 		MonsterType.Spider,
 		MonsterType.Ghost,
 		MonsterType.Vampire,
-		MonsterType.Bat
+		MonsterType.Bat,
 	};
 
 }

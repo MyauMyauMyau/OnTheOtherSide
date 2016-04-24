@@ -75,6 +75,8 @@ public class SkillButton : MonoBehaviour
 
 	void OnClickEvent()
 	{
+		if (Game.IsPlayerBlocked())
+			return;
 		if (Type == SkillButtonType.Electro)
 		{
 			Game.ClickType = ClickState.Electro;

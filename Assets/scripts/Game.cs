@@ -20,15 +20,14 @@ namespace Assets.scripts
 		public const int MAP_SIZE = 8;
 		public static LevelInfo LevelInformation;
 		public static int TurnsLeft;
-		public static Game instance;
+		public static Game Instance;
 		public static Vector3 BasketCoordinate = new Vector3(-4.2f, -0.8f);
 		public static Vector3 PotCoordinate = new Vector3(-5.53f, 0.8f);
 		public static Vector3 PortalCoordinate = new Vector3(-3.0f, -2.0f);
-		public static Sprite VampireSkin;
 		public static Texture2D MainCursor;
 		public static Texture2D FireCursor;
 		public static Texture2D ElectroCursor;
-		public static ClickState ClickType = ClickState.Default;
+		public static ClickState ClickType;
 		public static Dictionary<MonsterType, int> MonsterCounter;
 
 		public static int Level;
@@ -36,6 +35,9 @@ namespace Assets.scripts
 		{
 			PlayerIsBlocked = false;
 			SkillButton.buttons = new List<SkillButton>();
+			WaterField.Bridges = new Dictionary<Coordinate, Direction>();
+			WaterField.BridgeObjects = new List<Monster>();
+			WaterField.River = new List<Coordinate>();
 			MonsterCounter = new Dictionary<MonsterType, int>()
 			{
 				{MonsterType.Zombie, 0},
@@ -61,7 +63,7 @@ namespace Assets.scripts
 			}
 			if (Level == 2)
 			{
-				LevelInformation = new LevelInfo { Map = "ESVVBGBE EGGBVBSE EBZBGSBE EGGSHSVE EVZBHZBE EVZVBZGE EBGSZSGE EEEEEEEE" };
+				LevelInformation = new LevelInfo { Map = "ESVVBGBE EGGBVBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGSZSGE EEEEEEEE" };
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
 					{'G', 30},
@@ -102,18 +104,9 @@ namespace Assets.scripts
 			}
 		}
 
-		private void CheckAchievements()
-		{
-			//second character achievement
-			if (MonsterCounter[MonsterType.Vampire] > 49)
-			{
-				PlayerPrefs.SetInt("Achievement1Unlocked", 1);
-			}
-			PlayerPrefs.Save();
-		}
 		private void Start()
 		{
-			VampireSkin = Resources.Load<Sprite>("Sprites/vampireSkin");
+			ClickType = ClickState.Default;
 			BombFirePrefab = Resources.Load("BombFire", typeof(GameObject)) as GameObject;
 			SpaceObjectPrefab = Resources.Load("SpaceObjectPrefab", typeof (GameObject)) as GameObject;
 			SkillButton.ActiveFire = Resources.Load<Sprite>("ButtonsSprites/fireActiveButton");
@@ -126,13 +119,13 @@ namespace Assets.scripts
 			Monster.BatSprite = Resources.Load("Sprites/2-letuchka", typeof(Sprite)) as Sprite;
 			Monster.GhostSprite = Resources.Load("Sprites/2-prizrak", typeof(Sprite)) as Sprite;
 			Monster.EmptyCellSprite = Resources.Load("Sprites/1-pustaiaKLETKA", typeof(Sprite)) as Sprite;
-			Monster.UnstableVampireSprite = Resources.Load("Sprites/1-bomba", typeof(Sprite)) as Sprite;
-			Monster.UnstableZombieSprite = Resources.Load("Sprites/1-bomba", typeof(Sprite)) as Sprite;
-			Monster.UnstableSpiderSprite = Resources.Load("Sprites/1-bomba", typeof(Sprite)) as Sprite;
-			Monster.UnstableBatSprite = Resources.Load("Sprites/1-bomba", typeof(Sprite)) as Sprite;
-			Monster.UnstableGhostSprite = Resources.Load("Sprites/1-bomba", typeof(Sprite)) as Sprite;
+			Monster.BombSprite = Resources.Load("Sprites/1-bomba", typeof(Sprite)) as Sprite;
 			Monster.BlackHoleSprite = Resources.Load("Sprites/3Black_hole_02", typeof(Sprite)) as Sprite;
 			Monster.CooconSprite = Resources.Load("Sprites/1-kokonZAMOROZKA", typeof(Sprite)) as Sprite;
+			Monster.WaterHSprite = Resources.Load("Sprites/WaterH", typeof(Sprite)) as Sprite;
+			Monster.WaterVSprite = Resources.Load("Sprites/WaterV", typeof(Sprite)) as Sprite;
+			Monster.WaterDSprite = Resources.Load("Sprites/WaterD", typeof(Sprite)) as Sprite;
+			Monster.RaftSprite = Resources.Load("Sprites/Raft", typeof(Sprite)) as Sprite;
 			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
 			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
 			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;
@@ -146,23 +139,15 @@ namespace Assets.scripts
 				{MonsterType.Ghost, Monster.GhostSprite},
 				{MonsterType.EmptyCell, Monster.EmptyCellSprite},
 				{MonsterType.BlackHole, Monster.BlackHoleSprite},
-				{MonsterType.Coocon, Monster.CooconSprite}
+				{MonsterType.Coocon, Monster.CooconSprite},
+				{MonsterType.Bomb, Monster.BombSprite },
+				{MonsterType.WaterHorizontal, Monster.WaterHSprite },
+				{MonsterType.WaterVertical, Monster.WaterVSprite },
+				{MonsterType.WaterDiagonal, Monster.WaterDSprite },
+				{MonsterType.Raft, Monster.RaftSprite},
 			};
-			Monster.StableToUnstableSprites = new Dictionary<MonsterType, Sprite>
-			{
-				{MonsterType.Zombie, Monster.UnstableZombieSprite},
-				{MonsterType.Spider, Monster.UnstableSpiderSprite},
-				{MonsterType.Vampire, Monster.UnstableVampireSprite},
-				{MonsterType.Bat, Monster.UnstableBatSprite},
-				{MonsterType.Ghost, Monster.UnstableGhostSprite},
-
-			};
-			instance = this;
+			Instance = this;
 			
-			if (PlayerPrefs.GetInt("Achievement1Unlocked") == 1)
-			{
-				GameObject.Find("hero").GetComponent<SpriteRenderer>().sprite = VampireSkin;
-			}
 
 			GenerateMap();
 
@@ -172,13 +157,12 @@ namespace Assets.scripts
 		public static bool IsPlayerBlocked()
 		{
 			if (GameField.IsAnyMoving() || PlayerIsBlocked)
-				return false;
-			return true;
+				return true;
+			return false;
 		}
 		// Update is called once per frame
 		public void Update()
 		{
-			CheckAchievements();
 			CheckCursorClick();
 			if (TurnsLeft == 0)
 				PlayerIsBlocked = true;                        
@@ -211,11 +195,12 @@ namespace Assets.scripts
 		private void GenerateMap()
 		{
 			GameField.Map = new Monster[MAP_SIZE, MAP_SIZE];
+			WaterField.Map = new Monster[MAP_SIZE,MAP_SIZE];
 			for (var i = 0; i < MAP_SIZE; i++)
 			{
 				for (var j = 0; j < MAP_SIZE; j++)
 				{
-					SpaceObjectCreate(i, j, LevelInformation.Map.ElementAt(j*(MAP_SIZE + 1) + i));
+					MonsterCreate(i, j, LevelInformation.Map.ElementAt(j*(MAP_SIZE + 1) + i));
 				}
 			}
 			int trgCnt = 0;
@@ -227,17 +212,54 @@ namespace Assets.scripts
 				go.transform.position = new Vector3(-1.1f + trgCnt * 2.2f, -4.2f);
 				trgCnt++;
 			}
+			WaterField.GenerateRiver();
 		}
 
-		public static void SpaceObjectCreate(int x, int y, char type, float delay = 0, bool isUnstable = false)
+		public static void MonsterCreate(int x, int y, char type, float delay = 0)
 		{
-			Monster monster = ((GameObject)Instantiate(
-						SpaceObjectPrefab, GameField.GetVectorFromCoord(x,y),
+			if (type >= '1' && type <= '6')
+			{
+				if (type >= '4')
+				{
+					Monster bridge = ((GameObject)Instantiate(
+						SpaceObjectPrefab, GameField.GetVectorFromCoord(x, y),
 						Quaternion.Euler(new Vector3())))
 						.GetComponent<Monster>();
-			monster.Initialise(x, y, type, delay, isUnstable); //?
-			GameField.Map[x, y] = monster;
+					bridge.Initialise(x, y, 'R', delay);
+					WaterField.BridgeObjects.Add(bridge);
+					WaterField.Bridges.Add(new Coordinate(x,y), Direction.Forward);
+					bridge.gameObject.GetComponent<SpriteRenderer>().sortingOrder = 0;
+					bridge.gameObject.GetComponent<CircleCollider2D>().enabled = false;
+					type -= (char) 3;
+				}
+				Monster water = ((GameObject)Instantiate(
+						SpaceObjectPrefab, GameField.GetVectorFromCoord(x, y),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<Monster>();
+
+				water.Initialise(x, y, type, delay); //?
+				WaterField.Map[x, y] = water;
+				water.gameObject.GetComponent<SpriteRenderer>().sortingOrder = -1;
+				water.gameObject.GetComponent<CircleCollider2D>().enabled = false;
+			}
+			else
+			{
+				Monster monster = ((GameObject)Instantiate(
+						SpaceObjectPrefab, GameField.GetVectorFromCoord(x, y),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<Monster>();
+				monster.Initialise(x, y, type, delay); //?
+				GameField.Map[x, y] = monster;
+			}
+			
 		}
 
+		public static void NextTurn()
+		{
+			TurnsLeft--;
+			Instance.Update();
+			WaterField.ShiftBridges();
+			
+		}
 	}
 }

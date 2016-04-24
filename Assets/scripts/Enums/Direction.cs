@@ -8,6 +8,9 @@ namespace Assets.scripts.Enums
 	public enum Direction
 	{
 		Vertical,
-		Horizontal
+		Horizontal,
+		Forward,
+		Backward,
+
 	}
 }
