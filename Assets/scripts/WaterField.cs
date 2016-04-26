@@ -156,9 +156,9 @@ namespace Assets.scripts
 		private static void MoveBridge(Coordinate from, Coordinate to)
 		{
 			var bridge = BridgeObjects.First(x => x.GridPosition == from);
-			Debug.Log(from.X +" "+ from.Y);
-			Debug.Log(to.X + " " + to.Y);
 			bridge.Move(to);
+			if (GameField.Map[from.X, from.Y] == null)
+				return;
 			GameField.Map[from.X, from.Y].Move(to);
 			GameField.Map[to.X, to.Y] = GameField.Map[from.X, from.Y];
 			GameField.Map[from.X, from.Y] = null;

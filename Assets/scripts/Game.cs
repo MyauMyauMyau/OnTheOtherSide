@@ -311,9 +311,13 @@ namespace Assets.scripts
 			
 		}
 
-		public static void NextTurn()
+		public static IEnumerator NextTurn()
 		{
 			TurnsLeft--;
+			while (GameField.IsAnyMoving())
+			{
+				yield return null;
+			}
 			Instance.Update();
 			WaterField.ShiftBridges();
 			

@@ -27,7 +27,7 @@ public class Monster : MonoBehaviour
 	public static float RemoveStartTime;
 	public static float RemoveEndTime;
 	public static bool RemoveSoundPlaying;
-	public const float BaseDropSpeed = 10f;
+	public const float BaseDropSpeed = 5f;
 	public bool IsTargetForBlackHole;
 	public bool IsFrozen;
 	public float DropSpeed;
@@ -190,7 +190,8 @@ public class Monster : MonoBehaviour
 		DestroyRotationSpeed = rnd.Next(500);
 		DestroyRotation = (rnd.Next(2) == 0 ? Vector3.back : Vector3.forward);
 		DropSpeed = BaseDropSpeed*2;
-		MoveSpeed = 10f;
+		
+
 		GrowSpeed = 0.05f;
 		GridPosition = new Coordinate(x,y);
 		TypeOfMonster = CharsToObjectTypes[type];
@@ -198,7 +199,8 @@ public class Monster : MonoBehaviour
 		{
 			gameObject.GetComponent<SpriteRenderer>().sprite = TypesToSprites[TypeOfMonster];
 		}
-		
+
+		MoveSpeed = 10f;
 		if (TypeOfMonster == MonsterType.BlackHole)
 		{
 			var light = gameObject.GetComponentInChildren<Light>();
@@ -276,7 +278,7 @@ public class Monster : MonoBehaviour
 					else
 					{
 						GameField.MoveIsFinished = true;
-						Game.NextTurn();
+						StartCoroutine(Game.NextTurn());
 					}
 				}
 				State = MonsterState.Default;
@@ -284,6 +286,7 @@ public class Monster : MonoBehaviour
 			else
 			{
 				float step;
+				
 				step = State == MonsterState.Dropping ? this.DropSpeed*Time.deltaTime : this.MoveSpeed*Time.deltaTime;
 				transform.position = Vector3.MoveTowards(transform.position, Destination, step);
 			}
@@ -519,6 +522,7 @@ public class Monster : MonoBehaviour
 
 	public void Move(Coordinate newPosition)
 	{
+		
 		State = MonsterState.Moving;
 		PreviousPosition = GridPosition;
 		GridPosition = newPosition;
