@@ -18,9 +18,9 @@ public class SkillButton : MonoBehaviour
 	{
 		foreach (var button in buttons)
 		{
-			if (button.Type == SkillButtonType.Fire && (type == MonsterType.Vampire || type == MonsterType.Zombie))
+			if (button.Type == SkillButtonType.Fire && (type == MonsterType.Voodoo || type == MonsterType.Zombie))
 				button.FillAmount += 0.04f;
-			if (button.Type == SkillButtonType.Electro && type != MonsterType.Vampire && type != MonsterType.Zombie)
+			if (button.Type == SkillButtonType.Electro && type != MonsterType.Voodoo && type != MonsterType.Zombie)
 				button.FillAmount += 0.03f;
 			if (button.FillAmount >= 1)
 			{

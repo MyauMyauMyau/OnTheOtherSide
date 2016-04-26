@@ -15,15 +15,20 @@ namespace Assets.scripts
 	public class Game : MonoBehaviour
 	{
 		// Use this for initialization
-		public static GameObject SpaceObjectPrefab;
+		public static GameObject MonsterPrefab;
+		public static GameObject BatPrefab;
+		public static GameObject VoodooPrefab;
+		public static GameObject ZombiePrefab;
+		public static GameObject GhostPrefab;
+		public static GameObject SpiderPrefab;
 		public static GameObject BombFirePrefab;
 		public const int MAP_SIZE = 8;
 		public static LevelInfo LevelInformation;
 		public static int TurnsLeft;
 		public static Game Instance;
-		public static Vector3 BasketCoordinate = new Vector3(-4.2f, -0.8f);
-		public static Vector3 PotCoordinate = new Vector3(-5.53f, 0.8f);
-		public static Vector3 PortalCoordinate = new Vector3(-3.0f, -2.0f);
+		public static Vector3 BasketCoordinate = new Vector3(3f, -5f);
+		public static Vector3 PotCoordinate = new Vector3(-1f, -5f);
+		public static Vector3 PortalCoordinate = new Vector3(1f, -5.0f);
 		public static Texture2D MainCursor;
 		public static Texture2D FireCursor;
 		public static Texture2D ElectroCursor;
@@ -42,7 +47,7 @@ namespace Assets.scripts
 			{
 				{MonsterType.Zombie, 0},
 				{MonsterType.Spider, 0},
-				{MonsterType.Vampire, 0},
+				{MonsterType.Voodoo, 0},
 				{MonsterType.Bat, 0},
 				{MonsterType.Ghost, 0},
 				{MonsterType.Coocon, 0}
@@ -108,35 +113,30 @@ namespace Assets.scripts
 		{
 			ClickType = ClickState.Default;
 			BombFirePrefab = Resources.Load("BombFire", typeof(GameObject)) as GameObject;
-			SpaceObjectPrefab = Resources.Load("SpaceObjectPrefab", typeof (GameObject)) as GameObject;
+			MonsterPrefab = Resources.Load("MonsterObject", typeof (GameObject)) as GameObject;
+			BatPrefab = Resources.Load("objects/bat/Bat", typeof(GameObject)) as GameObject;
+			VoodooPrefab = Resources.Load("objects/voodoo/Voodoo", typeof(GameObject)) as GameObject;
+			ZombiePrefab = Resources.Load("objects/zombie/Zombie", typeof(GameObject)) as GameObject;
+			GhostPrefab = Resources.Load("objects/ghost/Ghost", typeof(GameObject)) as GameObject;
+			SpiderPrefab = Resources.Load("objects/spider/Spider", typeof(GameObject)) as GameObject;
 			SkillButton.ActiveFire = Resources.Load<Sprite>("ButtonsSprites/fireActiveButton");
 			SkillButton.Fire = Resources.Load<Sprite>("ButtonsSprites/fireLoad");
 			SkillButton.ActiveElectro = Resources.Load<Sprite>("ButtonsSprites/electroActiveButton");
 			SkillButton.Electro = Resources.Load<Sprite>("ButtonsSprites/electroLoad");
-			Monster.VampireSprite = Resources.Load("Sprites/2-vampir", typeof(Sprite)) as Sprite;
-			Monster.ZombieSprite = Resources.Load("Sprites/2-zombak", typeof(Sprite)) as Sprite;
-			Monster.SpiderSprite = Resources.Load("Sprites/2-pauk", typeof(Sprite)) as Sprite;
-			Monster.BatSprite = Resources.Load("Sprites/2-letuchka", typeof(Sprite)) as Sprite;
-			Monster.GhostSprite = Resources.Load("Sprites/2-prizrak", typeof(Sprite)) as Sprite;
-			Monster.EmptyCellSprite = Resources.Load("Sprites/1-pustaiaKLETKA", typeof(Sprite)) as Sprite;
-			Monster.BombSprite = Resources.Load("Sprites/1-bomba", typeof(Sprite)) as Sprite;
+			Monster.EmptyCellSprite = Resources.Load("objects/graves/grave1", typeof(Sprite)) as Sprite;
+			Monster.BombSprite = Resources.Load("Sprites/bomb", typeof(Sprite)) as Sprite;
 			Monster.BlackHoleSprite = Resources.Load("Sprites/3Black_hole_02", typeof(Sprite)) as Sprite;
-			Monster.CooconSprite = Resources.Load("Sprites/1-kokonZAMOROZKA", typeof(Sprite)) as Sprite;
-			Monster.WaterHSprite = Resources.Load("Sprites/WaterH", typeof(Sprite)) as Sprite;
-			Monster.WaterVSprite = Resources.Load("Sprites/WaterV", typeof(Sprite)) as Sprite;
-			Monster.WaterDSprite = Resources.Load("Sprites/WaterD", typeof(Sprite)) as Sprite;
-			Monster.RaftSprite = Resources.Load("Sprites/Raft", typeof(Sprite)) as Sprite;
+			Monster.CooconSprite = Resources.Load("objects/cocoon/cocoon", typeof(Sprite)) as Sprite;
+			Monster.WaterHSprite = Resources.Load("objects/river/WaterH", typeof(Sprite)) as Sprite;
+			Monster.WaterVSprite = Resources.Load("objects/river/WaterV", typeof(Sprite)) as Sprite;
+			Monster.WaterDSprite = Resources.Load("objects/river/WaterD", typeof(Sprite)) as Sprite;
+			Monster.RaftSprite = Resources.Load("objects/river/Raft", typeof(Sprite)) as Sprite;
 			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
 			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
 			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;
 			Cursor.SetCursor(MainCursor, new Vector2(0,0), CursorMode.Auto);
 			Monster.TypesToSprites = new Dictionary<MonsterType, Sprite>
 			{
-				{MonsterType.Zombie, Monster.ZombieSprite},
-				{MonsterType.Spider, Monster.SpiderSprite},
-				{MonsterType.Vampire, Monster.VampireSprite},
-				{MonsterType.Bat, Monster.BatSprite},
-				{MonsterType.Ghost, Monster.GhostSprite},
 				{MonsterType.EmptyCell, Monster.EmptyCellSprite},
 				{MonsterType.BlackHole, Monster.BlackHoleSprite},
 				{MonsterType.Coocon, Monster.CooconSprite},
@@ -206,10 +206,30 @@ namespace Assets.scripts
 			int trgCnt = 0;
 			foreach (var target in LevelInformation.Targets)
 			{
-				GameObject go = new GameObject();
-				SpriteRenderer renderer = go.AddComponent<SpriteRenderer>();
-				renderer.sprite = Monster.TypesToSprites[Monster.CharsToObjectTypes[target.Key]];
-				go.transform.position = new Vector3(-1.1f + trgCnt * 2.2f, -4.2f);
+				GameObject prefab = MonsterPrefab;
+				switch (target.Key)
+				{
+					case 'V':
+						prefab = VoodooPrefab;
+						break;
+					case 'S':
+						prefab = SpiderPrefab;
+						break;
+					case 'B':
+						prefab = BatPrefab;
+						break;
+					case 'G':
+						prefab = GhostPrefab;
+						break;
+					case 'Z':
+						prefab = ZombiePrefab;
+						break;
+				}
+				
+				Monster monster = ((GameObject)Instantiate(
+						prefab, new Vector3(-1.1f + trgCnt * 2.2f, -4.2f),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<Monster>();
 				trgCnt++;
 			}
 			WaterField.GenerateRiver();
@@ -217,12 +237,49 @@ namespace Assets.scripts
 
 		public static void MonsterCreate(int x, int y, char type, float delay = 0)
 		{
-			if (type >= '1' && type <= '6')
+			if (Monster.MonsterTypes.Contains(Monster.CharsToObjectTypes[type]))
+			{
+				GameObject prefab = MonsterPrefab;
+				switch (type)
+				{
+					case 'V':
+						prefab = VoodooPrefab;
+						break;
+					case 'S':
+						prefab = SpiderPrefab;
+						break;
+					case 'B':
+						prefab = BatPrefab;
+						break;
+					case 'G':
+						prefab = GhostPrefab;
+						break;
+					case 'Z':
+						prefab = ZombiePrefab;
+						break;
+				}
+				try
+				{
+					Monster monster = ((GameObject)Instantiate(
+						prefab, GameField.GetVectorFromCoord(x, y),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<Monster>();
+					monster.Initialise(x, y, type, delay); //?
+					GameField.Map[x, y] = monster;
+				}
+				catch (Exception)
+				{
+					
+					Debug.Log(type);
+				}
+				
+			}
+			else if (type >= '1' && type <= '6')
 			{
 				if (type >= '4')
 				{
 					Monster bridge = ((GameObject)Instantiate(
-						SpaceObjectPrefab, GameField.GetVectorFromCoord(x, y),
+						MonsterPrefab, GameField.GetVectorFromCoord(x, y),
 						Quaternion.Euler(new Vector3())))
 						.GetComponent<Monster>();
 					bridge.Initialise(x, y, 'R', delay);
@@ -233,7 +290,7 @@ namespace Assets.scripts
 					type -= (char) 3;
 				}
 				Monster water = ((GameObject)Instantiate(
-						SpaceObjectPrefab, GameField.GetVectorFromCoord(x, y),
+						MonsterPrefab, GameField.GetVectorFromCoord(x, y),
 						Quaternion.Euler(new Vector3())))
 						.GetComponent<Monster>();
 
@@ -245,7 +302,7 @@ namespace Assets.scripts
 			else
 			{
 				Monster monster = ((GameObject)Instantiate(
-						SpaceObjectPrefab, GameField.GetVectorFromCoord(x, y),
+						MonsterPrefab, GameField.GetVectorFromCoord(x, y),
 						Quaternion.Euler(new Vector3())))
 						.GetComponent<Monster>();
 				monster.Initialise(x, y, type, delay); //?

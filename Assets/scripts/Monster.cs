@@ -16,11 +16,6 @@ public class Monster : MonoBehaviour
 	public Vector3 Destination { get; set; }
 	public Coordinate PreviousPosition {get; set;}
 	public MonsterType TypeOfMonster { get; set;}
-	public static Sprite VampireSprite;
-	public static Sprite ZombieSprite;
-	public static Sprite SpiderSprite;
-	public static Sprite BatSprite;
-	public static Sprite GhostSprite;
 	public static Sprite EmptyCellSprite;
 	public static Sprite BlackHoleSprite;
 	public static Sprite CooconSprite;
@@ -199,7 +194,11 @@ public class Monster : MonoBehaviour
 		GrowSpeed = 0.05f;
 		GridPosition = new Coordinate(x,y);
 		TypeOfMonster = CharsToObjectTypes[type];
-		gameObject.GetComponent<SpriteRenderer>().sprite = TypesToSprites[TypeOfMonster];
+		if (!MonsterTypes.Contains(Monster.CharsToObjectTypes[type]))
+		{
+			gameObject.GetComponent<SpriteRenderer>().sprite = TypesToSprites[TypeOfMonster];
+		}
+		
 		if (TypeOfMonster == MonsterType.BlackHole)
 		{
 			var light = gameObject.GetComponentInChildren<Light>();
@@ -226,7 +225,7 @@ public class Monster : MonoBehaviour
 	{
 		if (State == MonsterState.Destroying)
 		{
-			if (TypeOfMonster == MonsterType.Vampire || TypeOfMonster == MonsterType.Zombie)
+			if (TypeOfMonster == MonsterType.Voodoo || TypeOfMonster == MonsterType.Zombie)
 				SendToBasket();
 			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat)
 				SendToPot();
@@ -531,7 +530,7 @@ public class Monster : MonoBehaviour
 	{
 		{ 'Z', MonsterType.Zombie},
 		{ 'S', MonsterType.Spider},
-		{ 'V', MonsterType.Vampire},
+		{ 'V', MonsterType.Voodoo},
 		{ 'B', MonsterType.Bat},
 		{ 'G', MonsterType.Ghost},
 		{ 'H', MonsterType.BlackHole},
@@ -539,6 +538,9 @@ public class Monster : MonoBehaviour
 		{'1', MonsterType.WaterHorizontal },
 		{'2', MonsterType.WaterVertical },
 		{'3', MonsterType.WaterDiagonal },
+		{'4', MonsterType.WaterHorizontal },
+		{'5', MonsterType.WaterVertical },
+		{'6', MonsterType.WaterDiagonal },
 		{'C', MonsterType.Coocon},
 		{'W', MonsterType.Bomb },
 		{'R', MonsterType.Raft }
@@ -546,12 +548,12 @@ public class Monster : MonoBehaviour
 
 	public static Dictionary<MonsterType, Sprite> TypesToSprites;
 
-	private static readonly List<MonsterType> MonsterTypes = new List<MonsterType>()
+	public static readonly List<MonsterType> MonsterTypes = new List<MonsterType>()
 	{
 		MonsterType.Zombie,
 		MonsterType.Spider,
 		MonsterType.Ghost,
-		MonsterType.Vampire,
+		MonsterType.Voodoo,
 		MonsterType.Bat,
 	};
 

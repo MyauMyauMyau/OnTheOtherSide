@@ -7,7 +7,7 @@ namespace Assets.scripts
 {
 	public enum MonsterType
 	{
-		Vampire,
+		Voodoo,
 		Spider,
 		Bat,
 		Ghost,

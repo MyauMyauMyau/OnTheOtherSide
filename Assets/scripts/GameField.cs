@@ -174,7 +174,8 @@ namespace Assets.scripts
 					if (Map[i, j] != null && Map[i, j].TypeOfMonster == type)
 					{
 						if (!Map[i, j].IsFrozen)
-							Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
+							foreach (var sprite in Map[i, j].GetComponentsInChildren<SpriteRenderer>())
+								sprite.color = Color.black;
 						Map[i, j].DestroyMonster();
 					}
 				}
@@ -193,7 +194,10 @@ namespace Assets.scripts
 					if (Map[i, j] != null && Map[i, j].IsMonster())
 					{
 						if (!Map[i, j].IsFrozen)
-							Map[i, j].GetComponent<SpriteRenderer>().color = Color.black;
+						{
+							foreach (var sprite in Map[i, j].GetComponentsInChildren<SpriteRenderer>())
+								sprite.color = Color.black;
+						}
 						Map[i, j].DestroyMonster();
 					}
 				}
@@ -363,8 +367,8 @@ namespace Assets.scripts
 		}
 		public static Vector3 GetVectorFromCoord(int i, int j)
 		{
-			return new Vector3(i*0.90f - Game.MAP_SIZE/2 + 2.7f,
-							Game.MAP_SIZE/2 - j*0.90f - 0.32f, 0);
+			return new Vector3(i*1.07f - Game.MAP_SIZE/2 + 0.25f ,
+							Game.MAP_SIZE/2 - j*1.048f + 0.5f, 0);
 		}
 
 		public static List<char> MonsterList = new List<char>()
