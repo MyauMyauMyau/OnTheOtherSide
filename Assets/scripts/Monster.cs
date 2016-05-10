@@ -20,6 +20,9 @@ public class Monster : MonoBehaviour
 	public static Sprite BlackHoleSprite;
 	public static Sprite CooconSprite;
 	public static Sprite BombSprite;
+	public static Sprite Pumpkin1Sprite;
+	public static Sprite Pumpkin2Sprite;
+	public static Sprite Pumpkin3Sprite;
 	public static Sprite WaterVSprite;
 	public static Sprite WaterHSprite;
 	public static Sprite WaterDSprite;
@@ -42,12 +45,14 @@ public class Monster : MonoBehaviour
 	public float ToBasketStartTime;
 	public MonsterState State { get; set; }
 	public bool UpdatedField = false;
-	public Random rnd = new Random();
+	public static Random Rnd = new Random();
 	public Vector3 DestroyRotation;
 	public int DestroyRotationSpeed;
+	public bool IsAnimated;
+	public int AnimationStartTime;
 	public bool IsMonster()
 	{
-		return MonsterTypes.Contains(TypeOfMonster);
+		return Dictionaries.MonsterTypes.Contains(TypeOfMonster);
 	}
 
 	private void SendToBasket()
@@ -116,7 +121,7 @@ public class Monster : MonoBehaviour
 					}
 				}
 			}
-			Game.MonsterCounter[MonsterType.Coocon]++;
+			Dictionaries.MonsterCounter[MonsterType.Coocon]++;
 			GameField.Map[GridPosition.X, GridPosition.Y] = null;
 			ToBasketStartTime = Time.time;
 			State = MonsterState.Destroying;
@@ -141,7 +146,7 @@ public class Monster : MonoBehaviour
 		}
 		GameField.Map[GridPosition.X, GridPosition.Y] = null;
 		ToBasketStartTime = Time.time;
-		Game.MonsterCounter[TypeOfMonster]++;
+		Dictionaries.MonsterCounter[TypeOfMonster]++;
 		SkillButton.AddEnergy(TypeOfMonster);
 		State = MonsterState.Destroying;
 		AudioHolder.PlayRemove();
@@ -187,17 +192,21 @@ public class Monster : MonoBehaviour
 
 	public void Initialise(int x, int y, char type, float delay = 0)
 	{
-		DestroyRotationSpeed = rnd.Next(500);
-		DestroyRotation = (rnd.Next(2) == 0 ? Vector3.back : Vector3.forward);
+		DestroyRotationSpeed = Rnd.Next(500);
+		DestroyRotation = (Rnd.Next(2) == 0 ? Vector3.back : Vector3.forward);
 		DropSpeed = BaseDropSpeed*2;
 		
-
 		GrowSpeed = 0.05f;
 		GridPosition = new Coordinate(x,y);
-		TypeOfMonster = CharsToObjectTypes[type];
-		if (!MonsterTypes.Contains(Monster.CharsToObjectTypes[type]))
+		TypeOfMonster = Dictionaries.CharsToObjectTypes[type];
+		if (Dictionaries.AnimatedTypes.Contains(TypeOfMonster))
 		{
-			gameObject.GetComponent<SpriteRenderer>().sprite = TypesToSprites[TypeOfMonster];
+			IsAnimated = true;
+			AnimationStartTime = (int)Time.time + Rnd.Next(50);
+		}
+		if (!Dictionaries.AnimatedTypes.Contains(Dictionaries.CharsToObjectTypes[type]))
+		{
+			gameObject.GetComponent<SpriteRenderer>().sprite = Dictionaries.TypesToSprites[TypeOfMonster];
 		}
 
 		MoveSpeed = 10f;
@@ -229,7 +238,8 @@ public class Monster : MonoBehaviour
 		{
 			if (TypeOfMonster == MonsterType.Voodoo || TypeOfMonster == MonsterType.Zombie)
 				SendToBasket();
-			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat)
+			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat || TypeOfMonster == MonsterType.Pumpkin1
+				|| TypeOfMonster == MonsterType.Pumpkin2 || TypeOfMonster == MonsterType.Pumpkin3)
 				SendToPot();
 			if (TypeOfMonster == MonsterType.Ghost)
 				SendToPortal();
@@ -298,7 +308,14 @@ public class Monster : MonoBehaviour
 		{
 			DropMonsters();
 		}
-
+		if (IsAnimated && Time.time > AnimationStartTime)
+		{
+			Debug.Log(Time.time);
+			//IsAnimated = false;
+			var anim = GetComponent<Animation>();
+			anim.Play();
+			AnimationStartTime += 50;
+		}
 	}
 
 	private void DropMonsters()
@@ -405,7 +422,7 @@ public class Monster : MonoBehaviour
 		if (coords.Count > 0)
 		{
 			State = MonsterState.Decreasing;
-			blackHoleTarget = coords.ElementAt(rnd.Next(coords.Count));
+			blackHoleTarget = coords.ElementAt(Rnd.Next(coords.Count));
 			if (!GameField.Map[blackHoleTarget.X, blackHoleTarget.Y].IsTargetForBlackHole)
 				GameField.Map[blackHoleTarget.X, blackHoleTarget.Y].IsTargetForBlackHole = true;
 		}
@@ -528,37 +545,4 @@ public class Monster : MonoBehaviour
 		GridPosition = newPosition;
 		Destination = GameField.GetVectorFromCoord(newPosition.X, newPosition.Y);
 	}
-
-
-	public static readonly Dictionary<char, MonsterType> CharsToObjectTypes = new Dictionary<char, MonsterType>
-	{
-		{ 'Z', MonsterType.Zombie},
-		{ 'S', MonsterType.Spider},
-		{ 'V', MonsterType.Voodoo},
-		{ 'B', MonsterType.Bat},
-		{ 'G', MonsterType.Ghost},
-		{ 'H', MonsterType.BlackHole},
-		{ 'E', MonsterType.EmptyCell},
-		{'1', MonsterType.WaterHorizontal },
-		{'2', MonsterType.WaterVertical },
-		{'3', MonsterType.WaterDiagonal },
-		{'4', MonsterType.WaterHorizontal },
-		{'5', MonsterType.WaterVertical },
-		{'6', MonsterType.WaterDiagonal },
-		{'C', MonsterType.Coocon},
-		{'W', MonsterType.Bomb },
-		{'R', MonsterType.Raft }
-	};
-
-	public static Dictionary<MonsterType, Sprite> TypesToSprites;
-
-	public static readonly List<MonsterType> MonsterTypes = new List<MonsterType>()
-	{
-		MonsterType.Zombie,
-		MonsterType.Spider,
-		MonsterType.Ghost,
-		MonsterType.Voodoo,
-		MonsterType.Bat,
-	};
-
 }

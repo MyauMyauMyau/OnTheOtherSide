@@ -16,7 +16,7 @@ public class TargetsText : MonoBehaviour {
 	{
 		for (var i = 0; i < Game.LevelInformation.Targets.Count; i++)
 		{
-			var currentMonsters = Game.MonsterCounter[Monster.CharsToObjectTypes[Game.LevelInformation.Targets.ElementAt(i).Key]];
+			var currentMonsters = Dictionaries.MonsterCounter[Dictionaries.CharsToObjectTypes[Game.LevelInformation.Targets.ElementAt(i).Key]];
 			var totalMonsters = Game.LevelInformation.Targets.ElementAt(i).Value;
 			var text = "" + currentMonsters  + "/";
 			text += totalMonsters;

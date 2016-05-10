@@ -29,7 +29,8 @@ namespace Assets.scripts
 			{
 				if (Map[i, 0] == null)
 				{
-					Game.MonsterCreate(i, 0, MonsterList.ElementAt(Rnd.Next(5)), delay);
+					Game.MonsterCreate(i, 0,
+						Dictionaries.MonsterGenerationList.ElementAt(Rnd.Next(Dictionaries.MonsterGenerationList.Count)), delay);
 				}
 			}
 		}
@@ -150,6 +151,7 @@ namespace Assets.scripts
 		}
 		public static void UpdateField()
 		{
+			CheckBuildingMonsters();
 			for (int i = 0; i < Map.GetLength(0); i++)
 			{
 				for (int j = 0; j < Map.GetLength(1); j++)
@@ -164,7 +166,48 @@ namespace Assets.scripts
 			}
 		}
 
-
+		public static void CheckBuildingMonsters()
+		{
+			for (int i = 0; i < Game.MAP_SIZE; i++)
+				for (int j = 0; j < Game.MAP_SIZE - 2; j++)
+				{
+					if (Map[i, j] != null && Map[i, j + 1] != null && Map[i, j + 2] != null && Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster))
+					{
+						if (Map[i, j].TypeOfMonster == Map[i, j + 1].TypeOfMonster &&
+						    Map[i, j].TypeOfMonster == Map[i, j + 2].TypeOfMonster)
+						{
+							var type = Map[i, j].TypeOfMonster;
+							
+							Map[i,j].DestroyMonster();
+							Map[i, j + 1].DestroyMonster();
+							Map[i, j + 2].DestroyMonster();
+							Map[i, j + 1] = null;
+							Map[i, j + 2] = null;
+							Map[i, j] = null;
+							Game.MonsterCreate(i, j + 1, Dictionaries.MonstersUpgradeDictionary[type]);
+						}
+					}
+				}
+			for (int i = 0; i < Game.MAP_SIZE - 2; i++)
+				for (int j = 0; j < Game.MAP_SIZE; j++)
+				{
+					if (Map[i, j] != null && Map[i + 1, j] != null && Map[i + 2, j] != null && Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster))
+					{
+						if (Map[i, j].TypeOfMonster == Map[i + 1, j].TypeOfMonster &&
+							Map[i, j].TypeOfMonster == Map[i + 2, j].TypeOfMonster)
+						{
+							var type = Map[i, j].TypeOfMonster;
+							Map[i, j].DestroyMonster();
+							Map[i + 1, j].DestroyMonster();
+							Map[i + 2, j].DestroyMonster();
+							Map[i, j] = null;
+							Map[i+1, j] = null;
+							Map[i+2, j] = null;
+							Game.MonsterCreate(i + 1, j, Dictionaries.MonstersUpgradeDictionary[type]);
+						}
+					}
+				}
+		}
 
 		public static void DestroyAllOf(MonsterType type)
 		{
@@ -370,15 +413,6 @@ namespace Assets.scripts
 			return new Vector3(i*1.07f - Game.MAP_SIZE/2 + 0.25f ,
 							Game.MAP_SIZE/2 - j*1.048f + 0.5f, 0);
 		}
-
-		public static List<char> MonsterList = new List<char>()
-		{
-			'Z',
-			'S',
-			'V',
-			'B',
-			'G',
-		}; 
 
 		public static bool IsAnyMoving()
 		{

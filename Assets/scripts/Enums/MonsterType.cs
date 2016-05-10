@@ -19,6 +19,9 @@ namespace Assets.scripts
 		WaterDiagonal,
 		WaterHorizontal,
 		WaterVertical,
-		Raft			
+		Raft,
+		Pumpkin1,
+		Pumpkin2,
+		Pumpkin3
 	}
 }

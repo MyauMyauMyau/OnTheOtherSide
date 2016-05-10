@@ -33,7 +33,6 @@ namespace Assets.scripts
 		public static Texture2D FireCursor;
 		public static Texture2D ElectroCursor;
 		public static ClickState ClickType;
-		public static Dictionary<MonsterType, int> MonsterCounter;
 
 		public static int Level;
 		private void Awake()
@@ -43,14 +42,18 @@ namespace Assets.scripts
 			WaterField.Bridges = new Dictionary<Coordinate, Direction>();
 			WaterField.BridgeObjects = new List<Monster>();
 			WaterField.River = new List<Coordinate>();
-			MonsterCounter = new Dictionary<MonsterType, int>()
+			Dictionaries.MonsterCounter = new Dictionary<MonsterType, int>()
 			{
 				{MonsterType.Zombie, 0},
 				{MonsterType.Spider, 0},
 				{MonsterType.Voodoo, 0},
 				{MonsterType.Bat, 0},
 				{MonsterType.Ghost, 0},
-				{MonsterType.Coocon, 0}
+				{MonsterType.Coocon, 0},
+				{MonsterType.Pumpkin1, 0},
+				{MonsterType.Pumpkin2, 0},
+				{MonsterType.Pumpkin3, 0},
+
 			};
 			GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
 			Level = PlayerPrefs.GetInt("CurrentLevel");
@@ -68,7 +71,8 @@ namespace Assets.scripts
 			}
 			if (Level == 2)
 			{
-				LevelInformation = new LevelInfo { Map = "ESVVBGBE EGGBVBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGSZSGE EEEEEEEE" };
+				LevelInformation = new LevelInfo { Map = "ESVVBGBE EGGBVBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGSZSGE EEEEEEEE",
+					Pumpkins = true};
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
 					{'G', 30},
@@ -131,11 +135,14 @@ namespace Assets.scripts
 			Monster.WaterVSprite = Resources.Load("objects/river/WaterV", typeof(Sprite)) as Sprite;
 			Monster.WaterDSprite = Resources.Load("objects/river/WaterD", typeof(Sprite)) as Sprite;
 			Monster.RaftSprite = Resources.Load("objects/river/Raft", typeof(Sprite)) as Sprite;
+			Monster.Pumpkin1Sprite = Resources.Load("objects/pumpkin/pumpkin1", typeof (Sprite)) as Sprite;
+			Monster.Pumpkin2Sprite = Resources.Load("objects/pumpkin/pumpkin2", typeof(Sprite)) as Sprite;
+			Monster.Pumpkin3Sprite = Resources.Load("objects/pumpkin/pumpkin3", typeof(Sprite)) as Sprite;
 			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
 			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
 			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;
 			Cursor.SetCursor(MainCursor, new Vector2(0,0), CursorMode.Auto);
-			Monster.TypesToSprites = new Dictionary<MonsterType, Sprite>
+			Dictionaries.TypesToSprites = new Dictionary<MonsterType, Sprite>
 			{
 				{MonsterType.EmptyCell, Monster.EmptyCellSprite},
 				{MonsterType.BlackHole, Monster.BlackHoleSprite},
@@ -145,10 +152,20 @@ namespace Assets.scripts
 				{MonsterType.WaterVertical, Monster.WaterVSprite },
 				{MonsterType.WaterDiagonal, Monster.WaterDSprite },
 				{MonsterType.Raft, Monster.RaftSprite},
+				{MonsterType.Pumpkin1, Monster.Pumpkin1Sprite},
+				{MonsterType.Pumpkin2, Monster.Pumpkin2Sprite},
+				{MonsterType.Pumpkin3, Monster.Pumpkin3Sprite},
 			};
 			Instance = this;
-			
 
+			if (LevelInformation.Pumpkins)
+			{
+				Dictionaries.MonsterGenerationList.Add('x');
+			}
+			if (LevelInformation.Skeleton)
+			{
+				Dictionaries.MonsterGenerationList.Add('a');
+			}
 			GenerateMap();
 
 		}
@@ -235,9 +252,14 @@ namespace Assets.scripts
 			WaterField.GenerateRiver();
 		}
 
+		public static void MonsterCreate(int x, int y, MonsterType type, float delay = 0)
+		{
+			char ctype = Dictionaries.CharsToObjectTypes.First(p => p.Value == type).Key;
+			MonsterCreate(x,y,ctype,delay);
+		}
 		public static void MonsterCreate(int x, int y, char type, float delay = 0)
 		{
-			if (Monster.MonsterTypes.Contains(Monster.CharsToObjectTypes[type]))
+			if (Dictionaries.MonsterTypes.Contains(Dictionaries.CharsToObjectTypes[type]))
 			{
 				GameObject prefab = MonsterPrefab;
 				switch (type)

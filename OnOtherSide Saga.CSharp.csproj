@@ -70,6 +70,7 @@
     <Compile Include="Assets\scripts\BombBoom.cs" />
     <Compile Include="Assets\scripts\CameraScript.cs" />
     <Compile Include="Assets\scripts\Coordinate.cs" />
+    <Compile Include="Assets\scripts\Dictionaries.cs" />
     <Compile Include="Assets\scripts\Enums\ClickState.cs" />
     <Compile Include="Assets\scripts\Enums\Direction.cs" />
     <Compile Include="Assets\scripts\Enums\MonsterState.cs" />

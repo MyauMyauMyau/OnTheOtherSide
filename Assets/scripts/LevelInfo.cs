@@ -9,6 +9,8 @@ namespace Assets.scripts
 	{
 		public string Map;
 		public int Points;
-		public Dictionary<char, int> Targets;  
+		public Dictionary<char, int> Targets;
+		public bool Pumpkins;
+		public bool Skeleton;
 	}
 }
