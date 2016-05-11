@@ -53,10 +53,10 @@ namespace Assets.scripts
 				{MonsterType.Pumpkin1, 0},
 				{MonsterType.Pumpkin2, 0},
 				{MonsterType.Pumpkin3, 0},
-				{MonsterType.Sceleton1, 0},
-				{MonsterType.Sceleton2, 0},
-				{MonsterType.Sceleton3, 0},
-				{MonsterType.Sceleton4, 0},
+				{MonsterType.Skeleton1, 0},
+				{MonsterType.Skeleton2, 0},
+				{MonsterType.Skeleton3, 0},
+				{MonsterType.Skeleton4, 0},
 
 			};
 			GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
@@ -75,8 +75,8 @@ namespace Assets.scripts
 			}
 			if (Level == 2)
 			{
-				LevelInformation = new LevelInfo { Map = "xSxxBGBE EGGBVBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGSZSGE EEEEEEEE",
-					Pumpkins = true};
+				LevelInformation = new LevelInfo { Map = "dSddBGBE EaaBaBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGSZSGE EEEEEEEE",
+					Skeleton = true};
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
 					{'G', 30},
@@ -144,6 +144,12 @@ namespace Assets.scripts
 			Monster.Pumpkin3Sprite = Resources.Load("objects/pumpkin/pumpkin3", typeof(Sprite)) as Sprite;
 			Monster.PumpkinFaceSprite = Resources.Load("objects/pumpkin/pumpkinFace", typeof(Sprite)) as Sprite;
 			Monster.PumpkinBranchSprite = Resources.Load("objects/pumpkin/pumpkinTop", typeof(Sprite)) as Sprite;
+			Monster.SkeletonSprite1= Resources.Load("objects/skeleton/skeleton1", typeof(Sprite)) as Sprite;
+			Monster.SkeletonSprite2= Resources.Load("objects/skeleton/skeleton2", typeof(Sprite)) as Sprite;
+			Monster.SkeletonSprite3= Resources.Load("objects/skeleton/skeleton3", typeof(Sprite)) as Sprite;
+			Monster.SkeletonSprite4= Resources.Load("objects/skeleton/skeleton4", typeof(Sprite)) as Sprite;
+			Monster.SkeletonMudSprite= Resources.Load("objects/skeleton/skeletonMud", typeof(Sprite)) as Sprite;
+			Monster.SkeletonAloneSprite= Resources.Load("objects/skeleton/skeletonAlone", typeof(Sprite)) as Sprite;
 			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
 			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
 			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;
@@ -161,6 +167,10 @@ namespace Assets.scripts
 				{MonsterType.Pumpkin1, Monster.Pumpkin1Sprite},
 				{MonsterType.Pumpkin2, Monster.Pumpkin2Sprite},
 				{MonsterType.Pumpkin3, Monster.Pumpkin3Sprite},
+				{MonsterType.Skeleton1, Monster.SkeletonSprite1},
+				{MonsterType.Skeleton2, Monster.SkeletonSprite2},
+				{MonsterType.Skeleton3, Monster.SkeletonSprite3},
+				{MonsterType.Skeleton4, Monster.SkeletonSprite4},
 			};
 			Instance = this;
 
@@ -286,20 +296,13 @@ namespace Assets.scripts
 						prefab = ZombiePrefab;
 						break;
 				}
-				try
-				{
-					Monster monster = ((GameObject)Instantiate(
-						prefab, GameField.GetVectorFromCoord(x, y),
-						Quaternion.Euler(new Vector3())))
-						.GetComponent<Monster>();
-					monster.Initialise(x, y, type, delay); //?
-					GameField.Map[x, y] = monster;
-				}
-				catch (Exception)
-				{
-					
-					Debug.Log(type);
-				}
+
+				Monster monster = ((GameObject)Instantiate(
+					prefab, GameField.GetVectorFromCoord(x, y),
+					Quaternion.Euler(new Vector3())))
+					.GetComponent<Monster>();
+				monster.Initialise(x, y, type, delay); //?
+				GameField.Map[x, y] = monster;
 				
 			}
 			else if (type >= '1' && type <= '6')

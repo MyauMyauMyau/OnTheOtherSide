@@ -23,9 +23,9 @@ namespace Assets.scripts
 		Pumpkin1,
 		Pumpkin2,
 		Pumpkin3,
-		Sceleton1,
-		Sceleton2,
-		Sceleton3,
-		Sceleton4,
+		Skeleton1,
+		Skeleton2,
+		Skeleton3,
+		Skeleton4,
 	}
 }

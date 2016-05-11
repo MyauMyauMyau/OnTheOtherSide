@@ -221,7 +221,14 @@ namespace Assets.scripts
 				yield return new WaitForSeconds(0);
 			}
 			var type = Map[start.X, start.Y].TypeOfMonster;
-
+			if (Map[(start.X + finish.X)/2, (start.Y + finish.Y)/2].IsSceleton())
+			{
+				Map[start.X, start.Y].GetComponent<SpriteRenderer>().sortingOrder = 2;
+				Map[start.X, start.Y].GetComponent<SpriteRenderer>().sprite =
+					Monster.SkeletonMudSprite;
+				yield return new WaitForSeconds(0.25f);
+			}
+				
 			Map[start.X, start.Y].Destroy();
 			Map[(start.X + finish.X) / 2, (start.Y + finish.Y) / 2].Destroy();
 			Map[finish.X, finish.Y].Destroy();
