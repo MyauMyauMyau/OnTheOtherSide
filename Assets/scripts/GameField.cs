@@ -14,13 +14,18 @@ using Random = System.Random;
 
 namespace Assets.scripts
 {
-	public class GameField
+	public class GameField : MonoBehaviour
 	{
 		public static Monster[,] Map;
 		public static Coordinate? ClickedObject;
 		public static float MoveSpeed = 10.0f;
 		public static bool MoveIsFinished = true;
 		public static Random Rnd = new Random();
+		public static GameField Instance;
+		public void Start()
+		{
+			Instance = this;
+		}
 		public static void CheckUpperBorder()
 		{
 			var delay = 0f;
@@ -156,10 +161,12 @@ namespace Assets.scripts
 			{
 				for (int j = 0; j < Map.GetLength(1); j++)
 				{
-					if (Map[i, j] == null || !Map[i, j].IsMonster())
+					if (Map[i, j] == null || !Map[i, j].IsMonster() || 
+						Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i,j].TypeOfMonster))
 						continue;
 					CheckColumn(Map[i, j], i, j);
-					if (Map[i,j] == null || !Map[i,j].IsMonster())
+					if (Map[i, j] == null || !Map[i, j].IsMonster() ||
+						Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster))
 						continue;
 					CheckRow(Map[i, j], i, j); //checking row here
 				}
@@ -176,15 +183,8 @@ namespace Assets.scripts
 						if (Map[i, j].TypeOfMonster == Map[i, j + 1].TypeOfMonster &&
 						    Map[i, j].TypeOfMonster == Map[i, j + 2].TypeOfMonster)
 						{
-							var type = Map[i, j].TypeOfMonster;
-							
-							Map[i,j].DestroyMonster();
-							Map[i, j + 1].DestroyMonster();
-							Map[i, j + 2].DestroyMonster();
-							Map[i, j + 1] = null;
-							Map[i, j + 2] = null;
-							Map[i, j] = null;
-							Game.MonsterCreate(i, j + 1, Dictionaries.MonstersUpgradeDictionary[type]);
+							Instance.StartCoroutine(DestroyUpgradableObjects(new Coordinate(i, j),
+								new Coordinate(i, j + 2)));
 						}
 					}
 				}
@@ -194,21 +194,77 @@ namespace Assets.scripts
 					if (Map[i, j] != null && Map[i + 1, j] != null && Map[i + 2, j] != null && Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster))
 					{
 						if (Map[i, j].TypeOfMonster == Map[i + 1, j].TypeOfMonster &&
-							Map[i, j].TypeOfMonster == Map[i + 2, j].TypeOfMonster)
+							Map[i, j].TypeOfMonster == Map[i + 2, j].TypeOfMonster && Map[i,j].State != MonsterState.Destroying)
 						{
-							var type = Map[i, j].TypeOfMonster;
-							Map[i, j].DestroyMonster();
-							Map[i + 1, j].DestroyMonster();
-							Map[i + 2, j].DestroyMonster();
-							Map[i, j] = null;
-							Map[i+1, j] = null;
-							Map[i+2, j] = null;
-							Game.MonsterCreate(i + 1, j, Dictionaries.MonstersUpgradeDictionary[type]);
+							Instance.StartCoroutine(DestroyUpgradableObjects(new Coordinate(i, j),
+								new Coordinate(i + 2, j)));
+				
 						}
 					}
 				}
 		}
 
+		private static IEnumerator DestroyUpgradableObjects(Coordinate start, Coordinate finish)
+		{
+			Game.PlayerIsBlocked = true;
+			Map[start.X, start.Y].State = MonsterState.Destroying;
+			Map[(start.X + finish.X) / 2, (start.Y + finish.Y) / 2].State = MonsterState.Destroying;
+			Map[finish.X, finish.Y].State = MonsterState.Destroying;
+			var to = GetVectorFromCoord((start.X + finish.X) / 2, (start.Y + finish.Y) / 2);
+			var delta = (float)GetDistance(to, Map[start.X, start.Y].transform.position) / 25;
+			for (int i = 0; i < 25; i++)
+			{
+				Map[start.X, start.Y].transform.position =
+					Vector3.MoveTowards(Map[start.X, start.Y].transform.position, to, delta);
+				Map[finish.X, finish.Y].transform.position =
+					Vector3.MoveTowards(Map[finish.X, finish.Y].transform.position, to, delta);
+				yield return new WaitForSeconds(0);
+			}
+			var type = Map[start.X, start.Y].TypeOfMonster;
+
+			Map[start.X, start.Y].Destroy();
+			Map[(start.X + finish.X) / 2, (start.Y + finish.Y) / 2].Destroy();
+			Map[finish.X, finish.Y].Destroy();
+			Map[start.X, start.Y] = null;
+			Map[(start.X + finish.X) / 2, (start.Y + finish.Y) / 2] = null;
+			Map[finish.X, finish.Y] = null;
+			if (type == MonsterType.Pumpkin1)
+				TransformPumpkin1((start.X + finish.X) / 2, (start.Y + finish.Y) / 2);
+			Game.MonsterCreate((start.X + finish.X) / 2, (start.Y + finish.Y) / 2, Dictionaries.MonstersUpgradeDictionary[type]);
+			Game.PlayerIsBlocked = false;
+		}
+
+		private static void TransformPumpkin1(int x, int y)
+		{
+			
+			Monster branch = ((GameObject)Instantiate(
+						Game.MonsterPrefab, GetVectorFromCoord(x, y),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<Monster>();
+
+			branch.Initialise(x, y, 'z');
+			branch.transform.localScale = new Vector3(1f, 1f);
+			branch.GetComponent<SpriteRenderer>().sprite = Monster.PumpkinBranchSprite;
+			branch.State = MonsterState.Destroying;
+			branch.ToBasketStartTime = Time.time;
+
+			Monster face = ((GameObject)Instantiate(
+						Game.MonsterPrefab, GetVectorFromCoord(x, y),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<Monster>();
+			
+			face.Initialise(x, y, 'z');
+			face.transform.localScale = new Vector3(1f, 1f);
+			face.GetComponent<SpriteRenderer>().sprite = Monster.PumpkinFaceSprite;
+			face.State = MonsterState.Destroying;
+			face.ToBasketStartTime = Time.time;
+
+		}
+
+		private static double GetDistance(Vector3 p1, Vector3 p2)
+		{
+			return Math.Sqrt((p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y));
+		}
 		public static void DestroyAllOf(MonsterType type)
 		{
 			for (int i = 0; i < Game.MAP_SIZE; i++)
@@ -421,7 +477,8 @@ namespace Assets.scripts
 					if (Map[i,j] != null && 
 						(Map[i, j].State == MonsterState.Dropping 
 						|| Map[i, j].State == MonsterState.Moving || Map[i, j].State == MonsterState.Growing
-						|| Map[i, j].State == MonsterState.Decreasing))
+						|| Map[i, j].State == MonsterState.Decreasing
+						|| Map[i,j].State == MonsterState.Destroying))
 							return true;
 			return false;
 		}

@@ -53,6 +53,10 @@ namespace Assets.scripts
 				{MonsterType.Pumpkin1, 0},
 				{MonsterType.Pumpkin2, 0},
 				{MonsterType.Pumpkin3, 0},
+				{MonsterType.Sceleton1, 0},
+				{MonsterType.Sceleton2, 0},
+				{MonsterType.Sceleton3, 0},
+				{MonsterType.Sceleton4, 0},
 
 			};
 			GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
@@ -71,14 +75,14 @@ namespace Assets.scripts
 			}
 			if (Level == 2)
 			{
-				LevelInformation = new LevelInfo { Map = "ESVVBGBE EGGBVBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGSZSGE EEEEEEEE",
+				LevelInformation = new LevelInfo { Map = "xSxxBGBE EGGBVBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGSZSGE EEEEEEEE",
 					Pumpkins = true};
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
 					{'G', 30},
 					{'Z', 20},
 				};
-				TurnsLeft = 15;
+				TurnsLeft = 100;
 			}
 			if (Level == 3)
 			{
@@ -138,6 +142,8 @@ namespace Assets.scripts
 			Monster.Pumpkin1Sprite = Resources.Load("objects/pumpkin/pumpkin1", typeof (Sprite)) as Sprite;
 			Monster.Pumpkin2Sprite = Resources.Load("objects/pumpkin/pumpkin2", typeof(Sprite)) as Sprite;
 			Monster.Pumpkin3Sprite = Resources.Load("objects/pumpkin/pumpkin3", typeof(Sprite)) as Sprite;
+			Monster.PumpkinFaceSprite = Resources.Load("objects/pumpkin/pumpkinFace", typeof(Sprite)) as Sprite;
+			Monster.PumpkinBranchSprite = Resources.Load("objects/pumpkin/pumpkinTop", typeof(Sprite)) as Sprite;
 			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
 			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
 			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;

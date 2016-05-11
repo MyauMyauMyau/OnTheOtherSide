@@ -12,6 +12,9 @@ namespace Assets.scripts
 		{
 			{MonsterType.Pumpkin1, MonsterType.Pumpkin2 },
 			{MonsterType.Pumpkin2, MonsterType.Pumpkin3 },
+			{MonsterType.Sceleton1, MonsterType.Sceleton2},
+			{MonsterType.Sceleton2, MonsterType.Sceleton3},
+			{MonsterType.Sceleton3, MonsterType.Sceleton4},
 		};
 		public static readonly Dictionary<char, MonsterType> CharsToObjectTypes = new Dictionary<char, MonsterType>
 		{
@@ -34,6 +37,10 @@ namespace Assets.scripts
 			{'x', MonsterType.Pumpkin1 },
 			{'y', MonsterType.Pumpkin2 },
 			{'z', MonsterType.Pumpkin3 },
+			{'a', MonsterType.Sceleton1 },
+			{'b', MonsterType.Sceleton2 },
+			{'c', MonsterType.Sceleton3 },
+			{'d', MonsterType.Sceleton4 },
 		};
 
 		public static Dictionary<MonsterType, Sprite> TypesToSprites;
@@ -48,6 +55,10 @@ namespace Assets.scripts
 			MonsterType.Pumpkin1,
 			MonsterType.Pumpkin2,
 			MonsterType.Pumpkin3,
+			MonsterType.Sceleton4,
+			MonsterType.Sceleton3,
+			MonsterType.Sceleton2,
+			MonsterType.Sceleton1,
 		};
 
 		public static readonly List<MonsterType> AnimatedTypes = new List<MonsterType>()

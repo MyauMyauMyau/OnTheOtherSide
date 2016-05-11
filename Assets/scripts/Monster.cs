@@ -23,6 +23,12 @@ public class Monster : MonoBehaviour
 	public static Sprite Pumpkin1Sprite;
 	public static Sprite Pumpkin2Sprite;
 	public static Sprite Pumpkin3Sprite;
+	public static Sprite PumpkinFaceSprite;
+	public static Sprite PumpkinBranchSprite;
+	public static Sprite SceletonSprite1;
+	public static Sprite SceletonSprite2;
+	public static Sprite SceletonSprite3;
+	public static Sprite SceletonSprite4;
 	public static Sprite WaterVSprite;
 	public static Sprite WaterHSprite;
 	public static Sprite WaterDSprite;
@@ -55,7 +61,7 @@ public class Monster : MonoBehaviour
 		return Dictionaries.MonsterTypes.Contains(TypeOfMonster);
 	}
 
-	private void SendToBasket()
+	public void SendToBasket()
 	{
 		var curPos = Vector3.Lerp(
 			GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y), Game.BasketCoordinate,
@@ -66,7 +72,7 @@ public class Monster : MonoBehaviour
 		if (transform.position == Game.BasketCoordinate)
 			Destroy(gameObject);
 	}
-	private void SendToPortal()
+	public void SendToPortal()
 	{
 		var curPos = Vector3.Lerp(
 			GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y), Game.PortalCoordinate,
@@ -77,7 +83,7 @@ public class Monster : MonoBehaviour
 		if (transform.position == Game.PortalCoordinate)
 			Destroy(gameObject);
 	}
-	private void SendToPot()
+	public void SendToPot()
 	{
 		var curPos = Vector3.Lerp(
 			GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y), Game.PotCoordinate,
@@ -232,14 +238,19 @@ public class Monster : MonoBehaviour
 		State = MonsterState.Growing;
 	}
 
+	public void Destroy()
+	{
+		Destroy(gameObject);
+	}
 	void Update()
 	{
+		if (State == MonsterState.WaitingForActivation) return;
 		if (State == MonsterState.Destroying)
 		{
 			if (TypeOfMonster == MonsterType.Voodoo || TypeOfMonster == MonsterType.Zombie)
 				SendToBasket();
-			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat || TypeOfMonster == MonsterType.Pumpkin1
-				|| TypeOfMonster == MonsterType.Pumpkin2 || TypeOfMonster == MonsterType.Pumpkin3)
+			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat ||
+				TypeOfMonster == MonsterType.Pumpkin3)
 				SendToPot();
 			if (TypeOfMonster == MonsterType.Ghost)
 				SendToPortal();
@@ -310,7 +321,6 @@ public class Monster : MonoBehaviour
 		}
 		if (IsAnimated && Time.time > AnimationStartTime)
 		{
-			Debug.Log(Time.time);
 			//IsAnimated = false;
 			var anim = GetComponent<Animation>();
 			anim.Play();

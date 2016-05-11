@@ -22,6 +22,10 @@ namespace Assets.scripts
 		Raft,
 		Pumpkin1,
 		Pumpkin2,
-		Pumpkin3
+		Pumpkin3,
+		Sceleton1,
+		Sceleton2,
+		Sceleton3,
+		Sceleton4,
 	}
 }
