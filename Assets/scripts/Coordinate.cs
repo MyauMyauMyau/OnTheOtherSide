@@ -18,9 +18,7 @@ namespace Assets.scripts
 
 		public bool IsNeighbourWith(Coordinate other)
 		{
-			if (Math.Abs(X - other.X) + Math.Abs(Y - other.Y) == 1)
-				return true;
-			return false;
+			return (Math.Abs(X - other.X) + Math.Abs(Y - other.Y) == 1);
 		}
 
 		public bool Equals(Coordinate p)

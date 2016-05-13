@@ -15,6 +15,7 @@ namespace Assets.scripts
 			{MonsterType.Skeleton1, MonsterType.Skeleton2},
 			{MonsterType.Skeleton2, MonsterType.Skeleton3},
 			{MonsterType.Skeleton3, MonsterType.Skeleton4},
+			{MonsterType.Skeleton4, MonsterType.Skeleton5},
 		};
 		public static readonly Dictionary<char, MonsterType> CharsToObjectTypes = new Dictionary<char, MonsterType>
 		{
@@ -41,6 +42,7 @@ namespace Assets.scripts
 			{'b', MonsterType.Skeleton2 },
 			{'c', MonsterType.Skeleton3 },
 			{'d', MonsterType.Skeleton4 },
+			{'e', MonsterType.Skeleton5 },
 		};
 
 		public static Dictionary<MonsterType, Sprite> TypesToSprites;
@@ -59,6 +61,7 @@ namespace Assets.scripts
 			MonsterType.Skeleton3,
 			MonsterType.Skeleton2,
 			MonsterType.Skeleton1,
+			MonsterType.Skeleton5
 		};
 
 		public static readonly List<MonsterType> AnimatedTypes = new List<MonsterType>()

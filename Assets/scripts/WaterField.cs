@@ -80,12 +80,10 @@ namespace Assets.scripts
 		}
 		public static void ShiftBridges()
 		{
-			Debug.Log("bridgesCount " + Bridges.Count);
 			Game.PlayerIsBlocked = true;
 			var dict = new Dictionary<Coordinate, Direction>();
 			for (int i = 0; i < Bridges.Count; i++)
 			{
-				Debug.Log(Bridges.Count);
 				var k = River.FindIndex(x => x == Bridges.ElementAt(i).Key);
 				if (Bridges.ElementAt(i).Value == Direction.Forward)
 				{

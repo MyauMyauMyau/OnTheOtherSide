@@ -22,6 +22,7 @@ namespace Assets.scripts
 		public static bool MoveIsFinished = true;
 		public static Random Rnd = new Random();
 		public static GameField Instance;
+		public static Monster[] AdviceMonsterTriple = new Monster[3];
 		public void Start()
 		{
 			Instance = this;
@@ -117,14 +118,26 @@ namespace Assets.scripts
 					if (Map[i, coordinate.Y] == null || Map[i+1, coordinate.Y] == null || Map[i+2, coordinate.Y] == null) continue;
 					if (Map[i, coordinate.Y].TypeOfMonster == Map[i + 1, coordinate.Y].TypeOfMonster
 					    && Map[i, coordinate.Y].TypeOfMonster == Map[i + 2, coordinate.Y].TypeOfMonster)
+					{
+						AdviceMonsterTriple[0] = Map[i, coordinate.Y];
+						AdviceMonsterTriple[1] = Map[i + 1, coordinate.Y];
+						AdviceMonsterTriple[2] = Map[i + 2, coordinate.Y];
 						return true;
+					}
+						
 				}
 				for (int i = bottomBoundY; i <= topBoundY - 2; i++)
 				{
 					if (Map[coordinate.X, i] == null || Map[coordinate.X, i + 1] == null || Map[coordinate.X ,i + 2] == null) continue;
-					if (Map[coordinate.X, i].TypeOfMonster == Map[coordinate.X, i+1].TypeOfMonster
-						&& Map[coordinate.X, i].TypeOfMonster == Map[coordinate.X, i+2].TypeOfMonster)
+					if (Map[coordinate.X, i].TypeOfMonster == Map[coordinate.X, i + 1].TypeOfMonster
+					    && Map[coordinate.X, i].TypeOfMonster == Map[coordinate.X, i + 2].TypeOfMonster)
+					{
+						AdviceMonsterTriple[0] = Map[coordinate.X, i];
+						AdviceMonsterTriple[1] = Map[coordinate.X, i + 1];
+						AdviceMonsterTriple[2] = Map[coordinate.X, i+2];
 						return true;
+					}
+						
 				}
 			}
 			return false;
@@ -181,7 +194,8 @@ namespace Assets.scripts
 					if (Map[i, j] != null && Map[i, j + 1] != null && Map[i, j + 2] != null && Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster))
 					{
 						if (Map[i, j].TypeOfMonster == Map[i, j + 1].TypeOfMonster &&
-						    Map[i, j].TypeOfMonster == Map[i, j + 2].TypeOfMonster)
+						    Map[i, j].TypeOfMonster == Map[i, j + 2].TypeOfMonster &&
+							Map[i, j].State != MonsterState.WaitingForActivation)
 						{
 							Instance.StartCoroutine(DestroyUpgradableObjects(new Coordinate(i, j),
 								new Coordinate(i, j + 2)));
@@ -194,7 +208,7 @@ namespace Assets.scripts
 					if (Map[i, j] != null && Map[i + 1, j] != null && Map[i + 2, j] != null && Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster))
 					{
 						if (Map[i, j].TypeOfMonster == Map[i + 1, j].TypeOfMonster &&
-							Map[i, j].TypeOfMonster == Map[i + 2, j].TypeOfMonster && Map[i,j].State != MonsterState.Destroying)
+							Map[i, j].TypeOfMonster == Map[i + 2, j].TypeOfMonster && Map[i,j].State != MonsterState.WaitingForActivation)
 						{
 							Instance.StartCoroutine(DestroyUpgradableObjects(new Coordinate(i, j),
 								new Coordinate(i + 2, j)));
@@ -207,9 +221,9 @@ namespace Assets.scripts
 		private static IEnumerator DestroyUpgradableObjects(Coordinate start, Coordinate finish)
 		{
 			Game.PlayerIsBlocked = true;
-			Map[start.X, start.Y].State = MonsterState.Destroying;
-			Map[(start.X + finish.X) / 2, (start.Y + finish.Y) / 2].State = MonsterState.Destroying;
-			Map[finish.X, finish.Y].State = MonsterState.Destroying;
+			Map[start.X, start.Y].State = MonsterState.WaitingForActivation;
+			Map[(start.X + finish.X) / 2, (start.Y + finish.Y) / 2].State = MonsterState.WaitingForActivation;
+			Map[finish.X, finish.Y].State = MonsterState.WaitingForActivation;
 			var to = GetVectorFromCoord((start.X + finish.X) / 2, (start.Y + finish.Y) / 2);
 			var delta = (float)GetDistance(to, Map[start.X, start.Y].transform.position) / 25;
 			for (int i = 0; i < 25; i++)
@@ -218,10 +232,10 @@ namespace Assets.scripts
 					Vector3.MoveTowards(Map[start.X, start.Y].transform.position, to, delta);
 				Map[finish.X, finish.Y].transform.position =
 					Vector3.MoveTowards(Map[finish.X, finish.Y].transform.position, to, delta);
-				yield return new WaitForSeconds(0);
+				yield return null;
 			}
 			var type = Map[start.X, start.Y].TypeOfMonster;
-			if (Map[(start.X + finish.X)/2, (start.Y + finish.Y)/2].IsSceleton())
+			if (Map[start.X, start.Y].IsSceleton())
 			{
 				Map[start.X, start.Y].GetComponent<SpriteRenderer>().sortingOrder = 2;
 				Map[start.X, start.Y].GetComponent<SpriteRenderer>().sprite =
@@ -489,6 +503,14 @@ namespace Assets.scripts
 							return true;
 			return false;
 		}
-		
+
+		public static void GetAdvice()
+		{
+			foreach (var monster in AdviceMonsterTriple)
+			{
+				Debug.Log(monster.GridPosition.X);
+				Instance.StartCoroutine(monster.AnimateAdvice());
+			}	
+		}
 	}
 }

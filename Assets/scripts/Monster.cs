@@ -30,7 +30,7 @@ public class Monster : MonoBehaviour
 	public static Sprite SkeletonSprite3;
 	public static Sprite SkeletonSprite4;
 	public static Sprite SkeletonMudSprite;
-	public static Sprite SkeletonAloneSprite;
+	public static Sprite SkeletonSprite5;
 	public static Sprite WaterVSprite;
 	public static Sprite WaterHSprite;
 	public static Sprite WaterDSprite;
@@ -52,7 +52,7 @@ public class Monster : MonoBehaviour
 	public const float GravitySpeed = 0.01f;
 	public float ToBasketStartTime;
 	public MonsterState State { get; set; }
-	public bool UpdatedField = false;
+	public bool UpdatedField;
 	public static Random Rnd = new Random();
 	public Vector3 DestroyRotation;
 	public int DestroyRotationSpeed;
@@ -63,6 +63,22 @@ public class Monster : MonoBehaviour
 		return Dictionaries.MonsterTypes.Contains(TypeOfMonster);
 	}
 
+	public IEnumerator AnimateAdvice()
+	{
+		var bufState = State;
+		State = MonsterState.WaitingForActivation;
+		for (int i = 0; i < 10; i++)
+		{
+			transform.position = new Vector3(transform.position.x , transform.position.y + 0.03f);
+			yield return null;
+		}
+		for (int i = 0; i < 10; i++)
+		{
+			transform.position = new Vector3(transform.position.x, transform.position.y - 0.03f);
+			yield return null;
+		}
+		State = bufState;
+	}
 	public void SendToBasket()
 	{
 		var curPos = Vector3.Lerp(
@@ -157,10 +173,6 @@ public class Monster : MonoBehaviour
 		Dictionaries.MonsterCounter[TypeOfMonster]++;
 		SkillButton.AddEnergy(TypeOfMonster);
 		State = MonsterState.Destroying;
-		if (TypeOfMonster == MonsterType.Skeleton4)
-		{
-			GetComponent<SpriteRenderer>().sprite = SkeletonAloneSprite;
-		}
 
 		AudioHolder.PlayRemove();
 		foreach (var ice in iceList)
@@ -188,14 +200,16 @@ public class Monster : MonoBehaviour
 		{
 			if (x == GridPosition.X)
 				continue;
-			if (GameField.Map[x, GridPosition.Y] != null && GameField.Map[x, GridPosition.Y].IsMonster())
+			if (GameField.Map[x, GridPosition.Y] != null && GameField.Map[x, GridPosition.Y].IsMonster()
+				&& !GameField.Map[x, GridPosition.Y].IsUpgradable())
 				GameField.Map[x, GridPosition.Y].DestroyMonster();
 		}
 		for (int y = bottomBoundY; y <= topBoundY; y++)
 		{
 			if (y == GridPosition.Y)
 				continue;
-			if (GameField.Map[GridPosition.X, y] != null && GameField.Map[GridPosition.X,y].IsMonster())
+			if (GameField.Map[GridPosition.X, y] != null && GameField.Map[GridPosition.X,y].IsMonster()
+				&& !GameField.Map[GridPosition.X, y].IsUpgradable())
 				GameField.Map[GridPosition.X, y].DestroyMonster();
 		}
 
@@ -212,9 +226,9 @@ public class Monster : MonoBehaviour
 		GrowSpeed = 0.05f;
 		GridPosition = new Coordinate(x,y);
 		TypeOfMonster = Dictionaries.CharsToObjectTypes[type];
-		if (IsSceleton() && TypeOfMonster != MonsterType.Skeleton1)
+
+		if ((IsSceleton() || IsPumpkin()) && TypeOfMonster != MonsterType.Skeleton1)
 		{
-			Debug.Log("meow");
 			transform.localScale = new Vector3(1, 1);
 		}
 		if (Dictionaries.AnimatedTypes.Contains(TypeOfMonster))
@@ -247,13 +261,28 @@ public class Monster : MonoBehaviour
 			State = MonsterState.WaitingForInitialising;
 			return;
 		}
-		State = MonsterState.Growing;
+		if (TypeOfMonster == MonsterType.Skeleton5 || TypeOfMonster == MonsterType.Pumpkin3)
+		{
+			DestroyMonster();
+		}
+		else State = MonsterState.Growing;
+	}
+
+	public bool IsUpgradable()
+	{
+		return (IsSceleton() || IsPumpkin());
+	}
+
+	private bool IsPumpkin()
+	{
+		return (TypeOfMonster == MonsterType.Pumpkin1 || TypeOfMonster == MonsterType.Pumpkin2 || TypeOfMonster == MonsterType.Pumpkin3);
 	}
 
 	public bool IsSceleton()
 	{
 		return (TypeOfMonster == MonsterType.Skeleton1 || TypeOfMonster == MonsterType.Skeleton2 ||
-		        TypeOfMonster == MonsterType.Skeleton3 || TypeOfMonster == MonsterType.Skeleton4);
+		        TypeOfMonster == MonsterType.Skeleton3 || TypeOfMonster == MonsterType.Skeleton4 
+				|| TypeOfMonster == MonsterType.Skeleton5);
 	}
 	public void Destroy()
 	{
@@ -265,7 +294,7 @@ public class Monster : MonoBehaviour
 		if (State == MonsterState.Destroying)
 		{
 			if (TypeOfMonster == MonsterType.Voodoo || TypeOfMonster == MonsterType.Zombie ||
-				TypeOfMonster == MonsterType.Skeleton4)
+				TypeOfMonster == MonsterType.Skeleton5)
 				SendToBasket();
 			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat ||
 				TypeOfMonster == MonsterType.Pumpkin3)
