@@ -10,6 +10,7 @@ public class Preferences : MonoBehaviour {
 			PlayerPrefs.SetInt("Sound", 1);
 			PlayerPrefs.SetInt("LevelUnlocked", 1);
 			PlayerPrefs.SetInt("FromGame",0);
+			PlayerPrefs.SetInt("Gold", 50);
 			PlayerPrefs.Save();
 		}
 	}

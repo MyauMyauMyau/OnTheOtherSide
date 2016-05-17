@@ -30,7 +30,6 @@ public class Monster : MonoBehaviour
 	public static Sprite SkeletonSprite3;
 	public static Sprite SkeletonSprite4;
 	public static Sprite SkeletonMudSprite;
-	public static Sprite SkeletonSprite5;
 	public static Sprite WaterVSprite;
 	public static Sprite WaterHSprite;
 	public static Sprite WaterDSprite;
@@ -261,7 +260,7 @@ public class Monster : MonoBehaviour
 			State = MonsterState.WaitingForInitialising;
 			return;
 		}
-		if (TypeOfMonster == MonsterType.Skeleton5 || TypeOfMonster == MonsterType.Pumpkin3)
+		if (TypeOfMonster == MonsterType.Skeleton4 || TypeOfMonster == MonsterType.Pumpkin3)
 		{
 			DestroyMonster();
 		}
@@ -281,8 +280,7 @@ public class Monster : MonoBehaviour
 	public bool IsSceleton()
 	{
 		return (TypeOfMonster == MonsterType.Skeleton1 || TypeOfMonster == MonsterType.Skeleton2 ||
-		        TypeOfMonster == MonsterType.Skeleton3 || TypeOfMonster == MonsterType.Skeleton4 
-				|| TypeOfMonster == MonsterType.Skeleton5);
+		        TypeOfMonster == MonsterType.Skeleton3 || TypeOfMonster == MonsterType.Skeleton4);
 	}
 	public void Destroy()
 	{
@@ -294,7 +292,7 @@ public class Monster : MonoBehaviour
 		if (State == MonsterState.Destroying)
 		{
 			if (TypeOfMonster == MonsterType.Voodoo || TypeOfMonster == MonsterType.Zombie ||
-				TypeOfMonster == MonsterType.Skeleton5)
+				TypeOfMonster == MonsterType.Skeleton4)
 				SendToBasket();
 			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat ||
 				TypeOfMonster == MonsterType.Pumpkin3)
@@ -369,9 +367,10 @@ public class Monster : MonoBehaviour
 		if (IsAnimated && Time.time > AnimationStartTime)
 		{
 			//IsAnimated = false;
-			var anim = GetComponent<Animation>();
-			anim.Play();
+			var anim = GetComponent<Animator>();
+			anim.SetTrigger("AnimTrigger");
 			AnimationStartTime += 50;
+			//anim.ResetTrigger("AnimTrigger");
 		}
 	}
 

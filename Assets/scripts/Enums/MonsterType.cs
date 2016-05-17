@@ -27,6 +27,5 @@ namespace Assets.scripts
 		Skeleton2,
 		Skeleton3,
 		Skeleton4,
-		Skeleton5
 	}
 }

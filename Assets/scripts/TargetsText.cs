@@ -4,7 +4,8 @@ using System.Linq;
 using Assets.scripts;
 using UnityEngine.UI;
 
-public class TargetsText : MonoBehaviour {
+public class 
+	sText : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

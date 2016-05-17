@@ -37,6 +37,7 @@ namespace Assets.scripts
 		public static int Level;
 		private void Awake()
 		{
+			//PlayerPrefs.DeleteAll();
 			PlayerIsBlocked = false;
 			SkillButton.buttons = new List<SkillButton>();
 			WaterField.Bridges = new Dictionary<Coordinate, Direction>();
@@ -57,7 +58,6 @@ namespace Assets.scripts
 				{MonsterType.Skeleton2, 0},
 				{MonsterType.Skeleton3, 0},
 				{MonsterType.Skeleton4, 0},
-				{MonsterType.Skeleton5, 0},
 
 			};
 			GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
@@ -76,7 +76,7 @@ namespace Assets.scripts
 			}
 			if (Level == 2)
 			{
-				LevelInformation = new LevelInfo { Map = "dSddBGBE EaaBaBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGyySyE EEEEEEEE",
+				LevelInformation = new LevelInfo { Map = "cSccBcBE EaaBaBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGyySyE EEEEEEEE",
 					Skeleton = true};
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
@@ -150,7 +150,6 @@ namespace Assets.scripts
 			Monster.SkeletonSprite3= Resources.Load("objects/skeleton/skeleton3", typeof(Sprite)) as Sprite;
 			Monster.SkeletonSprite4= Resources.Load("objects/skeleton/skeleton4", typeof(Sprite)) as Sprite;
 			Monster.SkeletonMudSprite= Resources.Load("objects/skeleton/skeletonMud", typeof(Sprite)) as Sprite;
-			Monster.SkeletonSprite5= Resources.Load("objects/skeleton/skeleton5", typeof(Sprite)) as Sprite;
 			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
 			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
 			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;
@@ -172,7 +171,6 @@ namespace Assets.scripts
 				{MonsterType.Skeleton2, Monster.SkeletonSprite2},
 				{MonsterType.Skeleton3, Monster.SkeletonSprite3},
 				{MonsterType.Skeleton4, Monster.SkeletonSprite4},
-				{MonsterType.Skeleton5, Monster.SkeletonSprite5},
 			};
 			Instance = this;
 
@@ -244,35 +242,6 @@ namespace Assets.scripts
 				{
 					MonsterCreate(i, j, LevelInformation.Map.ElementAt(j*(MAP_SIZE + 1) + i));
 				}
-			}
-			int trgCnt = 0;
-			foreach (var target in LevelInformation.Targets)
-			{
-				GameObject prefab = MonsterPrefab;
-				switch (target.Key)
-				{
-					case 'V':
-						prefab = VoodooPrefab;
-						break;
-					case 'S':
-						prefab = SpiderPrefab;
-						break;
-					case 'B':
-						prefab = BatPrefab;
-						break;
-					case 'G':
-						prefab = GhostPrefab;
-						break;
-					case 'Z':
-						prefab = ZombiePrefab;
-						break;
-				}
-				
-				Monster monster = ((GameObject)Instantiate(
-						prefab, new Vector3(-1.1f + trgCnt * 2.2f, -4.2f),
-						Quaternion.Euler(new Vector3())))
-						.GetComponent<Monster>();
-				trgCnt++;
 			}
 			WaterField.GenerateRiver();
 		}

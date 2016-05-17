@@ -15,11 +15,11 @@ public class AudioHolder : MonoBehaviour
 	public AudioClip Remove;
 	public AudioClip SwapMonster;
 	public AudioClip Win;
-	public static AudioHolder instance;
+	public static AudioHolder Instance;
 	// Use this for initialization
 	void Start ()
 	{
-		instance = this;
+		Instance = this;
 	}
 	
 	// Update is called once per frame
@@ -30,49 +30,49 @@ public class AudioHolder : MonoBehaviour
 	public static void PlayBomb()
 	{
 
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.Bomb);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.Bomb);
 
 	}
 	public static void PlayFireBall()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.FireBall);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.FireBall);
 
 	}
 	public static void PlayElectricity()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.Electricity);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.Electricity);
 
 	}
 	public static void PlayRemove()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.Remove, 0.25f);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.Remove, 0.25f);
 
 	}
 	public static void PlayMassRemove()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.MassRemove, 0.25f);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.MassRemove, 0.25f);
 
 	}
 	public static void PlayLose()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.Lose);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.Lose);
 
 	}
 	public static void PlaySwapMonsters()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.SwapMonster);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.SwapMonster);
 
 	}
 	public static void PlayWin()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.Win);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.Win);
 	}
 	public static void PlayButton()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.Button);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.Button);
 	}
 	public static void PlayCocoon()
 	{
-		instance.GetComponent<AudioSource>().PlayOneShot(instance.Cocoon, 0.25f);
+		Instance.GetComponent<AudioSource>().PlayOneShot(Instance.Cocoon, 0.25f);
 	}
 }

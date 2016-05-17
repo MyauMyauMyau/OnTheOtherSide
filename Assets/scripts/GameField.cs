@@ -175,11 +175,11 @@ namespace Assets.scripts
 				for (int j = 0; j < Map.GetLength(1); j++)
 				{
 					if (Map[i, j] == null || !Map[i, j].IsMonster() || 
-						Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i,j].TypeOfMonster))
+						Map[i,j].IsUpgradable())
 						continue;
 					CheckColumn(Map[i, j], i, j);
 					if (Map[i, j] == null || !Map[i, j].IsMonster() ||
-						Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster))
+						Map[i, j].IsUpgradable())
 						continue;
 					CheckRow(Map[i, j], i, j); //checking row here
 				}
@@ -499,7 +499,8 @@ namespace Assets.scripts
 						(Map[i, j].State == MonsterState.Dropping 
 						|| Map[i, j].State == MonsterState.Moving || Map[i, j].State == MonsterState.Growing
 						|| Map[i, j].State == MonsterState.Decreasing
-						|| Map[i,j].State == MonsterState.Destroying))
+						|| Map[i,j].State == MonsterState.Destroying
+						|| Map[i, j].State == MonsterState.WaitingForActivation))
 							return true;
 			return false;
 		}
@@ -508,7 +509,6 @@ namespace Assets.scripts
 		{
 			foreach (var monster in AdviceMonsterTriple)
 			{
-				Debug.Log(monster.GridPosition.X);
 				Instance.StartCoroutine(monster.AnimateAdvice());
 			}	
 		}
