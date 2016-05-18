@@ -6,26 +6,23 @@ using UnityEngine.UI;
 
 public class WinLoseController : MonoBehaviour
 {
-
-	private bool win;
-	private bool lose;
-	private bool canvasIsShown;
 	// Use this for initialization
 	void Start () {
 	
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		if (Input.GetKeyDown(KeyCode.Escape) && !canvasIsShown)
-			ShowCanvas("Сбегаете?", "Выйти в меню");
-		else if (CheckWin() && !canvasIsShown)
+	void Update ()
+	{
+		if (Game.GameIsFinished) return;
+		if (CheckWin())
 		{
 			Game.PlayerIsBlocked = true;
 			if (!GameField.IsAnyMoving())
 			{
+				Game.GameIsFinished = true;
 				AudioHolder.PlayWin();
-				ShowCanvas("Победа!", "Выйти в меню");
+				ShowFlag(true);
 				if (PlayerPrefs.GetInt("LevelUnlocked") == Game.Level)
 				{
 					PlayerPrefs.SetInt("LevelUnlocked", Game.Level + 1);
@@ -33,20 +30,28 @@ public class WinLoseController : MonoBehaviour
 				}
 			}
 		}
-		else if (Game.TurnsLeft == 0 && !canvasIsShown)
+		else if (Game.TurnsLeft == 0)
 		{
+			if (!GameField.IsAnyMoving())
+				GameField.UpdateField();
 			Game.PlayerIsBlocked = true;
 			if (!GameField.IsAnyMoving() && !CheckWin())
 			{
+				PlayerPrefs.SetInt("Lives", PlayerPrefs.GetInt("Lives") - 1);
+				Game.GameIsFinished = true;
 				AudioHolder.PlayLose();
-				ShowCanvas("Поражение!", "Выйти в меню");
+				ShowFlag(false);
 			}
 		}
-		else if (Input.GetKeyDown(KeyCode.Escape))
-			HideCanvas();
-
-
 	}
+
+	private void ShowFlag(bool isWin)
+	{
+		var flagName = isWin ? "WinFlag" : "LoseFlag";
+		transform.FindChild(flagName).GetComponent<Animation>().Play();
+	}
+
+	
 
 	private bool CheckWin()
 	{
@@ -57,27 +62,5 @@ public class WinLoseController : MonoBehaviour
 			if (currentMonsters < totalMonsters) return false;
 		}
 		return true;
-	}
-
-	private void HideCanvas()
-	{
-		canvasIsShown = false;
-		var text = transform.FindChild("Text");
-		text.gameObject.SetActive(false);
-		
-		var btn = transform.FindChild("Button");
-		btn.gameObject.SetActive(false);
-		
-	}
-
-	void ShowCanvas(string labelText, string buttonText)
-	{
-		canvasIsShown = true;
-		var text = transform.FindChild("Text");
-		text.gameObject.SetActive(true);
-		text.GetComponent<Text>().text = labelText;
-		var btn = transform.FindChild("Button");
-		btn.gameObject.SetActive(true);
-		btn.GetComponentInChildren<Text>().text = buttonText;
 	}
 }

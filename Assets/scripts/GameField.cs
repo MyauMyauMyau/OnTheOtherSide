@@ -487,8 +487,8 @@ namespace Assets.scripts
 		}
 		public static Vector3 GetVectorFromCoord(int i, int j)
 		{
-			return new Vector3(i*1.07f - Game.MAP_SIZE/2 + 0.25f ,
-							Game.MAP_SIZE/2 - j*1.048f + 0.5f, 0);
+			return new Vector3(i*0.85f - Game.MAP_SIZE/2 + 1.05f ,
+							Game.MAP_SIZE/2 - j*0.85f -0.4f, 0);
 		}
 
 		public static bool IsAnyMoving()

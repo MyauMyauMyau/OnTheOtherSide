@@ -18,6 +18,11 @@ public class Monster : MonoBehaviour
 	public MonsterType TypeOfMonster { get; set;}
 	public static Sprite EmptyCellSprite;
 	public static Sprite BlackHoleSprite;
+	public static Sprite BatSprite;
+	public static Sprite ZombieSprite;
+	public static Sprite GhostSprite;
+	public static Sprite VoodooSprite;
+	public static Sprite SpiderSprite;
 	public static Sprite CooconSprite;
 	public static Sprite BombSprite;
 	public static Sprite Pumpkin1Sprite;
@@ -32,7 +37,10 @@ public class Monster : MonoBehaviour
 	public static Sprite SkeletonMudSprite;
 	public static Sprite WaterVSprite;
 	public static Sprite WaterHSprite;
-	public static Sprite WaterDSprite;
+	public static Sprite WaterUpperRightSprite;
+	public static Sprite WaterUpperLeftSprite;
+	public static Sprite WaterDownRightSprite;
+	public static Sprite WaterDownLeftSprite;
 	public static Sprite RaftSprite;
 	public static float RemoveStartTime;
 	public static float RemoveEndTime;
@@ -241,13 +249,13 @@ public class Monster : MonoBehaviour
 		}
 
 		MoveSpeed = 10f;
-		if (TypeOfMonster == MonsterType.BlackHole)
-		{
-			var light = gameObject.GetComponentInChildren<Light>();
-			light.enabled = true;
-			light.range = 1.33f;
-			light.color = Color.blue;
-		}
+		//if (TypeOfMonster == MonsterType.BlackHole)
+		//{
+		//	var light = gameObject.GetComponentInChildren<Light>();
+		//	light.enabled = true;
+		//	light.range = 1.33f;
+		//	light.color = Color.blue;
+		//}
 		if (TypeOfMonster == MonsterType.Raft)
 		{
 			gameObject.GetComponent<SpriteRenderer>().sortingOrder = 2;
@@ -358,7 +366,7 @@ public class Monster : MonoBehaviour
 			}
 		}
 		if (IsMonster())
-			gameObject.GetComponentInChildren<Light>().enabled = State == MonsterState.Clicked;
+			gameObject.transform.FindChild("BackLight").gameObject.GetComponent<SpriteRenderer>().enabled = State == MonsterState.Clicked;
 								   
 		if (IsMonster() && !IsFrozen && State !=MonsterState.Moving && GridPosition.Y != Game.MAP_SIZE - 1)
 		{

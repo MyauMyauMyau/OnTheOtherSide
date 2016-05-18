@@ -13,8 +13,23 @@ public class GameUI : MonoBehaviour
 		SetSoundButton();
 		UpdateTurnsLeft();
 		UpdateGold();
+		SetTargets();
+		UpdateLives();
 	}
-	
+
+	private void UpdateLives()
+	{
+		GetComponentsInChildren<Text>()[6].text = PlayerPrefs.GetInt("Lives").ToString();
+	}
+
+	private void SetTargets()
+	{
+		for (var i = 0; i < Game.LevelInformation.Targets.Count; i++)
+		{
+			GetComponentsInChildren<Image>()[i + 5].sprite = Dictionaries.TypesToSprites[Dictionaries.CharsToObjectTypes[Game.LevelInformation.Targets.ElementAt(i).Key]];
+		}
+	}
+
 	// Update is called once per frame
 	void Update () {
 		
@@ -51,6 +66,7 @@ public class GameUI : MonoBehaviour
 			if (monstersLeft == 0)
 				GetComponentsInChildren<Text>()[i + 2].color = Color.green;
 		}
+
 	}
 
 	public void SwitchSound()

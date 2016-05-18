@@ -26,18 +26,21 @@ namespace Assets.scripts
 		public static LevelInfo LevelInformation;
 		public static int TurnsLeft;
 		public static Game Instance;
-		public static Vector3 BasketCoordinate = new Vector3(3f, -5f);
-		public static Vector3 PotCoordinate = new Vector3(-1f, -5f);
-		public static Vector3 PortalCoordinate = new Vector3(1f, -5.0f);
+		public static Vector3 BasketCoordinate = new Vector3(0f, -4f);
+		public static Vector3 PotCoordinate = new Vector3(3f, -4f);
+		public static Vector3 PortalCoordinate = new Vector3(1.5f, -4.0f);
 		public static Texture2D MainCursor;
 		public static Texture2D FireCursor;
 		public static Texture2D ElectroCursor;
 		public static ClickState ClickType;
 		public float LastAdviceTime;
 		public static int Level;
+		public static bool GameIsFinished;
 		private void Awake()
 		{
+			LastAdviceTime = 0;
 			//PlayerPrefs.DeleteAll();
+			GameIsFinished = false;
 			PlayerIsBlocked = false;
 			SkillButton.buttons = new List<SkillButton>();
 			WaterField.Bridges = new Dictionary<Coordinate, Direction>();
@@ -68,15 +71,15 @@ namespace Assets.scripts
 				LevelInformation = new LevelInfo {Map = "ZSVBBGBB ZHGGBBSS GBZBGSZS ZGGSVGVG GVZBVZBS ZVZVBZGV GBGSZSGS ZBZBBGBZ"};
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
-					{'Z', 5},
-					{'S', 5},
-					{'V', 5}
+					{'Z', 0},
+					{'S', 3},
+					{'V', 0}
 				};
-				TurnsLeft = 5;
+				TurnsLeft = 1;
 			}
 			if (Level == 2)
 			{
-				LevelInformation = new LevelInfo { Map = "cSccBcBE EaaBaBSE 14113VSV EGGS2SVE EVZB6114 EVZVBZGE EBGyySyE EEEEEEEE",
+				LevelInformation = new LevelInfo { Map = "cSccBcBE EaaBaBSE ekeejVSV EGGSfSVE EVZBmeeo EVZVBZGE EBGyySyE EEEEEEEE",
 					Skeleton = true};
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
@@ -138,7 +141,10 @@ namespace Assets.scripts
 			Monster.CooconSprite = Resources.Load("objects/cocoon/cocoon", typeof(Sprite)) as Sprite;
 			Monster.WaterHSprite = Resources.Load("objects/river/WaterH", typeof(Sprite)) as Sprite;
 			Monster.WaterVSprite = Resources.Load("objects/river/WaterV", typeof(Sprite)) as Sprite;
-			Monster.WaterDSprite = Resources.Load("objects/river/WaterD", typeof(Sprite)) as Sprite;
+			Monster.WaterUpperRightSprite = Resources.Load("objects/river/WaterUR", typeof(Sprite)) as Sprite;
+			Monster.WaterUpperLeftSprite= Resources.Load("objects/river/WaterUL", typeof(Sprite)) as Sprite;
+			Monster.WaterDownRightSprite = Resources.Load("objects/river/WaterDR", typeof(Sprite)) as Sprite;
+			Monster.WaterDownLeftSprite = Resources.Load("objects/river/WaterDL", typeof(Sprite)) as Sprite;
 			Monster.RaftSprite = Resources.Load("objects/river/Raft", typeof(Sprite)) as Sprite;
 			Monster.Pumpkin1Sprite = Resources.Load("objects/pumpkin/pumpkin1", typeof (Sprite)) as Sprite;
 			Monster.Pumpkin2Sprite = Resources.Load("objects/pumpkin/pumpkin2", typeof(Sprite)) as Sprite;
@@ -150,6 +156,11 @@ namespace Assets.scripts
 			Monster.SkeletonSprite3= Resources.Load("objects/skeleton/skeleton3", typeof(Sprite)) as Sprite;
 			Monster.SkeletonSprite4= Resources.Load("objects/skeleton/skeleton4", typeof(Sprite)) as Sprite;
 			Monster.SkeletonMudSprite= Resources.Load("objects/skeleton/skeletonMud", typeof(Sprite)) as Sprite;
+			Monster.BatSprite = Resources.Load("targetsSprites/bat", typeof(Sprite)) as Sprite;
+			Monster.GhostSprite= Resources.Load("targetsSprites/ghost", typeof(Sprite)) as Sprite;
+			Monster.ZombieSprite = Resources.Load("targetsSprites/zombie", typeof(Sprite)) as Sprite;
+			Monster.VoodooSprite = Resources.Load("targetsSprites/voodoo", typeof(Sprite)) as Sprite;
+			Monster.SpiderSprite = Resources.Load("targetsSprites/spider", typeof(Sprite)) as Sprite;
 			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
 			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
 			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;
@@ -162,7 +173,10 @@ namespace Assets.scripts
 				{MonsterType.Bomb, Monster.BombSprite },
 				{MonsterType.WaterHorizontal, Monster.WaterHSprite },
 				{MonsterType.WaterVertical, Monster.WaterVSprite },
-				{MonsterType.WaterDiagonal, Monster.WaterDSprite },
+				{MonsterType.WaterUpperRight, Monster.WaterUpperRightSprite},
+				{MonsterType.WaterUpperLeft, Monster.WaterUpperLeftSprite},
+				{MonsterType.WaterDownRight, Monster.WaterDownRightSprite},
+				{MonsterType.WaterDownLeft, Monster.WaterDownLeftSprite},
 				{MonsterType.Raft, Monster.RaftSprite},
 				{MonsterType.Pumpkin1, Monster.Pumpkin1Sprite},
 				{MonsterType.Pumpkin2, Monster.Pumpkin2Sprite},
@@ -171,6 +185,12 @@ namespace Assets.scripts
 				{MonsterType.Skeleton2, Monster.SkeletonSprite2},
 				{MonsterType.Skeleton3, Monster.SkeletonSprite3},
 				{MonsterType.Skeleton4, Monster.SkeletonSprite4},
+				{MonsterType.Zombie, Monster.ZombieSprite},
+				{MonsterType.Voodoo, Monster.VoodooSprite},
+				{MonsterType.Spider, Monster.SpiderSprite},
+				{MonsterType.Ghost, Monster.GhostSprite},
+				{MonsterType.Bat, Monster.BatSprite},
+
 			};
 			Instance = this;
 
@@ -196,6 +216,7 @@ namespace Assets.scripts
 		// Update is called once per frame
 		public void Update()
 		{
+			if (GameIsFinished) return;
 			CheckCursorClick();
 			if (TurnsLeft == 0)
 				PlayerIsBlocked = true;                        
@@ -283,9 +304,9 @@ namespace Assets.scripts
 				GameField.Map[x, y] = monster;
 				
 			}
-			else if (type >= '1' && type <= '6')
+			else if (type >= 'e' && type <= 'p')
 			{
-				if (type >= '4')
+				if (type >= 'k')
 				{
 					Monster bridge = ((GameObject)Instantiate(
 						MonsterPrefab, GameField.GetVectorFromCoord(x, y),
@@ -296,7 +317,7 @@ namespace Assets.scripts
 					WaterField.Bridges.Add(new Coordinate(x,y), Direction.Forward);
 					bridge.gameObject.GetComponent<SpriteRenderer>().sortingOrder = 0;
 					bridge.gameObject.GetComponent<CircleCollider2D>().enabled = false;
-					type -= (char) 3;
+					type -= (char) 6;
 				}
 				Monster water = ((GameObject)Instantiate(
 						MonsterPrefab, GameField.GetVectorFromCoord(x, y),
