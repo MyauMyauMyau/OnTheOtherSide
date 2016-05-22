@@ -8,11 +8,13 @@ public class MainMenu : MonoBehaviour
 
 	public Canvas MainMenuCanvas;
 	public Canvas LevelMenuCanvas;
+	public Canvas HeroMenuCanvas;
 	public Button SoundButton;
 	// Use this for initialization
 	void Start()
 	{
 		LevelMenuCanvas.enabled = false;
+		HeroMenuCanvas.enabled = true;
 		if (PlayerPrefs.GetInt("FromGame") == 1)
 		{
 			PlayerPrefs.SetInt("FromGame", 0);
@@ -22,10 +24,6 @@ public class MainMenu : MonoBehaviour
 
 	void Update()
 	{
-		if (MainMenuCanvas.enabled && Input.GetKeyDown(KeyCode.Escape))
-			Quit();
-		if (!MainMenuCanvas.enabled && Input.GetKeyDown(KeyCode.Escape))
-			GoToMainMenu();
 	}
 	// Update is called once per frame
 	public void Quit()
@@ -37,15 +35,23 @@ public class MainMenu : MonoBehaviour
 	{
 		MainMenuCanvas.enabled = true;
 		LevelMenuCanvas.enabled = false;
+		HeroMenuCanvas.enabled = false;
 	}
 
 	public void GoToLevelMenu()
 	{
 		MainMenuCanvas.enabled = false;
 		LevelMenuCanvas.enabled = true;
+		HeroMenuCanvas.enabled = false;
 	}
 
-	public void Play()
+	public void GoToHeroMenu()
+	{
+		MainMenuCanvas.enabled = false;
+		LevelMenuCanvas.enabled = false;
+		HeroMenuCanvas.enabled = true;
+	}
+	public static void Play()
 	{
 		SceneManager.LoadScene("game");
 	}

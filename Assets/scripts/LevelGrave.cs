@@ -10,11 +10,6 @@ public class LevelGrave : MonoBehaviour
 	void Start ()
 	{
 		n = int.Parse(name.Substring(5));
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
 		if (PlayerPrefs.GetInt("LevelUnlocked") >= n)
 		{
 			GetComponentInChildren<Text>().color = Color.white;
@@ -25,5 +20,11 @@ public class LevelGrave : MonoBehaviour
 			GetComponentInChildren<Text>().color = Color.gray;
 			GetComponent<Button>().interactable = false;
 		}
+	}
+	
+	// Update is called once per frame
+	void Update ()
+	{
+
 	}
 }

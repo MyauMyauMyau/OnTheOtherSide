@@ -38,7 +38,7 @@ namespace Assets.scripts
 		public static bool GameIsFinished;
 		private void Awake()
 		{
-			LastAdviceTime = 0;
+			LastAdviceTime = Time.time;
 			//PlayerPrefs.DeleteAll();
 			GameIsFinished = false;
 			PlayerIsBlocked = false;
@@ -350,6 +350,10 @@ namespace Assets.scripts
 			}
 			Instance.LastAdviceTime = Time.time + 5f;
 			Instance.Update();
+			while (GameField.IsAnyMoving())
+			{
+				yield return null;
+			}
 			WaterField.ShiftBridges();
 			
 		}

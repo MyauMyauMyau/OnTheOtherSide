@@ -1,15 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Assets.scripts;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class GameUI : MonoBehaviour
 {
-
+	public GameObject Hero;
+	public GameObject HunterPrefab;
+	public GameObject ClericPrefab;
+	public GameObject MummyPrefab;
+	public GameObject WolverinePrefab;
+	public GameObject VampirePrefab;
+	public GameObject DeathPrefab;
 	public Button SoundButton;
+	public static GameUI Instance;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
+		Instance = this;
+		Dictionaries.HeroTypesToPrefabs = new Dictionary<HeroType, GameObject>
+		{
+			{HeroType.Death, GameUI.Instance.DeathPrefab},
+			{HeroType.Hunter, GameUI.Instance.HunterPrefab},
+			{HeroType.Cleric, GameUI.Instance.ClericPrefab},
+			{HeroType.Mummy, GameUI.Instance.MummyPrefab},
+			{HeroType.Vampire, GameUI.Instance.VampirePrefab},
+			{HeroType.Wolverine, GameUI.Instance.WolverinePrefab},
+		};
+		Hero =
+			(GameObject)
+				Instantiate(Dictionaries.HeroTypesToPrefabs[(HeroType) PlayerPrefs.GetInt("CurrentHero")], new Vector3(-3.2f, 5.3f),
+					Quaternion.Euler(new Vector3(0, 0)));
+		;
+		Debug.Log(Hero.ToString());
 		SetSoundButton();
 		UpdateTurnsLeft();
 		UpdateGold();

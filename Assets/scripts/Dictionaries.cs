@@ -8,6 +8,12 @@ namespace Assets.scripts
 {
 	class Dictionaries
 	{
+		public static readonly Dictionary<HeroType, int> HeroPrices = new Dictionary<HeroType, int>
+		{
+			{HeroType.Death, 10},
+		};
+
+		public static Dictionary<HeroType, GameObject> HeroTypesToPrefabs;
 		public static readonly Dictionary<MonsterType, MonsterType> MonstersUpgradeDictionary = new Dictionary<MonsterType, MonsterType>
 		{
 			{MonsterType.Pumpkin1, MonsterType.Pumpkin2 },
@@ -38,6 +44,7 @@ namespace Assets.scripts
 			{'n', MonsterType.WaterUpperLeft },
 			{'o', MonsterType.WaterDownRight },
 			{'p', MonsterType.WaterDownLeft },
+
 			{'C', MonsterType.Coocon},
 			{'W', MonsterType.Bomb },
 			{'R', MonsterType.Raft },
