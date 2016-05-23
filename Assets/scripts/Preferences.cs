@@ -6,7 +6,7 @@ public class Preferences : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		if (!PlayerPrefs.HasKey("CurrentHero"))
+		if (!PlayerPrefs.HasKey("Skill1"))
 		{
 			PlayerPrefs.SetInt("Sound", 1);
 			PlayerPrefs.SetInt("LevelUnlocked", 2);
@@ -16,6 +16,8 @@ public class Preferences : MonoBehaviour {
 			//heroes hunter, cleric, mummy, wolverine, vampire, death
 			PlayerPrefs.SetString("Heroes","000000");
 			PlayerPrefs.SetInt("CurrentHero", 0);
+			for (int i = 1; i < 4; i++)
+				PlayerPrefs.SetFloat("Skill" + i, 1f);
 			PlayerPrefs.Save();
 		}
 	}

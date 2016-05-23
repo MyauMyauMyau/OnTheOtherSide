@@ -23,13 +23,13 @@ public class HeroMenuUI : MonoBehaviour
 			DeathButton.image.color = Color.white;
 	}
 
-	public void OnClickDeath()
+	public void OnHeroClick(int herotype)
 	{
-		if (heroesInfo[5] == '0')
+		if (heroesInfo[herotype] == '0')
 			BuyHero(HeroType.Death);
 		else
 		{
-			Preferences.SetCurrentHero(5);
+			Preferences.SetCurrentHero(herotype);
 			MainMenu.Play();
 		}
 		

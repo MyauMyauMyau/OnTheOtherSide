@@ -1,91 +1,65 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.scripts;
-using Assets.scripts.Enums;
+﻿using System;
+using System.Reflection;
+using Assets.scripts.Skills;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class SkillButton : MonoBehaviour
+namespace Assets.scripts
 {
-	public static List<SkillButton> buttons = new List<SkillButton>();
-	public float FillAmount;
-	public static Sprite ActiveFire;
-	public static Sprite Fire;
-	public static Sprite ActiveElectro;
-	public static Sprite Electro;
-	public SkillButtonType Type;
-	public static void AddEnergy(MonsterType type)
+	public class SkillButton : MonoBehaviour
 	{
-		foreach (var button in buttons)
+
+		public Sprite InactiveImage;
+		public Sprite ActiveImage;
+		public float FillAmount;
+		public int ButtonNumber;
+		public Action Skill;
+		// Use this for initialization
+		void Start ()
 		{
-			if (button.Type == SkillButtonType.Fire && (type == MonsterType.Voodoo || type == MonsterType.Zombie))
-				button.FillAmount += 0.04f;
-			if (button.Type == SkillButtonType.Electro && type != MonsterType.Voodoo && type != MonsterType.Zombie)
-				button.FillAmount += 0.03f;
-			if (button.FillAmount >= 1)
+			FillAmount = 1f;
+
+			var skills = Dictionaries.HeroTypeToSkills[Game.HeroType];
+			Skill = () =>
 			{
-				button.FillAmount = 1;
-				button.GetComponent<Button>().interactable = true;
-				if (button.Type == SkillButtonType.Fire)
-				{
-					button.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/fireActiveButton");
-				}
-				if (button.Type == SkillButtonType.Electro)
-				{
-					
-					button.GetComponent<Button>().image.overrideSprite = ActiveElectro;
-				}
-				
-			}
+				skills.GetType().GetMethod("Skill" + ButtonNumber).Invoke(skills, null);
+				Deactivate();
+			};
 		}
-	}
-
-
-	public static void Deactivate(SkillButtonType type)
-	{
-		foreach (var skillButton in buttons)
-		{
-			if (skillButton.Type == type)
-			{
-				skillButton.FillAmount = 0;
-				if (skillButton.Type == SkillButtonType.Fire)
-					skillButton.GetComponent<Button>().image.overrideSprite= Fire;
-				if (skillButton.Type == SkillButtonType.Electro)
-					skillButton.GetComponent<Button>().image.overrideSprite = Electro;
-				Cursor.SetCursor(Game.MainCursor, new Vector2(0, 0), CursorMode.Auto);
-				Game.ClickType = ClickState.Default;
-				skillButton.GetComponent<Button>().interactable = false;
-			}
-		}		
-	}
-	// Use this for initialization
-	private void Start()
-	{
-		FillAmount = 0.75f;
-		GetComponent<Button>().interactable = false;
-		buttons.Add(this);
-		GetComponent<Button>().onClick.AddListener(OnClickEvent);	
-	}
 	
-	// Update is called once per frame
-	void Update ()
-	{
-		GetComponent<Image>().fillAmount = FillAmount;
-	}
+		// Update is called once per frame
+		void Update () {
 
-	void OnClickEvent()
-	{
-		if (Game.IsPlayerBlocked())
-			return;
-		if (Type == SkillButtonType.Electro)
-		{
-			Game.ClickType = ClickState.Electro;
-			Cursor.SetCursor(Game.ElectroCursor, new Vector2(0, 0), CursorMode.Auto);
+			if (FillAmount >= 1)
+			{
+				Activate();	
+			}
+			else
+			{
+				GetComponent<Image>().fillAmount = FillAmount;
+			}
 		}
-		if (Type == SkillButtonType.Fire)
+
+		public void OnClick()
 		{
-			Game.ClickType = ClickState.Fire;
-			Cursor.SetCursor(Game.FireCursor, new Vector2(0, 0), CursorMode.Auto);
-		}	
+			if (Game.IsPlayerBlocked()) return;
+			GameUI.Instance.ActivatePanel(Skill);
+
+		}
+
+		public void Activate()
+		{
+			GetComponent<Button>().image.overrideSprite = ActiveImage;
+			FillAmount = 1;
+			GetComponent<Button>().interactable = true;
+			GetComponent<Image>().fillAmount = FillAmount;
+		}
+
+		public void Deactivate()
+		{
+			FillAmount = 0;
+			GetComponent<Button>().image.overrideSprite = InactiveImage;
+			GetComponent<Button>().interactable = false;
+		}
 	}
 }

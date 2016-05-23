@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Assets.scripts.Skills;
 using UnityEngine;
 
 namespace Assets.scripts
@@ -11,6 +12,11 @@ namespace Assets.scripts
 		public static readonly Dictionary<HeroType, int> HeroPrices = new Dictionary<HeroType, int>
 		{
 			{HeroType.Death, 10},
+		};
+
+		public static readonly Dictionary<HeroType, ISkills> HeroTypeToSkills = new Dictionary<HeroType, ISkills>
+		{
+			{HeroType.Death, new DeathSkills()},
 		};
 
 		public static Dictionary<HeroType, GameObject> HeroTypesToPrefabs;

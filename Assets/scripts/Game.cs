@@ -36,13 +36,14 @@ namespace Assets.scripts
 		public float LastAdviceTime;
 		public static int Level;
 		public static bool GameIsFinished;
+		public static HeroType HeroType;
 		private void Awake()
 		{
+			HeroType = (HeroType)PlayerPrefs.GetInt("CurrentHero");
 			LastAdviceTime = Time.time;
-			//PlayerPrefs.DeleteAll();
+			//PlayerPrefs.DeleteAll();							   
 			GameIsFinished = false;
 			PlayerIsBlocked = false;
-			SkillButton.buttons = new List<SkillButton>();
 			WaterField.Bridges = new Dictionary<Coordinate, Direction>();
 			WaterField.BridgeObjects = new List<Monster>();
 			WaterField.River = new List<Coordinate>();
@@ -131,10 +132,6 @@ namespace Assets.scripts
 			ZombiePrefab = Resources.Load("objects/zombie/Zombie", typeof(GameObject)) as GameObject;
 			GhostPrefab = Resources.Load("objects/ghost/Ghost", typeof(GameObject)) as GameObject;
 			SpiderPrefab = Resources.Load("objects/spider/Spider", typeof(GameObject)) as GameObject;
-			SkillButton.ActiveFire = Resources.Load<Sprite>("ButtonsSprites/fireActiveButton");
-			SkillButton.Fire = Resources.Load<Sprite>("ButtonsSprites/fireLoad");
-			SkillButton.ActiveElectro = Resources.Load<Sprite>("ButtonsSprites/electroActiveButton");
-			SkillButton.Electro = Resources.Load<Sprite>("ButtonsSprites/electroLoad");
 			Monster.EmptyCellSprite = Resources.Load("objects/graves/grave1", typeof(Sprite)) as Sprite;
 			Monster.BombSprite = Resources.Load("Sprites/bomb", typeof(Sprite)) as Sprite;
 			Monster.BlackHoleSprite = Resources.Load("Sprites/3Black_hole_02", typeof(Sprite)) as Sprite;
@@ -161,9 +158,6 @@ namespace Assets.scripts
 			Monster.ZombieSprite = Resources.Load("targetsSprites/zombie", typeof(Sprite)) as Sprite;
 			Monster.VoodooSprite = Resources.Load("targetsSprites/voodoo", typeof(Sprite)) as Sprite;
 			Monster.SpiderSprite = Resources.Load("targetsSprites/spider", typeof(Sprite)) as Sprite;
-			MainCursor = Resources.Load("Cursors/MainCursor") as Texture2D;
-			FireCursor = Resources.Load("Cursors/FireCursor") as Texture2D;
-			ElectroCursor = Resources.Load("Cursors/ElectricityCursor") as Texture2D;
 			Cursor.SetCursor(MainCursor, new Vector2(0,0), CursorMode.Auto);
 			Dictionaries.TypesToSprites = new Dictionary<MonsterType, Sprite>
 			{
@@ -229,7 +223,6 @@ namespace Assets.scripts
 
 				if (Time.time > LastAdviceTime + 5f)
 				{
-					Debug.Log("getting advice");
 					LastAdviceTime += 5f;
 					GameField.GetAdvice();
 				}

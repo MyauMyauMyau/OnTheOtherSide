@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
+using UnityEngine;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.scripts;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class GameUI : MonoBehaviour
 {
-	public GameObject Hero;
+	private GameObject hero;
 	public GameObject HunterPrefab;
 	public GameObject ClericPrefab;
 	public GameObject MummyPrefab;
@@ -16,25 +17,38 @@ public class GameUI : MonoBehaviour
 	public GameObject DeathPrefab;
 	public Button SoundButton;
 	public static GameUI Instance;
+
+	public GameObject Buttons0;
+	public GameObject Buttons1;
+	public GameObject Buttons2;
+	public GameObject Buttons3;
+	public GameObject Buttons4;
+	public GameObject Buttons5;
+	public Action SkillToCast;
+
 	// Use this for initialization
 	void Start ()
 	{
 		Instance = this;
 		Dictionaries.HeroTypesToPrefabs = new Dictionary<HeroType, GameObject>
 		{
-			{HeroType.Death, GameUI.Instance.DeathPrefab},
-			{HeroType.Hunter, GameUI.Instance.HunterPrefab},
-			{HeroType.Cleric, GameUI.Instance.ClericPrefab},
-			{HeroType.Mummy, GameUI.Instance.MummyPrefab},
-			{HeroType.Vampire, GameUI.Instance.VampirePrefab},
-			{HeroType.Wolverine, GameUI.Instance.WolverinePrefab},
+			{HeroType.Death, DeathPrefab},
+			{HeroType.Hunter, HunterPrefab},
+			{HeroType.Cleric, ClericPrefab},
+			{HeroType.Mummy, MummyPrefab},
+			{HeroType.Vampire, VampirePrefab},
+			{HeroType.Wolverine, WolverinePrefab},
 		};
-		Hero =
+		hero =
 			(GameObject)
 				Instantiate(Dictionaries.HeroTypesToPrefabs[(HeroType) PlayerPrefs.GetInt("CurrentHero")], new Vector3(-3.2f, 5.3f),
 					Quaternion.Euler(new Vector3(0, 0)));
 		;
-		Debug.Log(Hero.ToString());
+
+		var buttonsName = "Buttons" + PlayerPrefs.GetInt("CurrentHero");
+		var buttonCanvas = (GameObject) GetType().GetField(buttonsName).GetValue(this);
+		Instantiate(buttonCanvas,
+			new Vector3(0, -4), Quaternion.Euler(new Vector3(0, 0)));
 		SetSoundButton();
 		UpdateTurnsLeft();
 		UpdateGold();
@@ -55,6 +69,24 @@ public class GameUI : MonoBehaviour
 		}
 	}
 
+	public void ActivatePanel(Action skill)
+	{
+		SkillToCast = skill;
+		Game.PlayerIsBlocked = true;
+		GetComponentsInChildren<Animation>()[2].Play("activatePanel");
+	}
+
+	public void DeactivatePanel()
+	{
+		GetComponentsInChildren<Animation>()[2].Play("deactivatePanel");
+		Game.PlayerIsBlocked = false;
+	}
+
+	public void CastSkill()
+	{
+		DeactivatePanel();
+		SkillToCast();
+	}
 	// Update is called once per frame
 	void Update () {
 		

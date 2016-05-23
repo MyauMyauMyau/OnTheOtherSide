@@ -178,7 +178,6 @@ public class Monster : MonoBehaviour
 		GameField.Map[GridPosition.X, GridPosition.Y] = null;
 		ToBasketStartTime = Time.time;
 		Dictionaries.MonsterCounter[TypeOfMonster]++;
-		SkillButton.AddEnergy(TypeOfMonster);
 		State = MonsterState.Destroying;
 
 		AudioHolder.PlayRemove();
@@ -516,7 +515,7 @@ public class Monster : MonoBehaviour
 		fireball.transform.localScale = new Vector3(0.1f, 0.1f, 1f);
 		fireball.SetActive(false);		
 		Game.PlayerIsBlocked = false;
-		SkillButton.Deactivate(SkillButtonType.Fire);
+		// SkillButton.Deactivate(SkillButtonType.Fire);
 		GameField.DestroySquare3X3(GridPosition);
 		AudioHolder.PlayMassRemove();
 	}
@@ -544,7 +543,7 @@ public class Monster : MonoBehaviour
 		}
 		l2.SetActive(false);
 		Game.PlayerIsBlocked = false;
-		SkillButton.Deactivate(SkillButtonType.Electro);
+//		SkillButton.Deactivate(SkillButtonType.Electro);
 		GameField.DestroyAllOf(TypeOfMonster);
 		AudioHolder.PlayMassRemove();
 	}
