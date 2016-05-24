@@ -14,6 +14,8 @@ namespace Assets.scripts
 		public float FillAmount;
 		public int ButtonNumber;
 		public Action Skill;
+		public int NumberOfTargets;
+		public GameObject TargetBrackets;
 		// Use this for initialization
 		void Start ()
 		{
@@ -25,6 +27,12 @@ namespace Assets.scripts
 				skills.GetType().GetMethod("Skill" + ButtonNumber).Invoke(skills, null);
 				Deactivate();
 			};
+			var propName = "TargetsSkill" + ButtonNumber + "Lvl" + skills.GetLevelOfUpgrade(ButtonNumber);
+			NumberOfTargets =
+				(int)skills.GetType()
+					.GetProperty( propName)
+					.GetGetMethod()
+					.Invoke(skills, null);
 		}
 	
 		// Update is called once per frame
@@ -43,8 +51,9 @@ namespace Assets.scripts
 		public void OnClick()
 		{
 			if (Game.IsPlayerBlocked()) return;
-			GameUI.Instance.ActivatePanel(Skill);
-
+			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill" + ButtonNumber + "Ready");
+			GameUI.Instance.ActivatePanel(Skill, NumberOfTargets);
+			SkillsController.TargetBrackets = TargetBrackets;
 		}
 
 		public void Activate()

@@ -41,8 +41,9 @@ public class GameUI : MonoBehaviour
 		};
 		hero =
 			(GameObject)
-				Instantiate(Dictionaries.HeroTypesToPrefabs[(HeroType) PlayerPrefs.GetInt("CurrentHero")], new Vector3(-3.2f, 5.3f),
+				Instantiate(Dictionaries.HeroTypesToPrefabs[(HeroType) PlayerPrefs.GetInt("CurrentHero")], new Vector3(-2.9f, 5.3f),
 					Quaternion.Euler(new Vector3(0, 0)));
+		SkillsController.Hero = hero;
 		;
 
 		var buttonsName = "Buttons" + PlayerPrefs.GetInt("CurrentHero");
@@ -69,8 +70,9 @@ public class GameUI : MonoBehaviour
 		}
 	}
 
-	public void ActivatePanel(Action skill)
+	public void ActivatePanel(Action skill, int numOfTargets)
 	{
+		SkillsController.Activate(numOfTargets);
 		SkillToCast = skill;
 		Game.PlayerIsBlocked = true;
 		GetComponentsInChildren<Animation>()[2].Play("activatePanel");
@@ -78,14 +80,17 @@ public class GameUI : MonoBehaviour
 
 	public void DeactivatePanel()
 	{
+		SkillsController.Hero.GetComponent<Animator>().SetTrigger("Default");
 		GetComponentsInChildren<Animation>()[2].Play("deactivatePanel");
 		Game.PlayerIsBlocked = false;
+		SkillsController.Deactivate();
 	}
 
 	public void CastSkill()
 	{
-		DeactivatePanel();
 		SkillToCast();
+		DeactivatePanel();
+		SkillsController.Hero.GetComponent<Animator>().ResetTrigger("Default");
 	}
 	// Update is called once per frame
 	void Update () {

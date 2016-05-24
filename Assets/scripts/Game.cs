@@ -203,7 +203,7 @@ namespace Assets.scripts
 		public static bool PlayerIsBlocked;
 		public static bool IsPlayerBlocked()
 		{
-			if (GameField.IsAnyMoving() || PlayerIsBlocked)
+			if (GameField.IsAnyMoving() || PlayerIsBlocked || GameIsFinished)
 				return true;
 			return false;
 		}

@@ -295,6 +295,11 @@ public class Monster : MonoBehaviour
 	}
 	void Update()
 	{
+		if (SkillsController.IsActive && State == MonsterState.Clicked)
+			{
+				State = MonsterState.Default;
+				GameField.ClickedObject = null;
+			}
 		if (State == MonsterState.WaitingForActivation) return;
 		if (State == MonsterState.Destroying)
 		{
@@ -547,8 +552,16 @@ public class Monster : MonoBehaviour
 		GameField.DestroyAllOf(TypeOfMonster);
 		AudioHolder.PlayMassRemove();
 	}
+
+	private void BracketMonster()
+	{
+			
+	}
 	void OnMouseDown()
 	{
+		if (SkillsController.IsActive)
+			SkillsController.BracketMonster(GridPosition);
+
 		if (Game.IsPlayerBlocked() || (!IsMonster() && TypeOfMonster != MonsterType.Bomb))
 			return;
 
