@@ -23,7 +23,7 @@ public class Preferences : MonoBehaviour {
 			PlayerPrefs.SetString("Skills2", "000");
 			PlayerPrefs.SetString("Skills3", "000");
 			PlayerPrefs.SetString("Skills4", "000");
-			PlayerPrefs.SetString("Skills5", "111");
+			PlayerPrefs.SetString("Skills5", "332");
 			for (int i = 1; i < 4; i++)
 				PlayerPrefs.SetFloat("Skill" + i, 1f);
 			PlayerPrefs.Save();

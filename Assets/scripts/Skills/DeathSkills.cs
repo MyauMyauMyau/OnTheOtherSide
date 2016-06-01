@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Assets.scripts.Skills
 {
@@ -51,19 +53,63 @@ namespace Assets.scripts.Skills
 		public void Skill1()
 		{
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill1Cast");
-			UnityEngine.Debug.Log("meow1");
+			SkillsController.Instance.StartCoroutine
+				(SkillsController.Instance.ThrowFireball(Skill1Level));
 		}
+
+
+		
 
 		public void Skill2()
 		{
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill2Cast");
-			UnityEngine.Debug.Log("meow2");
+			CastLightning();
 		}
 
+		private void CastLightning()
+		{
+			
+			var x = SkillsController.TargetCoordinates.ElementAt(0).X;
+			var y = SkillsController.TargetCoordinates.ElementAt(0).Y;
+			var typeOfMonster =
+				GameField.Map[x, y].TypeOfMonster;
+
+
+			if (Skill2Level == 1 || Skill2Level == 2)
+			{
+				var mLightningPrefab = Resources.Load("objects/heroes/DeathHero/Lightning/miniLightning", typeof(GameObject)) as GameObject;
+				var mLightning = ((GameObject) Object.Instantiate(mLightningPrefab, GameField.GetVectorFromCoord(x, y),
+					Quaternion.Euler(new Vector3()))).GetComponent<miniLightning>();
+				mLightning.Target = new Coordinate(x, y);
+				var targetsLeft = Skill2Level == 1 ? 1 : 4;
+				for (int i = 0; i < Game.MAP_SIZE; i++)
+					for (int j = 0; j < Game.MAP_SIZE; j++)
+					{
+						if (i == x && j == y) continue;
+						if (targetsLeft == 0) return;
+						if (GameField.Map[i, j] != null && GameField.Map[i, j].TypeOfMonster == typeOfMonster)
+						{
+							mLightning = ((GameObject) Object.Instantiate(mLightningPrefab, GameField.GetVectorFromCoord(i, j),
+								Quaternion.Euler(new Vector3()))).GetComponent<miniLightning>();
+							mLightning.Target = new Coordinate(i, j);
+							targetsLeft--;
+						}
+					}
+			}
+			else
+			{
+				var bLightningPrefab = Resources.Load("objects/heroes/DeathHero/Lightning/bigLightning", typeof(GameObject)) as GameObject;
+				var bigLightning = ((GameObject)Object.Instantiate(bLightningPrefab, new Vector3(-2.85f, 0.80f), 
+					Quaternion.Euler(new Vector3()))).GetComponent<bigLightning>();
+				bigLightning.Target = new Coordinate(x,y);
+			}
+
+		}
 		public void Skill3()
 		{
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill3Cast");
-			UnityEngine.Debug.Log("meow3");
+			SkillsController.Instance.StartCoroutine
+				(SkillsController.Instance.ThrowIceBall(Skill3Level));
 		}
 	}
 }

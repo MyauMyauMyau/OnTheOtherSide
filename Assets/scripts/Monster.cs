@@ -300,7 +300,7 @@ public class Monster : MonoBehaviour
 				State = MonsterState.Default;
 				GameField.ClickedObject = null;
 			}
-		if (State == MonsterState.WaitingForActivation) return;
+		if (State == MonsterState.WaitingForActivation || State == MonsterState.Deactivated) return;
 		if (State == MonsterState.Destroying)
 		{
 			if (TypeOfMonster == MonsterType.Voodoo || TypeOfMonster == MonsterType.Zombie ||
@@ -496,34 +496,7 @@ public class Monster : MonoBehaviour
 		}
 	}
 
-	private IEnumerator ThrowFireball()
-	{
-		AudioHolder.PlayFireBall();
-		Game.PlayerIsBlocked = true;
-		var fireball = GameObject.Find("hero").transform.FindChild("Fireball").gameObject;
-		fireball.SetActive(true);
-		var distance = transform.position - fireball.transform.position;
-		var posCopy = fireball.transform.position;
-		var scaleCopy = fireball.transform.localScale;
-		for (int i = 0; i < 50; i++)
-		{
-			posCopy.x += distance.x/50;
-			posCopy.y += distance.y/50;
-			scaleCopy.x += 0.01f;
-			scaleCopy.y += 0.01f;
-			fireball.transform.position = posCopy;
-			fireball.transform.localScale = scaleCopy;
-			fireball.transform.Rotate(Vector3.back*0.1f);
-			yield return new WaitForSeconds(0.005f);
-		}
-		fireball.transform.position = new Vector3(-3.47f, 1.84f);
-		fireball.transform.localScale = new Vector3(0.1f, 0.1f, 1f);
-		fireball.SetActive(false);		
-		Game.PlayerIsBlocked = false;
-		// SkillButton.Deactivate(SkillButtonType.Fire);
-		GameField.DestroySquare3X3(GridPosition);
-		AudioHolder.PlayMassRemove();
-	}
+	
 	private IEnumerator ThrowLightning()
 	{
 		AudioHolder.PlayElectricity();
@@ -568,11 +541,6 @@ public class Monster : MonoBehaviour
 		if (Game.ClickType == ClickState.Electro)
 		{
 			StartCoroutine(ThrowLightning());
-			return;
-		}
-		if (Game.ClickType == ClickState.Fire)
-		{
-			StartCoroutine(ThrowFireball());
 			return;
 		}
 		if (IsFrozen)

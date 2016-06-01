@@ -15,6 +15,7 @@ namespace Assets.scripts
 		WaitingForActivation,
 		Growing,
 		Decreasing,
-		Destroying
+		Destroying,
+		Deactivated
 	}
 }

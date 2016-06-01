@@ -69,14 +69,14 @@ namespace Assets.scripts
 			//LevelInformation = JsonConvert.DeserializeObject<LevelInfo>(File.ReadAllText("Assets/levels/1.json"));
 			if (Level == 1)
 			{
-				LevelInformation = new LevelInfo {Map = "ZSVBBGBB ZHGGBBSS GBZBGSZS ZGGSVGVG GVZBVZBS ZVZVBZGV GBGSZSGS ZBZBBGBZ"};
+				LevelInformation = new LevelInfo {Map = "ZSVBBGBB ZHGGBBSS GBZBGSZS ZGGSVHVG GVZBVZBS ZHZVBZGV GBGSZSGS ZBZBBGBZ"};
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
-					{'Z', 0},
+					{'Z', 10},
 					{'S', 3},
 					{'V', 0}
 				};
-				TurnsLeft = 1;
+				TurnsLeft = 100;
 			}
 			if (Level == 2)
 			{

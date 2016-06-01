@@ -301,7 +301,7 @@ namespace Assets.scripts
 				}
 		}
 
-		public static void DestroySquare3X3(Coordinate coordinate)
+		public static void BurnSquare3X3(Coordinate coordinate)
 		{
 			var bottomBoundX = Math.Max(0, coordinate.X - 1);
 			var bottomBoundY = Math.Max(0, coordinate.Y - 1);
@@ -311,7 +311,7 @@ namespace Assets.scripts
 			{
 				for (int j = bottomBoundY; j <= topBoundY; j ++)
 				{
-					if (Map[i, j] != null && Map[i, j].IsMonster())
+					if (Map[i, j] != null && Map[i, j].IsMonster() && !Map[i,j].IsUpgradable())
 					{
 						if (!Map[i, j].IsFrozen)
 						{
@@ -511,6 +511,54 @@ namespace Assets.scripts
 			{
 				Instance.StartCoroutine(monster.AnimateAdvice());
 			}	
+		}
+
+		public static void BurnCell(Coordinate coord)
+		{
+			int i = coord.X;
+			int j = coord.Y;
+			if (Map[i, j] == null || !Map[i, j].IsMonster() || Map[i, j].IsUpgradable())
+				return;
+			if (!Map[i, j].IsFrozen)
+			{
+				foreach (var sprite in Map[i, j].GetComponentsInChildren<SpriteRenderer>())
+					sprite.color = Color.black;
+			}
+			if (Map[i,j].IsMonster())
+				Map[i, j].DestroyMonster();
+		}
+
+		public static void BurnCross(Coordinate coordinate)
+		{
+			var bottomBoundX = Math.Max(0, coordinate.X - 1);
+			var bottomBoundY = Math.Max(0, coordinate.Y - 1);
+			var topBoundX = Math.Min(Game.MAP_SIZE - 1, coordinate.X + 1);
+			var topBoundY = Math.Min(Game.MAP_SIZE - 1, coordinate.Y + 1);
+
+			for (int i = bottomBoundX; i <= topBoundX; i ++)
+			{
+				if (Map[i, coordinate.Y] == null || !Map[i, coordinate.Y].IsMonster() || Map[i, coordinate.Y].IsUpgradable())
+					continue;
+				if (!Map[i, coordinate.Y].IsFrozen)
+				{
+					foreach (var sprite in Map[i, coordinate.Y].GetComponentsInChildren<SpriteRenderer>())
+						sprite.color = Color.black;
+				}
+				
+				Map[i, coordinate.Y].DestroyMonster();
+			}
+			for (int i = bottomBoundY; i <= topBoundY; i++)
+			{
+				if (i == coordinate.Y) continue;
+				if (Map[coordinate.X, i] == null || !Map[coordinate.X, i].IsMonster() || Map[coordinate.X, i].IsUpgradable())
+					continue;
+				if (!Map[coordinate.X, i].IsFrozen)
+				{
+					foreach (var sprite in Map[coordinate.X, i].GetComponentsInChildren<SpriteRenderer>())
+						sprite.color = Color.black;
+				}
+				Map[coordinate.X, i].DestroyMonster();
+			}
 		}
 	}
 }
