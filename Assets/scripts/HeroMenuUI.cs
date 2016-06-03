@@ -7,6 +7,7 @@ public class HeroMenuUI : MonoBehaviour
 {
 
 	public Button DeathButton;
+	public Button HunterButton;
 	private string heroesInfo;
 	// Use this for initialization
 	void Start ()
@@ -17,16 +18,14 @@ public class HeroMenuUI : MonoBehaviour
 	// Update is called once per frame
 	void Update () {
 		heroesInfo = PlayerPrefs.GetString("Heroes");
-		if (heroesInfo[5] == '0')
-			DeathButton.image.color = Color.gray;
-		else
-			DeathButton.image.color = Color.white;
+		DeathButton.image.color = heroesInfo[5] == '0' ? Color.gray : Color.white;
+		HunterButton.image.color = heroesInfo[0] == '0' ? Color.gray : Color.white;
 	}
 
 	public void OnHeroClick(int herotype)
 	{
 		if (heroesInfo[herotype] == '0')
-			BuyHero(HeroType.Death);
+			BuyHero((HeroType)herotype);
 		else
 		{
 			Preferences.SetCurrentHero(herotype);

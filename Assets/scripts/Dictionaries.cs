@@ -12,11 +12,17 @@ namespace Assets.scripts
 		public static readonly Dictionary<HeroType, int> HeroPrices = new Dictionary<HeroType, int>
 		{
 			{HeroType.Death, 10},
+			{HeroType.Hunter, 10},
+			{HeroType.Cleric, 10},
+			{HeroType.Mummy, 10},
+			{HeroType.Wolverine, 10},
+			{HeroType.Vampire, 10}
 		};
 
 		public static readonly Dictionary<HeroType, ISkills> HeroTypeToSkills = new Dictionary<HeroType, ISkills>
 		{
 			{HeroType.Death, new DeathSkills()},
+			{HeroType.Hunter, new HunterSkills()},
 		};
 
 		public static Dictionary<HeroType, GameObject> HeroTypesToPrefabs;

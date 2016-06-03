@@ -30,7 +30,7 @@ namespace Assets.scripts
 			var propName = "TargetsSkill" + ButtonNumber + "Lvl" + skills.GetLevelOfUpgrade(ButtonNumber);
 			NumberOfTargets =
 				(int)skills.GetType()
-					.GetProperty( propName)
+					.GetProperty(propName)
 					.GetGetMethod()
 					.Invoke(skills, null);
 		}
