@@ -496,7 +496,12 @@ public class Monster : MonoBehaviour
 		}
 	}
 
-	
+	public bool IsWater()
+	{
+		return (TypeOfMonster == MonsterType.WaterDownLeft || TypeOfMonster == MonsterType.WaterDownRight
+		        || TypeOfMonster == MonsterType.WaterHorizontal || TypeOfMonster == MonsterType.WaterVertical
+		        || TypeOfMonster == MonsterType.WaterUpperLeft || TypeOfMonster == MonsterType.WaterUpperRight);
+	}
 	private IEnumerator ThrowLightning()
 	{
 		AudioHolder.PlayElectricity();
@@ -526,15 +531,10 @@ public class Monster : MonoBehaviour
 		AudioHolder.PlayMassRemove();
 	}
 
-	private void BracketMonster()
-	{
-			
-	}
 	void OnMouseDown()
 	{
 		if (SkillsController.IsActive)
 			SkillsController.BracketMonster(GridPosition);
-
 		if (Game.IsPlayerBlocked() || (!IsMonster() && TypeOfMonster != MonsterType.Bomb))
 			return;
 

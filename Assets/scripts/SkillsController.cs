@@ -31,6 +31,7 @@ namespace Assets.scripts
 			IsActive = true;
 			MaxTargets = numOfTargets;
 			TargetCoordinates = new List<Coordinate>();
+			Brackets = new List<GameObject>();
 
 		}
 		public IEnumerator ThrowFireball(int size)
@@ -101,6 +102,16 @@ namespace Assets.scripts
 
 		public static void BracketMonster(Coordinate gridPosition)
 		{
+			Debug.Log(MaxTargets);
+			if (Brackets.Any(x => x.transform.position == GameField.GetVectorFromCoord(gridPosition.X, gridPosition.Y)))
+			{
+				TargetCoordinates.Remove(gridPosition);
+				var bracketToRemove = Brackets.First(x => x.transform.position == GameField.GetVectorFromCoord(gridPosition.X, gridPosition.Y));
+				Brackets.Remove(bracketToRemove);
+				Destroy(bracketToRemove.gameObject);
+
+				return;
+			}
 			if (MaxTargets == TargetCoordinates.Count) return;
 			var bracket = (GameObject) Instantiate(TargetBrackets,
 				GameField.GetVectorFromCoord(gridPosition.X, gridPosition.Y), Quaternion.Euler(new Vector3()));

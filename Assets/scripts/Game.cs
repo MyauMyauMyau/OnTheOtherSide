@@ -320,7 +320,7 @@ namespace Assets.scripts
 				water.Initialise(x, y, type, delay); //?
 				WaterField.Map[x, y] = water;
 				water.gameObject.GetComponent<SpriteRenderer>().sortingOrder = -1;
-				water.gameObject.GetComponent<CircleCollider2D>().enabled = false;
+				water.gameObject.GetComponent<CircleCollider2D>().enabled = true;
 			}
 			else
 			{
