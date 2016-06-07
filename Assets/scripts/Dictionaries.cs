@@ -23,6 +23,7 @@ namespace Assets.scripts
 		{
 			{HeroType.Death, new DeathSkills()},
 			{HeroType.Hunter, new HunterSkills()},
+			{HeroType.Cleric, new ClericSkills()},
 		};
 
 		public static Dictionary<HeroType, GameObject> HeroTypesToPrefabs;
