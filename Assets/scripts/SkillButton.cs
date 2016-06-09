@@ -33,7 +33,6 @@ namespace Assets.scripts
 					.GetProperty(propName)
 					.GetGetMethod()
 					.Invoke(skills, null);
-			Debug.Log(NumberOfTargets);
 		}
 	
 		// Update is called once per frame

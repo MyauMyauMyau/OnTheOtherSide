@@ -255,7 +255,7 @@ namespace Assets.scripts
 			Game.PlayerIsBlocked = false;
 		}
 
-		private static void TransformPumpkin1(int x, int y)
+		public static void TransformPumpkin1(int x, int y)
 		{
 			
 			Monster branch = ((GameObject)Instantiate(

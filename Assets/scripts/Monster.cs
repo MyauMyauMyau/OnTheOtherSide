@@ -16,6 +16,7 @@ public class Monster : MonoBehaviour
 	public Vector3 Destination { get; set; }
 	public Coordinate PreviousPosition {get; set;}
 	public MonsterType TypeOfMonster { get; set;}
+	public int FlagCounter;
 	public static Sprite EmptyCellSprite;
 	public static Sprite BlackHoleSprite;
 	public static Sprite BatSprite;
@@ -53,6 +54,7 @@ public class Monster : MonoBehaviour
 	public float GrowSpeed;
 	public float StartTime;
 	public float Delay;
+	public int FlagFrequancy;
 	private bool blackHoleHasJumped;
 	private bool isSpritesLoaded;
 	public float UpSpeed = 0.01f;
@@ -70,6 +72,26 @@ public class Monster : MonoBehaviour
 		return Dictionaries.MonsterTypes.Contains(TypeOfMonster);
 	}
 
+	public bool IsFlagPlaced;
+	public void PutFlag()
+	{
+		var startPos = new Vector3(-2.68f, 5.52f);
+		var curPos = Vector3.Lerp(
+			startPos, GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y),
+			(Time.time - ToBasketStartTime));
+		curPos.y += 4 * Mathf.Sin(Mathf.Clamp01((Time.time - ToBasketStartTime)) * Mathf.PI);
+		transform.position = curPos;
+		if (transform.position == GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y))
+		{
+			IsFlagPlaced = true;
+			if (GameField.Map[GridPosition.X, GridPosition.Y].IsFrozen)
+				GameField.Map[GridPosition.X, GridPosition.Y].DestroyMonster();
+			GameField.Map[GridPosition.X, GridPosition.Y].DestroyMonster();
+			GameField.Map[GridPosition.X, GridPosition.Y] = this;
+			gameObject.GetComponent<SpriteRenderer>().sortingOrder = 0;
+
+		}
+	}
 	public IEnumerator AnimateAdvice()
 	{
 		var bufState = State;
@@ -187,8 +209,36 @@ public class Monster : MonoBehaviour
 		}
 	}
 
-	
-	private void DestroyBomb()
+
+	public void ActivateFlag()
+	{
+		Game.PlayerIsBlocked = true;
+		var monsters = new List<Coordinate>();
+		var bottomBoundX = Math.Max(0, GridPosition.X - 1);
+		var bottomBoundY = Math.Max(0, GridPosition.Y - 1);
+		var topBoundX = Math.Min(Game.MAP_SIZE - 1, GridPosition.X + 1);
+		var topBoundY = Math.Min(Game.MAP_SIZE - 1, GridPosition.Y + 1);
+		for (int i = bottomBoundX; i <= topBoundX; i++)
+		{
+			for (int j = bottomBoundY; j <= topBoundY; j++)
+			{
+				if (i != j && GameField.Map[i, j] != null && GameField.Map[i, j].IsMonster() && !GameField.Map[i,j].IsUpgradable())
+				{
+					monsters.Add(new Coordinate(i,j));		
+				}
+			}
+		}
+		var trg = monsters[Rnd.Next(monsters.Count)];
+		var SparkPrefab = Resources.Load("objects/heroes/Cleric/HolyFlag/spark", typeof(GameObject)) as GameObject;
+		var spark = ((GameObject)Instantiate(
+					SparkPrefab, GameField.GetVectorFromCoord(trg.X, trg.Y),
+					Quaternion.Euler(new Vector3())))
+					.GetComponent<Spark>();
+		spark.Target = trg;
+	}
+
+	private
+		void DestroyBomb()
 	{
 		GetComponent<SpriteRenderer>().enabled = false;
 		GameObject boom = ((GameObject)Instantiate(
@@ -228,11 +278,13 @@ public class Monster : MonoBehaviour
 		DestroyRotationSpeed = Rnd.Next(500);
 		DestroyRotation = (Rnd.Next(2) == 0 ? Vector3.back : Vector3.forward);
 		DropSpeed = BaseDropSpeed*2;
-		
+		ToBasketStartTime = Time.time;
 		GrowSpeed = 0.05f;
 		GridPosition = new Coordinate(x,y);
 		TypeOfMonster = Dictionaries.CharsToObjectTypes[type];
 
+
+		
 		if ((IsSceleton() || IsPumpkin()) && TypeOfMonster != MonsterType.Skeleton1)
 		{
 			transform.localScale = new Vector3(1, 1);
@@ -242,7 +294,7 @@ public class Monster : MonoBehaviour
 			IsAnimated = true;
 			AnimationStartTime = (int)Time.time + Rnd.Next(50);
 		}
-		if (!Dictionaries.AnimatedTypes.Contains(Dictionaries.CharsToObjectTypes[type]))
+		if (!Dictionaries.AnimatedTypes.Contains(Dictionaries.CharsToObjectTypes[type]) && TypeOfMonster != MonsterType.ClericFlag)
 		{
 			gameObject.GetComponent<SpriteRenderer>().sprite = Dictionaries.TypesToSprites[TypeOfMonster];
 		}
@@ -295,6 +347,20 @@ public class Monster : MonoBehaviour
 	}
 	void Update()
 	{
+		if (TypeOfMonster == MonsterType.ClericFlag && !IsFlagPlaced)
+		{
+			PutFlag();
+			if ((gameObject.transform.localScale.x < 1)
+			&& State != MonsterState.Decreasing)
+			{
+				Vector3 scale = transform.localScale;
+
+				scale.x += GrowSpeed;
+				scale.y += GrowSpeed;
+				gameObject.transform.localScale = scale;
+			}
+			return;
+		}
 		if (SkillsController.IsActive && State == MonsterState.Clicked)
 			{
 				State = MonsterState.Default;
@@ -356,7 +422,7 @@ public class Monster : MonoBehaviour
 					else
 					{
 						GameField.MoveIsFinished = true;
-						StartCoroutine(Game.NextTurn());
+						Game.Instance.StartCoroutine(Game.NextTurn());
 					}
 				}
 				State = MonsterState.Default;

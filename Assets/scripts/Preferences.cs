@@ -19,7 +19,7 @@ public class Preferences : MonoBehaviour {
 			
 			//upgrades
 			PlayerPrefs.SetString("Skills0", "311");
-			PlayerPrefs.SetString("Skills1", "111");
+			PlayerPrefs.SetString("Skills1", "331");
 			PlayerPrefs.SetString("Skills2", "000");
 			PlayerPrefs.SetString("Skills3", "000");
 			PlayerPrefs.SetString("Skills4", "000");

@@ -44,6 +44,7 @@ namespace Assets.scripts
 			{ 'G', MonsterType.Ghost},
 			{ 'H', MonsterType.BlackHole},
 			{ 'E', MonsterType.EmptyCell},
+			{'F', MonsterType.ClericFlag},
 			{'e', MonsterType.WaterHorizontal },
 			{'f', MonsterType.WaterVertical },
 			{'g', MonsterType.WaterUpperRight },
