@@ -10,12 +10,13 @@ namespace Assets.scripts
 	{
 		public static GameObject TargetBrackets;
 		public static GameObject TargetBrackets2;
+		public static GameObject LineBrackets;
 		public static bool IsActive;
 		public static List<Coordinate> TargetCoordinates;
 		public static List<GameObject> Brackets; 
 		public static int MaxTargets;
 		public static GameObject Hero;
-
+		public static List<int> LineTargets; 
 		public static SkillsController Instance;
 		// Use this for initialization
 		void Start ()
@@ -23,6 +24,7 @@ namespace Assets.scripts
 			IsActive = false;
 			MaxTargets = 0;
 			TargetCoordinates = new List<Coordinate>();
+			LineTargets = new List<int>();
 			Brackets = new List<GameObject>();
 			Instance = this;
 		}
@@ -33,6 +35,7 @@ namespace Assets.scripts
 			MaxTargets = numOfTargets;
 			TargetCoordinates = new List<Coordinate>();
 			Brackets = new List<GameObject>();
+			LineTargets = new List<int>();
 
 		}
 		public IEnumerator ThrowFireball(int size)
@@ -80,7 +83,7 @@ namespace Assets.scripts
 		void Update ()
 		{
 			if (!IsActive) return;
-			if (MaxTargets == 0 || TargetCoordinates.Count>0)
+			if (MaxTargets == 0 || TargetCoordinates.Count>0 || LineTargets.Count>0)
 				ActivateYes();
 			else
 				DeactivateYes();
@@ -103,6 +106,25 @@ namespace Assets.scripts
 
 		public static void BracketMonster(Coordinate gridPosition)
 		{
+			if (LineBrackets != null)
+			{
+				var ind = LineTargets.FindIndex(x => x == gridPosition.Y);
+				if (ind >= 0)
+				{
+					LineTargets.RemoveAt(ind);
+					Destroy(Brackets.ElementAt(ind));
+					Brackets.RemoveAt(ind);
+				}
+				else
+				{
+					if (MaxTargets == LineTargets.Count) return;
+					var linebracket = (GameObject)Instantiate(LineBrackets,
+						GameField.GetVectorFromCoord(3.5f, gridPosition.Y), Quaternion.Euler(new Vector3()));
+					Brackets.Add(linebracket);
+					LineTargets.Add(gridPosition.Y);
+				}
+				return;
+			}
 			if (TargetBrackets2 != null)
 			{
 				var ind = TargetCoordinates.FindIndex(x => x == gridPosition);

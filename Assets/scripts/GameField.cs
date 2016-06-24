@@ -60,6 +60,26 @@ namespace Assets.scripts
 					asteroidsCoordinates.RemoveAt(target -1);
 			}
 		}
+
+		public static void ShuffleLine(int y)
+		{
+			var rnd = new Random();
+			var asteroidsCoordinates = new List<Coordinate>();
+			for (int i = 0; i < Map.GetLength(0); i++)
+			{
+					if (Map[i, y] != null && Map[i, y].IsMonster())
+						asteroidsCoordinates.Add(new Coordinate(i, y));
+			}
+			while (asteroidsCoordinates.Count != 0)
+			{
+				MoveIsFinished = false;
+				var target = rnd.Next(asteroidsCoordinates.Count);
+				Swap(asteroidsCoordinates.ElementAt(0), asteroidsCoordinates.ElementAt(target));
+				asteroidsCoordinates.RemoveAt(0);
+				if (target != 0)
+					asteroidsCoordinates.RemoveAt(target - 1);
+			}
+		}
 		public static bool IsAnyCorrectMove()
 		{
 			for (int i = 0; i < Map.GetLength(0)-1; i++)
@@ -485,7 +505,7 @@ namespace Assets.scripts
 					'W');
 			}
 		}
-		public static Vector3 GetVectorFromCoord(int i, int j)
+		public static Vector3 GetVectorFromCoord(float i, float j)
 		{
 			return new Vector3(i*0.85f - Game.MAP_SIZE/2 + 1.05f ,
 							Game.MAP_SIZE/2 - j*0.85f -0.4f, 0);

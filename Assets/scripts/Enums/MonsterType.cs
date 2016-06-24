@@ -32,6 +32,8 @@ namespace Assets.scripts
 		Skeleton4,
 		ClericFlag,
 		BloodVortex,
-		MagicSkull
+		MagicSkull,
+		EmptyCell2,
+		CandleCell
 	}
 }

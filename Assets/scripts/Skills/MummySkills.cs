@@ -33,9 +33,9 @@ namespace Assets.scripts.Skills
 			TargetsSkill3Lvl2 = 2;
 			TargetsSkill3Lvl3 = 3;
 
-			Skill1Level = int.Parse(PlayerPrefs.GetString("Skills4").Substring(0, 1));
-			Skill2Level = int.Parse(PlayerPrefs.GetString("Skills4").Substring(1, 1));
-			Skill3Level = int.Parse(PlayerPrefs.GetString("Skills4").Substring(2, 1));
+			Skill1Level = int.Parse(PlayerPrefs.GetString("Skills2").Substring(0, 1));
+			Skill2Level = int.Parse(PlayerPrefs.GetString("Skills2").Substring(1, 1));
+			Skill3Level = int.Parse(PlayerPrefs.GetString("Skills2").Substring(2, 1));
 		}
 		public int GetLevelOfUpgrade(int skillNumber)
 		{

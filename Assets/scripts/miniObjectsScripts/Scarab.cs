@@ -36,6 +36,7 @@ namespace Assets.scripts.miniObjectsScripts
 
 		private IEnumerator GoToTarget()
 		{
+			Game.PlayerIsBlocked = true;
 			var tg = (EndPoint.x - transform.position.x)/(-EndPoint.y + transform.position.y);
 			var atg = Mathf.Atan(tg)*180/Mathf.PI;
 			transform.Rotate(new Vector3(0,0,atg));
@@ -52,6 +53,7 @@ namespace Assets.scripts.miniObjectsScripts
 				GameField.Map[Target.X, Target.Y].Destroy();
 				Dictionaries.MonsterCounter[MonsterType.Coocon]++;
 			}
+			Game.PlayerIsBlocked = false;
 			Destroy(gameObject);
 		}
 

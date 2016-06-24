@@ -146,7 +146,7 @@ public class Monster : MonoBehaviour
 	}
 	public void DestroyMonster()
 	{
-		if (!IsMonster() && TypeOfMonster != MonsterType.Bomb) return;
+		if (!IsMonster() && TypeOfMonster != MonsterType.Bomb && TypeOfMonster != MonsterType.Coocon) return;
 		if (IsFrozen)
 		{
 			IsFrozen = false;

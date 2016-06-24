@@ -17,6 +17,7 @@ namespace Assets.scripts
 		public int NumberOfTargets;
 		public GameObject TargetBrackets;
 		public GameObject TargetBrackets2;
+		public GameObject LineBrackets;
 		// Use this for initialization
 		void Start ()
 		{
@@ -56,6 +57,7 @@ namespace Assets.scripts
 			GameUI.Instance.ActivatePanel(Skill, NumberOfTargets);
 			SkillsController.TargetBrackets = TargetBrackets;
 			SkillsController.TargetBrackets2 = TargetBrackets2;
+			SkillsController.LineBrackets = LineBrackets;
 		}
 
 		public void Activate()

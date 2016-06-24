@@ -25,7 +25,8 @@ namespace Assets.scripts
 			{HeroType.Hunter, new HunterSkills()},
 			{HeroType.Cleric, new ClericSkills()},
 			{HeroType.Vampire, new VampireSkills()},
-			{HeroType.Mummy, new MummySkills() }
+			{HeroType.Mummy, new MummySkills() },
+			{HeroType.Wolverine, new WolverineSkills()}
 		};
 
 		public static Dictionary<HeroType, GameObject> HeroTypesToPrefabs;
@@ -47,6 +48,8 @@ namespace Assets.scripts
 			{ 'H', MonsterType.BlackHole},
 			{ 'E', MonsterType.EmptyCell},
 			{'F', MonsterType.ClericFlag},
+			{ 'J', MonsterType.EmptyCell2},
+			{ 'I', MonsterType.CandleCell},
 			{'X', MonsterType.BloodVortex},
 			{'M', MonsterType.MagicSkull},
 			{'e', MonsterType.WaterHorizontal },
