@@ -26,6 +26,7 @@ public class Monster : MonoBehaviour
 	public static Sprite SpiderSprite;
 	public static Sprite CooconSprite;
 	public static Sprite BombSprite;
+	public static Sprite MagicSkullSprite;
 	public static Sprite Pumpkin1Sprite;
 	public static Sprite Pumpkin2Sprite;
 	public static Sprite Pumpkin3Sprite;
@@ -54,12 +55,14 @@ public class Monster : MonoBehaviour
 	public float GrowSpeed;
 	public float StartTime;
 	public float Delay;
+	public int BloodVortexLastTimeHandled;
 	public int FlagFrequancy;
 	private bool blackHoleHasJumped;
 	private bool isSpritesLoaded;
 	public float UpSpeed = 0.01f;
 	public const float GravitySpeed = 0.01f;
 	public float ToBasketStartTime;
+	public int BloodVortexLivesLeft = 10;
 	public MonsterState State { get; set; }
 	public bool UpdatedField;
 	public static Random Rnd = new Random();
@@ -143,6 +146,7 @@ public class Monster : MonoBehaviour
 	}
 	public void DestroyMonster()
 	{
+		if (!IsMonster() && TypeOfMonster != MonsterType.Bomb) return;
 		if (IsFrozen)
 		{
 			IsFrozen = false;
@@ -294,7 +298,8 @@ public class Monster : MonoBehaviour
 			IsAnimated = true;
 			AnimationStartTime = (int)Time.time + Rnd.Next(50);
 		}
-		if (!Dictionaries.AnimatedTypes.Contains(Dictionaries.CharsToObjectTypes[type]) && TypeOfMonster != MonsterType.ClericFlag)
+		if (!Dictionaries.AnimatedTypes.Contains(Dictionaries.CharsToObjectTypes[type]) 
+			&& TypeOfMonster != MonsterType.ClericFlag && TypeOfMonster != MonsterType.BloodVortex)
 		{
 			gameObject.GetComponent<SpriteRenderer>().sprite = Dictionaries.TypesToSprites[TypeOfMonster];
 		}
@@ -410,7 +415,11 @@ public class Monster : MonoBehaviour
 		{
 			HandleBlackHole();
 		}
-		
+		if (TypeOfMonster == MonsterType.BloodVortex)
+		{
+			transform.GetChild(0).transform.Rotate(0,0,Time.deltaTime*-200f);
+			transform.GetChild(1).transform.Rotate(0, 0, Time.deltaTime * 200f);
+		}
 		if (State == MonsterState.Moving || State == MonsterState.Dropping)
 		{
 			if (transform.position.Equals(Destination))
@@ -519,6 +528,69 @@ public class Monster : MonoBehaviour
 			blackHoleHasJumped = false;
 	}
 
+	public void HandleMagicSkull()
+	{
+		if (GridPosition.Y + 1 < Game.MAP_SIZE && GameField.Map[GridPosition.X, GridPosition.Y + 1] != null
+		    && GameField.Map[GridPosition.X, GridPosition.Y + 1].IsMonster()
+		    && GridPosition.Y - 1 >= 0 && GameField.Map[GridPosition.X, GridPosition.Y - 1] != null
+		    && GameField.Map[GridPosition.X, GridPosition.Y - 1].IsMonster())
+		{
+			StartCoroutine(ActivateSkull());
+			GameField.MagicSwap(new Coordinate(GridPosition.X, GridPosition.Y + 1), new Coordinate(GridPosition.X, GridPosition.Y - 1));
+		}
+		else if (GridPosition.X + 1 < Game.MAP_SIZE && GameField.Map[GridPosition.X + 1, GridPosition.Y] != null
+			&& GameField.Map[GridPosition.X + 1, GridPosition.Y].IsMonster()
+			&& GridPosition.X - 1 >= 0 && GameField.Map[GridPosition.X - 1, GridPosition.Y] != null
+			&& GameField.Map[GridPosition.X - 1, GridPosition.Y].IsMonster())
+		{
+			StartCoroutine(ActivateSkull());
+			GameField.MagicSwap(new Coordinate(GridPosition.X - 1, GridPosition.Y), new Coordinate(GridPosition.X + 1, GridPosition.Y));
+		}
+	}
+
+	private IEnumerator ActivateSkull()
+	{
+		transform.GetChild(0).gameObject.SetActive(true);
+		yield return new WaitForSeconds(0.5f);
+		transform.GetChild(0).gameObject.SetActive(false);
+	}
+
+
+	public void HandleBloodVortex()
+	{
+		if (BloodVortexLastTimeHandled == Game.TurnsLeft)
+			return;
+		BloodVortexLastTimeHandled = Game.TurnsLeft;
+		if (BloodVortexLivesLeft < 0) Destroy(gameObject);
+		var monsters = new List<Monster>();
+		if ( GridPosition.Y + 1 < Game.MAP_SIZE && GameField.Map[GridPosition.X, GridPosition.Y + 1] != null
+		    && GameField.Map[GridPosition.X, GridPosition.Y + 1].IsMonster()
+		    && !GameField.Map[GridPosition.X, GridPosition.Y + 1].IsUpgradable())
+			monsters.Add(GameField.Map[GridPosition.X, GridPosition.Y + 1]);
+		if (GridPosition.Y - 1>= 0&& GameField.Map[GridPosition.X, GridPosition.Y - 1] != null
+			&& GameField.Map[GridPosition.X, GridPosition.Y - 1].IsMonster()
+			&& !GameField.Map[GridPosition.X, GridPosition.Y - 1].IsUpgradable())
+			monsters.Add(GameField.Map[GridPosition.X, GridPosition.Y - 1]);
+		if (GridPosition.X + 1 < Game.MAP_SIZE && GameField.Map[GridPosition.X + 1, GridPosition.Y] != null
+			&& GameField.Map[GridPosition.X+1, GridPosition.Y].IsMonster()
+			&& !GameField.Map[GridPosition.X+1, GridPosition.Y].IsUpgradable())
+			monsters.Add(GameField.Map[GridPosition.X+1, GridPosition.Y]);
+		if (GridPosition.X - 1 >= 0 && GameField.Map[GridPosition.X- 1, GridPosition.Y] != null
+			&& GameField.Map[GridPosition.X - 1, GridPosition.Y].IsMonster()
+			&& !GameField.Map[GridPosition.X - 1, GridPosition.Y].IsUpgradable())
+			monsters.Add(GameField.Map[GridPosition.X - 1, GridPosition.Y]);
+		if (monsters.Count == 0) return;
+		var trg = monsters[Rnd.Next(monsters.Count)];
+		Move(trg.GridPosition);
+		if (trg.IsFrozen)
+			trg.DestroyMonster();
+		trg.DestroyMonster();
+		GameField.Map[GridPosition.X, GridPosition.Y] = this;
+		GameField.Map[PreviousPosition.X, PreviousPosition.Y] = null;
+		
+		
+	}
+
 	private void JumpBlackHole()
 	{
 		blackHoleHasJumped = true;
@@ -603,12 +675,6 @@ public class Monster : MonoBehaviour
 			SkillsController.BracketMonster(GridPosition);
 		if (Game.IsPlayerBlocked() || (!IsMonster() && TypeOfMonster != MonsterType.Bomb))
 			return;
-
-		if (Game.ClickType == ClickState.Electro)
-		{
-			StartCoroutine(ThrowLightning());
-			return;
-		}
 		if (IsFrozen)
 			return;
 		if (State == MonsterState.Default)
@@ -652,6 +718,14 @@ public class Monster : MonoBehaviour
 		
 		State = MonsterState.Moving;
 		PreviousPosition = GridPosition;
+		GridPosition = newPosition;
+		Destination = GameField.GetVectorFromCoord(newPosition.X, newPosition.Y);
+	}
+
+	public void DominantMove(Coordinate newPosition)
+	{
+		State = MonsterState.Moving;
+		PreviousPosition = newPosition;
 		GridPosition = newPosition;
 		Destination = GameField.GetVectorFromCoord(newPosition.X, newPosition.Y);
 	}

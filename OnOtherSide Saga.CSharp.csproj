@@ -90,6 +90,8 @@
     <Compile Include="Assets\scripts\Skills\DeathSkills.cs" />
     <Compile Include="Assets\scripts\Skills\HunterSkills.cs" />
     <Compile Include="Assets\scripts\Skills\ISkills.cs" />
+    <Compile Include="Assets\scripts\Skills\MummySkills.cs" />
+    <Compile Include="Assets\scripts\Skills\VampireSkills.cs" />
     <Compile Include="Assets\scripts\SkillsController.cs" />
     <Compile Include="Assets\scripts\TargetsText.cs" />
     <Compile Include="Assets\scripts\ToMenuButton.cs" />
@@ -99,8 +101,12 @@
     <Compile Include="Assets\scripts\miniObjectsScripts\ClericLight.cs" />
     <Compile Include="Assets\scripts\miniObjectsScripts\PriestLightning.cs" />
     <Compile Include="Assets\scripts\miniObjectsScripts\Raft.cs" />
+    <Compile Include="Assets\scripts\miniObjectsScripts\Scarab.cs" />
+    <Compile Include="Assets\scripts\miniObjectsScripts\Skull.cs" />
     <Compile Include="Assets\scripts\miniObjectsScripts\Spark.cs" />
     <Compile Include="Assets\scripts\miniObjectsScripts\bigLightning.cs" />
+    <Compile Include="Assets\scripts\miniObjectsScripts\bloodDrop.cs" />
+    <Compile Include="Assets\scripts\miniObjectsScripts\bloodVortex.cs" />
     <Compile Include="Assets\scripts\miniObjectsScripts\huntersShot.cs" />
     <Compile Include="Assets\scripts\miniObjectsScripts\miniLightning.cs" />
   </ItemGroup>

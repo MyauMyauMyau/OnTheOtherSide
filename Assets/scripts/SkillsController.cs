@@ -9,6 +9,7 @@ namespace Assets.scripts
 	public class SkillsController : MonoBehaviour
 	{
 		public static GameObject TargetBrackets;
+		public static GameObject TargetBrackets2;
 		public static bool IsActive;
 		public static List<Coordinate> TargetCoordinates;
 		public static List<GameObject> Brackets; 
@@ -102,7 +103,40 @@ namespace Assets.scripts
 
 		public static void BracketMonster(Coordinate gridPosition)
 		{
-			Debug.Log(MaxTargets);
+			if (TargetBrackets2 != null)
+			{
+				var ind = TargetCoordinates.FindIndex(x => x == gridPosition);
+				if (ind >= 0 && ind%2 == 0)
+				{
+					var ind2 = ind + 1;
+					if (TargetCoordinates.Count > ind2)
+					{
+						var pos = TargetCoordinates.ElementAt(ind2);
+						var bracketToRemove = Brackets.First(x => x.transform.position == GameField.GetVectorFromCoord(pos.X, pos.Y));
+						Brackets.Remove(bracketToRemove);
+						Destroy(bracketToRemove.gameObject);
+						TargetCoordinates.RemoveAt(ind2);
+					}
+				}
+				if (ind >= 0)
+				{
+					TargetCoordinates.Remove(gridPosition);
+					var bracketToRemove = Brackets.First(x => x.transform.position == GameField.GetVectorFromCoord(gridPosition.X, gridPosition.Y));
+					Brackets.Remove(bracketToRemove);
+					Destroy(bracketToRemove.gameObject);
+				}
+				if (ind < 0)
+				{
+					if (MaxTargets == TargetCoordinates.Count) return;
+					var currentBrackets = TargetCoordinates.Count%2 == 0 ? TargetBrackets : TargetBrackets2;
+					var br = (GameObject)Instantiate(currentBrackets,
+						GameField.GetVectorFromCoord(gridPosition.X, gridPosition.Y), Quaternion.Euler(new Vector3()));
+					Brackets.Add(br);
+					TargetCoordinates.Add(gridPosition);
+				}
+
+				return;
+			}
 			if (Brackets.Any(x => x.transform.position == GameField.GetVectorFromCoord(gridPosition.X, gridPosition.Y)))
 			{
 				TargetCoordinates.Remove(gridPosition);

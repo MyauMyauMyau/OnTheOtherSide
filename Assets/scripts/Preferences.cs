@@ -20,9 +20,9 @@ public class Preferences : MonoBehaviour {
 			//upgrades
 			PlayerPrefs.SetString("Skills0", "311");
 			PlayerPrefs.SetString("Skills1", "331");
-			PlayerPrefs.SetString("Skills2", "000");
-			PlayerPrefs.SetString("Skills3", "000");
-			PlayerPrefs.SetString("Skills4", "000");
+			PlayerPrefs.SetString("Skills2", "333");
+			PlayerPrefs.SetString("Skills3", "333");
+			PlayerPrefs.SetString("Skills4", "333");
 			PlayerPrefs.SetString("Skills5", "332");
 			for (int i = 1; i < 4; i++)
 				PlayerPrefs.SetFloat("Skill" + i, 1f);

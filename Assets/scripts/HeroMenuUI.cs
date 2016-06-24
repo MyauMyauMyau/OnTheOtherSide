@@ -9,6 +9,9 @@ public class HeroMenuUI : MonoBehaviour
 	public Button DeathButton;
 	public Button HunterButton;
 	public Button ClericButton;
+	public Button VampireButton;
+	public Button MummyButton;
+	public Button WolverineButton;
 	private string heroesInfo;
 	// Use this for initialization
 	void Start ()
@@ -22,6 +25,8 @@ public class HeroMenuUI : MonoBehaviour
 		DeathButton.image.color = heroesInfo[5] == '0' ? Color.gray : Color.white;
 		HunterButton.image.color = heroesInfo[0] == '0' ? Color.gray : Color.white;
 		ClericButton.image.color = heroesInfo[1] == '0' ? Color.gray : Color.white;
+		VampireButton.image.color = heroesInfo[2] == '0' ? Color.gray : Color.white;
+		VampireButton.image.color = heroesInfo[4] == '0' ? Color.gray : Color.white;
 	}
 
 	public void OnHeroClick(int herotype)

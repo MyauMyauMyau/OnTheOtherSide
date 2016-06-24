@@ -23,6 +23,7 @@ namespace Assets.scripts
 		public static GameObject GhostPrefab;
 		public static GameObject SpiderPrefab;
 		public static GameObject BombFirePrefab;
+		public static GameObject SkullPrefab;
 		public const int MAP_SIZE = 8;
 		public static LevelInfo LevelInformation;
 		public static int TurnsLeft;
@@ -70,7 +71,7 @@ namespace Assets.scripts
 			//LevelInformation = JsonConvert.DeserializeObject<LevelInfo>(File.ReadAllText("Assets/levels/1.json"));
 			if (Level == 1)
 			{
-				LevelInformation = new LevelInfo {Map = "ZSVBBGBB ZHGGBBSS GBZBGSZS ZGGSVHVG GVZBVZBS ZHZVBZGV GBGSZSGS ZBZBBGBZ"};
+				LevelInformation = new LevelInfo {Map = "ZSVCBGBB ZHGGBBSS GBZBGSZS ZGGSVHVG GVZBVZBS ZHZVBZGV GBGSZSGS ZBZBBGBZ"};
 				LevelInformation.Targets = new Dictionary<char, int>()
 				{
 					{'Z', 10},
@@ -133,6 +134,7 @@ namespace Assets.scripts
 			ZombiePrefab = Resources.Load("objects/zombie/Zombie", typeof(GameObject)) as GameObject;
 			GhostPrefab = Resources.Load("objects/ghost/Ghost", typeof(GameObject)) as GameObject;
 			SpiderPrefab = Resources.Load("objects/spider/Spider", typeof(GameObject)) as GameObject;
+			SkullPrefab = Resources.Load("objects/heroes/Mummy/skull/SkullPrefab", typeof(GameObject)) as GameObject;
 			FlagPrefab = Resources.Load("objects/heroes/Cleric/HolyFlag/Flag", typeof(GameObject)) as GameObject;
 			Monster.EmptyCellSprite = Resources.Load("objects/graves/grave1", typeof(Sprite)) as Sprite;
 			Monster.BombSprite = Resources.Load("Sprites/bomb", typeof(Sprite)) as Sprite;
@@ -160,6 +162,7 @@ namespace Assets.scripts
 			Monster.ZombieSprite = Resources.Load("targetsSprites/zombie", typeof(Sprite)) as Sprite;
 			Monster.VoodooSprite = Resources.Load("targetsSprites/voodoo", typeof(Sprite)) as Sprite;
 			Monster.SpiderSprite = Resources.Load("targetsSprites/spider", typeof(Sprite)) as Sprite;
+			Monster.MagicSkullSprite = Resources.Load("objects/heroes/Mummy/skull/scull cell", typeof(Sprite)) as Sprite;
 			Cursor.SetCursor(MainCursor, new Vector2(0,0), CursorMode.Auto);
 			Dictionaries.TypesToSprites = new Dictionary<MonsterType, Sprite>
 			{
@@ -186,6 +189,7 @@ namespace Assets.scripts
 				{MonsterType.Spider, Monster.SpiderSprite},
 				{MonsterType.Ghost, Monster.GhostSprite},
 				{MonsterType.Bat, Monster.BatSprite},
+				{MonsterType.MagicSkull, Monster.MagicSkullSprite},
 
 			};
 			Instance = this;
@@ -338,14 +342,12 @@ namespace Assets.scripts
 
 		public static IEnumerator NextTurn()
 		{
-			Debug.Log("f");
 			TurnsLeft--;
 			while (GameField.IsAnyMoving())
 			{
 				yield return null;
 			
 			}
-			Debug.Log("f2");
 			Instance.LastAdviceTime = Time.time + 5f;
 			Instance.Update();
 			while (GameField.IsAnyMoving())
@@ -357,32 +359,38 @@ namespace Assets.scripts
 			{
 				yield return null;
 			}
-			if (HeroType == HeroType.Cleric)
-				ActivateFlags();
+			ActivateFlagsAndVortexes();
 			GameField.MoveIsFinished = true;
 		}
 
-		private static void ActivateFlags()
+		private static void ActivateFlagsAndVortexes()
 		{
 			for (int i = 0; i < MAP_SIZE; i++)
 				for (int j = 0; j < MAP_SIZE; j++)
 				{
 					if (GameField.Map[i, j] != null && GameField.Map[i, j].TypeOfMonster == MonsterType.ClericFlag)
 					{
-						Debug.Log("counter is " + GameField.Map[i, j].FlagCounter);
 						GameField.Map[i, j].FlagCounter--;
 						if (GameField.Map[i, j].FlagCounter <= 0)
 						{
 							GameField.Map[i, j].ActivateFlag();
 							GameField.Map[i, j].FlagCounter = GameField.Map[i, j].FlagFrequancy;
 						}
-							
+
 					}
-						
-					
+					if (GameField.Map[i, j] != null && GameField.Map[i, j].TypeOfMonster == MonsterType.BloodVortex)
+					{
+						GameField.Map[i, j].BloodVortexLivesLeft--;
+						GameField.Map[i, j].HandleBloodVortex();
+
+					}
+					if (GameField.Map[i, j] != null && GameField.Map[i, j].TypeOfMonster == MonsterType.MagicSkull)
+					{
+						GameField.Map[i, j].HandleMagicSkull();
+					}
 				}
-					
-			
+
+
 		}
 	}
 }

@@ -560,5 +560,13 @@ namespace Assets.scripts
 				Map[coordinate.X, i].DestroyMonster();
 			}
 		}
+
+		public static void MagicSwap(Coordinate p1, Coordinate p2)
+		{
+			Map[p1.X, p1.Y].DominantMove(new Coordinate(p2.X, p2.Y));
+			Map[p2.X, p2.Y].DominantMove(new Coordinate(p1.X, p1.Y));
+
+			Map.SwapArrayElements(p1, p2);
+		}
 	}
 }

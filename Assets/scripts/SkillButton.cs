@@ -16,6 +16,7 @@ namespace Assets.scripts
 		public Action Skill;
 		public int NumberOfTargets;
 		public GameObject TargetBrackets;
+		public GameObject TargetBrackets2;
 		// Use this for initialization
 		void Start ()
 		{
@@ -54,6 +55,7 @@ namespace Assets.scripts
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill" + ButtonNumber + "Ready");
 			GameUI.Instance.ActivatePanel(Skill, NumberOfTargets);
 			SkillsController.TargetBrackets = TargetBrackets;
+			SkillsController.TargetBrackets2 = TargetBrackets2;
 		}
 
 		public void Activate()
