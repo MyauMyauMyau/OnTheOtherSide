@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using Assets.scripts;
 using Assets.scripts.Enums;
+using Newtonsoft.Json;
 using UnityEngine.UI;
 
 //using Newtonsoft.Json;
@@ -68,60 +69,8 @@ namespace Assets.scripts
 			};
 			GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
 			Level = PlayerPrefs.GetInt("CurrentLevel");
-			//LevelInformation = JsonConvert.DeserializeObject<LevelInfo>(File.ReadAllText("Assets/levels/1.json"));
-			if (Level == 1)
-			{
-				LevelInformation = new LevelInfo {Map = "ZSVCBGBB ZHGGBBSS GBZBGSZS ZGGSVHVG GVZBVZBS ZHZVBZGV GBGSZSGS ZBZBBGBZ"};
-				LevelInformation.Targets = new Dictionary<char, int>()
-				{
-					{'Z', 10},
-					{'S', 3},
-					{'V', 0}
-				};
-				TurnsLeft = 100;
-			}
-			if (Level == 2)
-			{
-				LevelInformation = new LevelInfo { Map = "cSccBcBE EaaBaBSE ekeejVSV EGGSfSVE EVZBmeeo EVZVBZGE EBGyxSxE EEEEEEEE",
-					Skeleton = true};
-				LevelInformation.Targets = new Dictionary<char, int>()
-				{
-					{'G', 30},
-					{'Z', 20},
-				};
-				TurnsLeft = 100;
-			}
-			if (Level == 3)
-			{
-				LevelInformation = new LevelInfo { Map = "ZSVBBGBB ZHGGBBHS GSZEESVS ZGEEEEVG GVEEEEBS ZVZEEZGV GBGSZSGS ZHZBBGBZ" };
-				LevelInformation.Targets = new Dictionary<char, int>()
-				{
-					{'G', 20},
-					{'B', 10},
-					{'S', 20}
-				};
-				TurnsLeft = 15;
-			}
-			if (Level == 4)
-			{
-				LevelInformation = new LevelInfo { Map = "ZSVBBGBB ZSGGBBVS GBZHHSCS SZGHHVGV GVZBVZBS ZVZVBZGV GBGSZSGS ZBZBBCBZ" };
-				LevelInformation.Targets = new Dictionary<char, int>()
-				{
-					{'V', 40},
-					{'Z', 35}
-				};
-				TurnsLeft = 20;
-			}
-			if (Level == 5)
-			{
-				LevelInformation = new LevelInfo { Map = "ECVBBCBE ZBGGVBSS CSZBGSCS ZSGGVBVG GCZHSCBS ZVZVBZGV CBGSZCGS EBZVBGHE" };
-				LevelInformation.Targets = new Dictionary<char, int>()
-				{
-					{'C', 8},
-					{'S', 50},
-				};
-				TurnsLeft = 25;
-			}
+			LevelInformation = JsonConvert.DeserializeObject<LevelInfo>(File.ReadAllText("Assets/levels/" + Level+".json"));
+			
 		}
 
 		private void Start()
@@ -162,12 +111,16 @@ namespace Assets.scripts
 			Monster.ZombieSprite = Resources.Load("targetsSprites/zombie", typeof(Sprite)) as Sprite;
 			Monster.VoodooSprite = Resources.Load("targetsSprites/voodoo", typeof(Sprite)) as Sprite;
 			Monster.SpiderSprite = Resources.Load("targetsSprites/spider", typeof(Sprite)) as Sprite;
+			Monster.CandleCellSprite = Resources.Load("objects/graves/candle", typeof(Sprite)) as Sprite;
+			Monster.EmptyCell2Sprite = Resources.Load("objects/graves/grave2", typeof(Sprite)) as Sprite;
 			Monster.MagicSkullSprite = Resources.Load("objects/heroes/Mummy/skull/scull cell", typeof(Sprite)) as Sprite;
 			Cursor.SetCursor(MainCursor, new Vector2(0,0), CursorMode.Auto);
 			Dictionaries.TypesToSprites = new Dictionary<MonsterType, Sprite>
 			{
 				{MonsterType.EmptyCell, Monster.EmptyCellSprite},
-				{MonsterType.BlackHole, Monster.BlackHoleSprite},
+				{ MonsterType.EmptyCell2, Monster.EmptyCell2Sprite},
+				{ MonsterType.CandleCell, Monster.CandleCellSprite},
+				{ MonsterType.BlackHole, Monster.BlackHoleSprite},
 				{MonsterType.Coocon, Monster.CooconSprite},
 				{MonsterType.Bomb, Monster.BombSprite },
 				{MonsterType.WaterHorizontal, Monster.WaterHSprite },
@@ -193,15 +146,8 @@ namespace Assets.scripts
 
 			};
 			Instance = this;
-
-			if (LevelInformation.Pumpkins)
-			{
-				Dictionaries.MonsterGenerationList.Add('x');
-			}
-			if (LevelInformation.Skeleton)
-			{
-				Dictionaries.MonsterGenerationList.Add('a');
-			}
+			TurnsLeft = LevelInformation.Turns;
+			Dictionaries.MonsterGenerationList = LevelInformation.Monsters.ToCharArray().ToList();
 			GenerateMap();
 
 		}
@@ -260,7 +206,16 @@ namespace Assets.scripts
 			{
 				for (var j = 0; j < MAP_SIZE; j++)
 				{
-					MonsterCreate(i, j, LevelInformation.Map.ElementAt(j*(MAP_SIZE + 1) + i));
+					try
+					{
+						MonsterCreate(i, j, LevelInformation.Map.ElementAt(j * (MAP_SIZE + 1) + i));
+					}
+					catch (Exception)
+					{
+						
+						Debug.Log(LevelInformation.Map.ElementAt(j * (MAP_SIZE + 1) + i));
+					}
+					
 				}
 			}
 			WaterField.GenerateRiver();
@@ -326,7 +281,7 @@ namespace Assets.scripts
 				water.Initialise(x, y, type, delay); //?
 				WaterField.Map[x, y] = water;
 				water.gameObject.GetComponent<SpriteRenderer>().sortingOrder = -1;
-				water.gameObject.GetComponent<CircleCollider2D>().enabled = true;
+				water.gameObject.GetComponent<CircleCollider2D>().enabled = false;
 			}
 			else
 			{

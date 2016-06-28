@@ -8,9 +8,8 @@ namespace Assets.scripts
 	public class LevelInfo
 	{
 		public string Map;
-		public int Points;
+		public string Monsters;
+		public int Turns;
 		public Dictionary<char, int> Targets;
-		public bool Pumpkins;
-		public bool Skeleton;
 	}
 }

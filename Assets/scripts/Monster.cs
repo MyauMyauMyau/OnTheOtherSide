@@ -64,6 +64,9 @@ public class Monster : MonoBehaviour
 	public float ToBasketStartTime;
 	public int BloodVortexLivesLeft = 10;
 	public MonsterState State { get; set; }
+	public static Sprite EmptyCell2Sprite { get; set; }
+	public static Sprite CandleCellSprite { get; set; }
+
 	public bool UpdatedField;
 	public static Random Rnd = new Random();
 	public Vector3 DestroyRotation;
@@ -98,7 +101,7 @@ public class Monster : MonoBehaviour
 	public IEnumerator AnimateAdvice()
 	{
 		var bufState = State;
-		State = MonsterState.WaitingForActivation;
+		State = MonsterState.Animating;
 		for (int i = 0; i < 10; i++)
 		{
 			transform.position = new Vector3(transform.position.x , transform.position.y + 0.03f);
@@ -371,7 +374,8 @@ public class Monster : MonoBehaviour
 				State = MonsterState.Default;
 				GameField.ClickedObject = null;
 			}
-		if (State == MonsterState.WaitingForActivation || State == MonsterState.Deactivated) return;
+		if (Game.PlayerIsBlocked || State == MonsterState.WaitingForActivation || State == MonsterState.Deactivated || State == MonsterState.Animating)
+			return;
 		if (State == MonsterState.Destroying)
 		{
 			if (TypeOfMonster == MonsterType.Voodoo || TypeOfMonster == MonsterType.Zombie ||

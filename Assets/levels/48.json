@@ -1,0 +1,6 @@
+﻿{
+  "Map": "JJZVVGJJ JJZVGVJJ JJGZVGJJ JJZVGZJJ JJZVGVJJ EEEZGEEE EJEVZEJE EEEVGEEE",
+  "Monsters" : "ZVG",
+  "Turns": 100,
+  "Targets": { 'Z' : 15, "V" : 30, "G" : 15 },
+}

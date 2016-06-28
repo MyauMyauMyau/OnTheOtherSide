@@ -107,11 +107,7 @@ namespace Assets.scripts
 
 		public static List<char> MonsterGenerationList = new List<char>()
 		{
-			'Z',
-			'S',
-			'V',
-			'B',
-			'G',
+
 		};
 
 		public static Dictionary<MonsterType, int> MonsterCounter;

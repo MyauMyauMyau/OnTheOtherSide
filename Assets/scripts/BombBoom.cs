@@ -25,7 +25,7 @@ public class BombBoom : MonoBehaviour {
 			transform.localScale = scale;
 			yield return new WaitForSeconds(0.005f);
 		}
-		DestroyObject(gameObject);
 		Game.PlayerIsBlocked = false;
+		DestroyObject(gameObject);		
 	}
 }

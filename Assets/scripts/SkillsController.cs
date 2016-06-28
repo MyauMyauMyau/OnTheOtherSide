@@ -36,6 +36,10 @@ namespace Assets.scripts
 			TargetCoordinates = new List<Coordinate>();
 			Brackets = new List<GameObject>();
 			LineTargets = new List<int>();
+			foreach (var coordinate in WaterField.River)
+			{
+				WaterField.Map[coordinate.X, coordinate.Y].GetComponent<CircleCollider2D>().enabled = true;
+			}
 
 		}
 		public IEnumerator ThrowFireball(int size)
@@ -78,6 +82,10 @@ namespace Assets.scripts
 			foreach(var bracket in Brackets)
 				Destroy(bracket);
 			Brackets = new List<GameObject>();
+			foreach (var coordinate in WaterField.River)
+			{
+				WaterField.Map[coordinate.X, coordinate.Y].GetComponent<CircleCollider2D>().enabled = false;
+			}
 		}
 		// Update is called once per frame
 		void Update ()

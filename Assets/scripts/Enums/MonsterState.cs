@@ -13,6 +13,7 @@ namespace Assets.scripts
 		Dropping,
 		WaitingForInitialising,
 		WaitingForActivation,
+		Animating,
 		Growing,
 		Decreasing,
 		Destroying,

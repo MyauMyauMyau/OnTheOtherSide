@@ -9,10 +9,10 @@ public class Preferences : MonoBehaviour {
 		if (!PlayerPrefs.HasKey("xxx"))
 		{
 			PlayerPrefs.SetInt("Sound", 1);
-			PlayerPrefs.SetInt("LevelUnlocked", 2);
+			PlayerPrefs.SetInt("LevelUnlocked", 60);
 			PlayerPrefs.SetInt("FromGame",0);
 			PlayerPrefs.SetInt("Gold", 50);
-			PlayerPrefs.SetInt("Lives", 5);
+			PlayerPrefs.SetInt("Lives", 100);
 			//heroes hunter, cleric, mummy, wolverine, vampire, death
 			PlayerPrefs.SetString("Heroes","000000");
 			PlayerPrefs.SetInt("CurrentHero", 0);

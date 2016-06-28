@@ -111,7 +111,7 @@ namespace Assets.scripts.Skills
 				Game.Destroy(boom);
 			foreach (var monster in monstersToDestroy)
 				GameField.BurnCell(monster.GridPosition);
-			Game.PlayerIsBlocked = true;
+			Game.PlayerIsBlocked = false;
 		}
 
 		public void Skill3()
