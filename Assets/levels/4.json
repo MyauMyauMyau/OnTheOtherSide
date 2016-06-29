@@ -1,6 +1,0 @@
-﻿{
-  "Map": "ESSGBBJJ EGGBGGJJ eehSBJJ ESGeeekk EBBGSBJJ ESGSBGJJ EGBSGSJJ EEEEEEJJ",
-  "Monsters" : "SBG",
-  "Turns": 100,
-  "Targets": { 'S' : 15, "B" : 15, "G" : 30 },
-}

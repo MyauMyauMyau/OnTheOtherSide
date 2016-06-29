@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using Assets.scripts;
 using Assets.scripts.Enums;
-using Newtonsoft.Json;
+using SimpleJSON;
 using UnityEngine.UI;
 
 //using Newtonsoft.Json;
@@ -69,8 +69,19 @@ namespace Assets.scripts
 			};
 			GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
 			Level = PlayerPrefs.GetInt("CurrentLevel");
-			LevelInformation = JsonConvert.DeserializeObject<LevelInfo>(File.ReadAllText("Assets/levels/" + Level+".json"));
+			var path = "levels/" + Level + "";
+			TextAsset file = Resources.Load(path, typeof(TextAsset)) as TextAsset;
+			Debug.Log(path);
+			string json = file.ToString();
 			
+			LevelInformation = LevelInfo.CreateFromJSON(json);
+			
+			Debug.Log(LevelInformation.Map);
+			Debug.Log(LevelInformation.Monsters);
+			Debug.Log(LevelInformation.Turns);
+			Debug.Log(LevelInformation.Targets.ElementAt(0).Key);
+			
+
 		}
 
 		private void Start()

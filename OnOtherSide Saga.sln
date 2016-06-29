@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnOtherSide Saga.CSharp.Plugins", "OnOtherSide Saga.CSharp.Plugins.csproj", "{7993B02C-55AC-8233-6963-5B401748C260}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnOtherSide Saga.CSharp", "OnOtherSide Saga.CSharp.csproj", "{56226833-9306-7DC5-79E7-5323D2729BDF}"
 EndProject
 Global
@@ -9,6 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7993B02C-55AC-8233-6963-5B401748C260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7993B02C-55AC-8233-6963-5B401748C260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7993B02C-55AC-8233-6963-5B401748C260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7993B02C-55AC-8233-6963-5B401748C260}.Release|Any CPU.Build.0 = Release|Any CPU
 		{56226833-9306-7DC5-79E7-5323D2729BDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56226833-9306-7DC5-79E7-5323D2729BDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56226833-9306-7DC5-79E7-5323D2729BDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
