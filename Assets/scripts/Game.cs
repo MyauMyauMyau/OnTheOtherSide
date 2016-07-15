@@ -8,6 +8,7 @@ using System.Threading;
 using Assets.scripts;
 using Assets.scripts.Enums;
 using SimpleJSON;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 //using Newtonsoft.Json;
@@ -29,8 +30,8 @@ namespace Assets.scripts
 		public static LevelInfo LevelInformation;
 		public static int TurnsLeft;
 		public static Game Instance;
-		public static Vector3 BasketCoordinate = new Vector3(0f, -4f);
-		public static Vector3 PotCoordinate = new Vector3(3f, -4f);
+		public static Vector3 BasketCoordinate = new Vector3(3f, -4f);
+		public static Vector3 PotCoordinate = new Vector3(0f, -4f);
 		public static Vector3 PortalCoordinate = new Vector3(1.5f, -4.0f);
 		public static Texture2D MainCursor;
 		public static Texture2D FireCursor;
@@ -39,6 +40,7 @@ namespace Assets.scripts
 		public float LastAdviceTime;
 		public static int Level;
 		public static bool GameIsFinished;
+		public static bool DropIsBlocked = true;
 		public static HeroType HeroType;
 		private void Awake()
 		{
@@ -71,17 +73,8 @@ namespace Assets.scripts
 			Level = PlayerPrefs.GetInt("CurrentLevel");
 			var path = "levels/" + Level + "";
 			TextAsset file = Resources.Load(path, typeof(TextAsset)) as TextAsset;
-			Debug.Log(path);
 			string json = file.ToString();
-			
 			LevelInformation = LevelInfo.CreateFromJSON(json);
-			
-			Debug.Log(LevelInformation.Map);
-			Debug.Log(LevelInformation.Monsters);
-			Debug.Log(LevelInformation.Turns);
-			Debug.Log(LevelInformation.Targets.ElementAt(0).Key);
-			
-
 		}
 
 		private void Start()
@@ -96,6 +89,7 @@ namespace Assets.scripts
 			SpiderPrefab = Resources.Load("objects/spider/Spider", typeof(GameObject)) as GameObject;
 			SkullPrefab = Resources.Load("objects/heroes/Mummy/skull/SkullPrefab", typeof(GameObject)) as GameObject;
 			FlagPrefab = Resources.Load("objects/heroes/Cleric/HolyFlag/Flag", typeof(GameObject)) as GameObject;
+			BrokenWebPrefab = Resources.Load("objects/web/BrokenWeb", typeof(GameObject)) as GameObject;
 			Monster.EmptyCellSprite = Resources.Load("objects/graves/grave1", typeof(Sprite)) as Sprite;
 			Monster.BombSprite = Resources.Load("Sprites/bomb", typeof(Sprite)) as Sprite;
 			Monster.BlackHoleSprite = Resources.Load("Sprites/3Black_hole_02", typeof(Sprite)) as Sprite;
@@ -163,16 +157,26 @@ namespace Assets.scripts
 
 		}
 
-		public static bool PlayerIsBlocked;
+		public static GameObject BrokenWebPrefab;
+
+		public static bool	 PlayerIsBlocked;
 		public static bool IsPlayerBlocked()
 		{
 			if (GameField.IsAnyMoving() || PlayerIsBlocked || GameIsFinished)
 				return true;
 			return false;
 		}
+		public void GoToMenu()
+		{
+			PlayerPrefs.SetInt("FromGame", 1);
+			PlayerPrefs.Save();
+			SceneManager.LoadScene("MainMenu");
+		}
 		// Update is called once per frame
 		public void Update()
 		{
+			if (Input.GetKeyDown(KeyCode.Escape))
+				GoToMenu();
 			if (GameIsFinished) return;
 			CheckCursorClick();
 			if (TurnsLeft == 0)
@@ -180,13 +184,13 @@ namespace Assets.scripts
 			GameField.CheckUpperBorder();
 			if (!GameField.IsAnyMoving())
 			{
-				if (!GameField.IsAnyCorrectMove())
+				if (!GameField.IsAnyCorrectMove() && !DropIsBlocked)
 					GameField.Shuffle();
 				GameField.UpdateField();
 
 				if (Time.time > LastAdviceTime + 5f)
 				{
-					LastAdviceTime += 5f;
+					LastAdviceTime = Time.time + 10f;
 					GameField.GetAdvice();
 				}
 			}
@@ -230,6 +234,7 @@ namespace Assets.scripts
 				}
 			}
 			WaterField.GenerateRiver();
+			DropIsBlocked = false;
 		}
 
 		public static void MonsterCreate(int x, int y, MonsterType type, float delay = 0)
@@ -239,6 +244,8 @@ namespace Assets.scripts
 		}
 		public static void MonsterCreate(int x, int y, char type, float delay = 0)
 		{
+			int respY;
+			respY = y == 0 ? y - 1 : y;			
 			if (Dictionaries.MonsterTypes.Contains(Dictionaries.CharsToObjectTypes[type]))
 			{
 				GameObject prefab = MonsterPrefab;
@@ -262,7 +269,7 @@ namespace Assets.scripts
 				}
 
 				Monster monster = ((GameObject)Instantiate(
-					prefab, GameField.GetVectorFromCoord(x, y),
+					prefab, GameField.GetVectorFromCoord(x, respY),
 					Quaternion.Euler(new Vector3())))
 					.GetComponent<Monster>();
 				monster.Initialise(x, y, type, delay); //?
@@ -309,13 +316,8 @@ namespace Assets.scripts
 		public static IEnumerator NextTurn()
 		{
 			TurnsLeft--;
-			while (GameField.IsAnyMoving())
-			{
-				yield return null;
-			
-			}
+			if (TurnsLeft == 0) yield break;
 			Instance.LastAdviceTime = Time.time + 5f;
-			Instance.Update();
 			while (GameField.IsAnyMoving())
 			{
 				yield return null;

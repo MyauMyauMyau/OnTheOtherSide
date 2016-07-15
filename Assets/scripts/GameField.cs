@@ -27,16 +27,28 @@ namespace Assets.scripts
 		{
 			Instance = this;
 		}
+
+		public static char LastMonster;
 		public static void CheckUpperBorder()
 		{
+			if (Game.DropIsBlocked) return;
 			var delay = 0f;
 			var step = 3f / Monster.BaseDropSpeed;
 			for (int i = 0; i < Map.GetLength(0); i++)
 			{
 				if (Map[i, 0] == null)
 				{
-					Game.MonsterCreate(i, 0,
-						Dictionaries.MonsterGenerationList.ElementAt(Rnd.Next(Dictionaries.MonsterGenerationList.Count)), delay);
+					for (int k = 0; k < 5; k++)
+					{
+						var monster = Dictionaries.MonsterGenerationList.ElementAt(Rnd.Next(Dictionaries.MonsterGenerationList.Count));
+						if (monster == LastMonster)
+							continue;
+						Game.MonsterCreate(i, 0, monster, delay);
+						LastMonster = monster;
+						break;
+							
+					}
+					
 				}
 			}
 		}
@@ -183,6 +195,7 @@ namespace Assets.scripts
 
 		public static void Drop(Coordinate p1, Coordinate p2)
 		{
+			if (Map[p1.X, p1.Y] == null) return;
 			Map[p1.X, p1.Y].Move(p2);
 			Map[p2.X, p2.Y] = Map[p1.X, p1.Y];
 			Map[p1.X, p1.Y] = null;
@@ -517,10 +530,10 @@ namespace Assets.scripts
 				for (int j = 0; j < Game.MAP_SIZE; j++)
 					if (Map[i,j] != null && 
 						(Map[i, j].State == MonsterState.Dropping 
-						|| Map[i, j].State == MonsterState.Moving || Map[i, j].State == MonsterState.Growing
+						|| Map[i, j].State == MonsterState.Moving
 						|| Map[i, j].State == MonsterState.Decreasing
-						|| Map[i,j].State == MonsterState.Destroying
-						|| Map[i, j].State == MonsterState.WaitingForActivation))
+						|| Map[i, j].State == MonsterState.WaitingForActivation
+						|| Map[i,j].State == MonsterState.Destroying))
 							return true;
 			return false;
 		}
@@ -583,8 +596,10 @@ namespace Assets.scripts
 
 		public static void MagicSwap(Coordinate p1, Coordinate p2)
 		{
-			Map[p1.X, p1.Y].DominantMove(new Coordinate(p2.X, p2.Y));
-			Map[p2.X, p2.Y].DominantMove(new Coordinate(p1.X, p1.Y));
+			if (Map[p1.X, p1.Y] != null)
+				Map[p1.X, p1.Y].DominantMove(new Coordinate(p2.X, p2.Y));
+			if (Map[p2.X, p2.Y] != null)
+				Map[p2.X, p2.Y].DominantMove(new Coordinate(p1.X, p1.Y));
 
 			Map.SwapArrayElements(p1, p2);
 		}

@@ -8,6 +8,7 @@ namespace Assets.scripts.Skills
 {
 	public interface ISkills
 	{
+		bool IsPossibleTarget(Monster monster, int skillNumber);
 		int TargetsSkill1Lvl1 { get; set; }
 		int TargetsSkill1Lvl2 { get; set; }
 		int TargetsSkill1Lvl3 { get; set; }

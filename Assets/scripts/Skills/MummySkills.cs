@@ -11,6 +11,21 @@ namespace Assets.scripts.Skills
 {
 	class MummySkills : ISkills
 	{
+		public bool IsPossibleTarget(Monster monster, int skillNumber)
+		{
+			if (skillNumber == 1)
+			{
+				return (monster.IsMonster() && !monster.IsUpgradable() );
+			}
+			if (skillNumber == 3)
+			{
+				return (!monster.IsUpgradable() && monster.TypeOfMonster != MonsterType.BlackHole && monster.TypeOfMonster != MonsterType.Bomb);
+			}
+			if (skillNumber == 2)
+				return (monster.TypeOfMonster == MonsterType.Coocon);
+			return false;
+		}
+
 		public int TargetsSkill1Lvl1 { get; set; }
 		public int TargetsSkill1Lvl2 { get; set; }
 		public int TargetsSkill1Lvl3 { get; set; }
@@ -68,33 +83,85 @@ namespace Assets.scripts.Skills
 			{
 				ray.transform.position = ray.transform.position - dist/40;
 				yield return new WaitForSeconds(0.005f);
-				ray.transform.GetChild(1).gameObject.SetActive(true);
 			}
-			yield return new WaitForSeconds(0.2f);
+			var boomPrefab = Resources.Load("objects/heroes/Mummy/beam/boomPrefab", typeof(GameObject)) as GameObject;
+			var boomList = new List<GameObject>();
 			if (Skill1Level >= 1)
 				if (GameField.Map[monster.X, monster.Y] != null)
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X, monster.Y), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
 					GameField.Map[monster.X, monster.Y].DestroyMonster();
+				}
 			if (Skill1Level >= 2)
 			{
-				if (monster.X - 1 >= 0 && monster.Y + 1 < Game.MAP_SIZE && GameField.Map[monster.X - 1, monster.Y + 1] != null && !GameField.Map[monster.X - 1, monster.Y + 1].IsUpgradable())
+				if (monster.X - 1 >= 0 && monster.Y + 1 < Game.MAP_SIZE && GameField.Map[monster.X - 1, monster.Y + 1] != null &&
+				    !GameField.Map[monster.X - 1, monster.Y + 1].IsUpgradable())
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X-1, monster.Y + 1), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
 					GameField.Map[monster.X-1, monster.Y + 1].DestroyMonster();
-				if (monster.Y - 1 >= 0 && GameField.Map[monster.X, monster.Y + 1] != null && !GameField.Map[monster.X, monster.Y + 1].IsUpgradable())
-					GameField.Map[monster.X, monster.Y + 1].DestroyMonster();			
-				if (monster.X + 1 < Game.MAP_SIZE && monster.Y + 1 < Game.MAP_SIZE && GameField.Map[monster.X - 1, monster.Y + 1] != null && !GameField.Map[monster.X + 1, monster.Y + 1].IsUpgradable())
+				}
+				if (monster.Y + 1 < Game.MAP_SIZE && GameField.Map[monster.X, monster.Y + 1] != null &&
+				    !GameField.Map[monster.X, monster.Y + 1].IsUpgradable())
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X, monster.Y + 1), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
+					GameField.Map[monster.X, monster.Y + 1].DestroyMonster();
+				}
+				if (monster.X + 1 < Game.MAP_SIZE && monster.Y + 1 < Game.MAP_SIZE &&
+				    GameField.Map[monster.X + 1, monster.Y + 1] != null &&
+				    !GameField.Map[monster.X + 1, monster.Y + 1].IsUpgradable())
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X + 1, monster.Y + 1), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
 					GameField.Map[monster.X + 1, monster.Y + 1].DestroyMonster();
+				}
 			}
 			if (Skill1Level == 3)
 			{
-				if (monster.X - 1 >= 0 && monster.Y + 2 < Game.MAP_SIZE && GameField.Map[monster.X - 1, monster.Y + 2] != null && !GameField.Map[monster.X - 1, monster.Y + 2].IsUpgradable())
+				if (monster.X - 1 >= 0 && monster.Y + 2 < Game.MAP_SIZE && GameField.Map[monster.X - 1, monster.Y + 2] != null &&
+				    !GameField.Map[monster.X - 1, monster.Y + 2].IsUpgradable())
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X - 1, monster.Y + 2), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
 					GameField.Map[monster.X - 1, monster.Y + 2].DestroyMonster();
-				if (monster.X - 2 >= 0 && monster.Y + 2 < Game.MAP_SIZE && GameField.Map[monster.X - 2, monster.Y + 2] != null &&!GameField.Map[monster.X - 2, monster.Y + 2].IsUpgradable())
+				}
+				if (monster.X - 2 >= 0 && monster.Y + 2 < Game.MAP_SIZE && GameField.Map[monster.X - 2, monster.Y + 2] != null &&
+				    !GameField.Map[monster.X - 2, monster.Y + 2].IsUpgradable())
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X - 2, monster.Y + 2), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
 					GameField.Map[monster.X - 2, monster.Y + 2].DestroyMonster();
-				if (monster.Y - 2 >= 0 && GameField.Map[monster.X, monster.Y + 2] != null  && !GameField.Map[monster.X, monster.Y + 2].IsUpgradable())
+				}
+				if (monster.Y + 2 < Game.MAP_SIZE && GameField.Map[monster.X, monster.Y + 2] != null &&
+				    !GameField.Map[monster.X, monster.Y + 2].IsUpgradable())
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X, monster.Y +2), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
 					GameField.Map[monster.X, monster.Y + 2].DestroyMonster();
-				if (monster.X + 1 < Game.MAP_SIZE && monster.Y + 2 < Game.MAP_SIZE && GameField.Map[monster.X + 1, monster.Y + 2] != null && !GameField.Map[monster.X + 1, monster.Y + 2].IsUpgradable())
+				}
+				if (monster.X + 1 < Game.MAP_SIZE && monster.Y + 2 < Game.MAP_SIZE &&
+				    GameField.Map[monster.X + 1, monster.Y + 2] != null &&
+				    !GameField.Map[monster.X + 1, monster.Y + 2].IsUpgradable())
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X + 1, monster.Y + 2), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
 					GameField.Map[monster.X +1, monster.Y + 2].DestroyMonster();
-				if (monster.X + 2 < Game.MAP_SIZE && monster.Y + 2 < Game.MAP_SIZE && GameField.Map[monster.X + 2, monster.Y + 2] != null && !GameField.Map[monster.X + 2, monster.Y + 2].IsUpgradable())
+				}
+				if (monster.X + 2 < Game.MAP_SIZE && monster.Y + 2 < Game.MAP_SIZE &&
+				    GameField.Map[monster.X + 2, monster.Y + 2] != null &&
+				    !GameField.Map[monster.X + 2, monster.Y + 2].IsUpgradable())
+				{
+					var boom = (GameObject)Game.Instantiate(boomPrefab, GameField.GetVectorFromCoord(monster.X + 2, monster.Y + 2), Quaternion.Euler(new Vector3()));
+					boomList.Add(boom);
 					GameField.Map[monster.X +2, monster.Y + 2].DestroyMonster();
+				}
+			}
+			yield return new WaitForSeconds(0.2f);
+			foreach (var boom in boomList)
+			{
+				Object.Destroy(boom.gameObject);	
 			}
 			Object.Destroy(ray.gameObject);
 		}

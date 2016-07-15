@@ -10,17 +10,22 @@ public class WinLoseController : MonoBehaviour
 	void Start () {
 	
 	}
-	
+
+	private bool IsFinished;
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Game.GameIsFinished) return;
+		if (IsFinished)
+			return;
 		if (CheckWin())
 		{
+			Debug.Log("1");
 			Game.PlayerIsBlocked = true;
 			if (!GameField.IsAnyMoving())
 			{
+				Debug.Log("2");
 				Game.GameIsFinished = true;
+				IsFinished = true;
 				AudioHolder.PlayWin();
 				ShowFlag(true);
 				if (PlayerPrefs.GetInt("LevelUnlocked") == Game.Level)
@@ -39,6 +44,7 @@ public class WinLoseController : MonoBehaviour
 			{
 				PlayerPrefs.SetInt("Lives", PlayerPrefs.GetInt("Lives") - 1);
 				Game.GameIsFinished = true;
+				IsFinished = true;
 				AudioHolder.PlayLose();
 				ShowFlag(false);
 			}

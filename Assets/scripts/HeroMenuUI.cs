@@ -37,7 +37,7 @@ public class HeroMenuUI : MonoBehaviour
 		else
 		{
 			Preferences.SetCurrentHero(herotype);
-			MainMenu.Play();
+			MainMenu.Instance.GoToLevelMenu();
 		}
 		
 	}

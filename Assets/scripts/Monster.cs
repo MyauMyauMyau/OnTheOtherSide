@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Assets.scripts;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Assets.scripts.Enums;
 using Random = System.Random;
 
@@ -78,6 +79,10 @@ public class Monster : MonoBehaviour
 		return Dictionaries.MonsterTypes.Contains(TypeOfMonster);
 	}
 
+	public void Click()
+	{
+		OnMouseDown();
+	}
 	public bool IsFlagPlaced;
 	public void PutFlag()
 	{
@@ -149,10 +154,11 @@ public class Monster : MonoBehaviour
 	}
 	public void DestroyMonster()
 	{
-		if (!IsMonster() && TypeOfMonster != MonsterType.Bomb && TypeOfMonster != MonsterType.Coocon) return;
+		if (!IsMonster()) return;
 		if (IsFrozen)
 		{
 			IsFrozen = false;
+			Instantiate(Game.BrokenWebPrefab, transform.position, Quaternion.Euler(new Vector3()));
 			gameObject.transform.GetChild(1).gameObject.SetActive(false);
 			return;
 		}
@@ -162,6 +168,12 @@ public class Monster : MonoBehaviour
 			AudioHolder.PlayBomb();
 			DestroyBomb();
 			return;
+		}
+
+		//make 1st layer
+		foreach (var spriteRenderer in GetComponentsInChildren<SpriteRenderer>())
+		{
+			spriteRenderer.sortingOrder = 3;
 		}
 		var bottomBoundX = Math.Max(0, GridPosition.X - 1);
 		var bottomBoundY = Math.Max(0, GridPosition.Y - 1);
@@ -229,11 +241,17 @@ public class Monster : MonoBehaviour
 		{
 			for (int j = bottomBoundY; j <= topBoundY; j++)
 			{
-				if (i != j && GameField.Map[i, j] != null && GameField.Map[i, j].IsMonster() && !GameField.Map[i,j].IsUpgradable())
+				if (i != j && GameField.Map[i, j] != null && GameField.Map[i, j].IsMonster() && !GameField.Map[i, j].IsFrozen
+					&& !GameField.Map[i,j].IsUpgradable())
 				{
 					monsters.Add(new Coordinate(i,j));		
 				}
 			}
+		}
+		if (monsters.Count == 0)
+		{
+			Game.PlayerIsBlocked = false;
+			return;
 		}
 		var trg = monsters[Rnd.Next(monsters.Count)];
 		var SparkPrefab = Resources.Load("objects/heroes/Cleric/HolyFlag/spark", typeof(GameObject)) as GameObject;
@@ -244,40 +262,15 @@ public class Monster : MonoBehaviour
 		spark.Target = trg;
 	}
 
-	private
-		void DestroyBomb()
+	private void DestroyBomb()
 	{
 		GetComponent<SpriteRenderer>().enabled = false;
-		GameObject boom = ((GameObject)Instantiate(
+		var boom = ((GameObject)Instantiate(
 		Game.BombFirePrefab, GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y),
-		Quaternion.Euler(new Vector3())));
+		Quaternion.Euler(new Vector3()))).GetComponent<BombBoom>();
 		GameField.Map[GridPosition.X, GridPosition.Y] = null;
 		State = MonsterState.Destroying;
-		var bottomBoundX = Math.Max(0, GridPosition.X - 2);
-		var bottomBoundY = Math.Max(0, GridPosition.Y - 2);
-		var topBoundX = Math.Min(Game.MAP_SIZE - 1, GridPosition.X + 2);
-		var topBoundY = Math.Min(Game.MAP_SIZE - 1, GridPosition.Y + 2);
-	
-
-		for (int x = bottomBoundX; x <= topBoundX; x++)
-		{
-			if (x == GridPosition.X)
-				continue;
-			if (GameField.Map[x, GridPosition.Y] != null && GameField.Map[x, GridPosition.Y].IsMonster()
-				&& !GameField.Map[x, GridPosition.Y].IsUpgradable())
-				GameField.Map[x, GridPosition.Y].DestroyMonster();
-		}
-		for (int y = bottomBoundY; y <= topBoundY; y++)
-		{
-			if (y == GridPosition.Y)
-				continue;
-			if (GameField.Map[GridPosition.X, y] != null && GameField.Map[GridPosition.X,y].IsMonster()
-				&& !GameField.Map[GridPosition.X, y].IsUpgradable())
-				GameField.Map[GridPosition.X, y].DestroyMonster();
-		}
-
-		
-		
+		boom.GridPosition = GridPosition;
 	}
 
 	public void Initialise(int x, int y, char type, float delay = 0)
@@ -369,12 +362,12 @@ public class Monster : MonoBehaviour
 			}
 			return;
 		}
-		if (SkillsController.IsActive && State == MonsterState.Clicked)
+		if (SkillsController.IsActive && State == MonsterState.Clicked )
 			{
 				State = MonsterState.Default;
 				GameField.ClickedObject = null;
 			}
-		if (Game.PlayerIsBlocked || State == MonsterState.WaitingForActivation || State == MonsterState.Deactivated || State == MonsterState.Animating)
+		if ((Game.PlayerIsBlocked && State != MonsterState.Destroying) || State == MonsterState.WaitingForActivation || State == MonsterState.Deactivated || State == MonsterState.Animating)
 			return;
 		if (State == MonsterState.Destroying)
 		{
@@ -467,6 +460,7 @@ public class Monster : MonoBehaviour
 
 	private void DropMonsters()
 	{
+		if (Game.DropIsBlocked) return;
 		if (GameField.Map[GridPosition.X, GridPosition.Y + 1] == null && WaterField.IsBridgeOrNull(GridPosition.X, GridPosition.Y + 1))
 		{
 			GameField.Drop(GridPosition, new Coordinate(GridPosition.X, GridPosition.Y + 1));
@@ -534,18 +528,28 @@ public class Monster : MonoBehaviour
 
 	public void HandleMagicSkull()
 	{
-		if (GridPosition.Y + 1 < Game.MAP_SIZE && GameField.Map[GridPosition.X, GridPosition.Y + 1] != null
-		    && GameField.Map[GridPosition.X, GridPosition.Y + 1].IsMonster()
-		    && GridPosition.Y - 1 >= 0 && GameField.Map[GridPosition.X, GridPosition.Y - 1] != null
-		    && GameField.Map[GridPosition.X, GridPosition.Y - 1].IsMonster())
+		if (GridPosition.Y + 1 < Game.MAP_SIZE && ( 
+			(GameField.Map[GridPosition.X, GridPosition.Y + 1] == null && WaterField.IsBridgeOrNull(GridPosition.X, GridPosition.Y + 1))
+		    || (GameField.Map[GridPosition.X, GridPosition.Y + 1] != null && GameField.Map[GridPosition.X, GridPosition.Y + 1].IsMonster()))
+		    && GridPosition.Y - 1 >= 0 && (
+			(GameField.Map[GridPosition.X, GridPosition.Y - 1] == null && WaterField.IsBridgeOrNull(GridPosition.X, GridPosition.Y - 1))
+			|| (GameField.Map[GridPosition.X, GridPosition.Y - 1] != null && GameField.Map[GridPosition.X, GridPosition.Y - 1].IsMonster())))
 		{
 			StartCoroutine(ActivateSkull());
 			GameField.MagicSwap(new Coordinate(GridPosition.X, GridPosition.Y + 1), new Coordinate(GridPosition.X, GridPosition.Y - 1));
 		}
-		else if (GridPosition.X + 1 < Game.MAP_SIZE && GameField.Map[GridPosition.X + 1, GridPosition.Y] != null
-			&& GameField.Map[GridPosition.X + 1, GridPosition.Y].IsMonster()
-			&& GridPosition.X - 1 >= 0 && GameField.Map[GridPosition.X - 1, GridPosition.Y] != null
-			&& GameField.Map[GridPosition.X - 1, GridPosition.Y].IsMonster())
+		else if (GridPosition.X + 1 < Game.MAP_SIZE && (
+			(GameField.Map[GridPosition.X + 1, GridPosition.Y] == null &&
+			 WaterField.IsBridgeOrNull(GridPosition.X + 1, GridPosition.Y))
+			||
+			(GameField.Map[GridPosition.X + 1, GridPosition.Y] != null &&
+			 GameField.Map[GridPosition.X + 1, GridPosition.Y].IsMonster()))
+		         && GridPosition.X - 1 >= 0 && (
+			         (GameField.Map[GridPosition.X - 1, GridPosition.Y] == null &&
+			          WaterField.IsBridgeOrNull(GridPosition.X - 1, GridPosition.Y))
+			         ||
+			         (GameField.Map[GridPosition.X - 1, GridPosition.Y] != null &&
+			          GameField.Map[GridPosition.X - 1, GridPosition.Y].IsMonster())))
 		{
 			StartCoroutine(ActivateSkull());
 			GameField.MagicSwap(new Coordinate(GridPosition.X - 1, GridPosition.Y), new Coordinate(GridPosition.X + 1, GridPosition.Y));
@@ -675,12 +679,20 @@ public class Monster : MonoBehaviour
 
 	void OnMouseDown()
 	{
-		if (SkillsController.IsActive)
+		if (SkillsController.IsActive && SkillsController.IsMonsterClickable(this))
 			SkillsController.BracketMonster(GridPosition);
-		if (Game.IsPlayerBlocked() || (!IsMonster() && TypeOfMonster != MonsterType.Bomb))
+		if (IsFrozen || Game.IsPlayerBlocked() || TypeOfMonster == MonsterType.Coocon ||
+		    (!IsMonster() && TypeOfMonster != MonsterType.Bomb))
+		{
+			if (GameField.ClickedObject != null)
+			{
+				
+				GameField.Map[GameField.ClickedObject.Value.X, GameField.ClickedObject.Value.Y].State = MonsterState.Default;
+				GameField.ClickedObject = null;
+			}
 			return;
-		if (IsFrozen)
-			return;
+
+		}
 		if (State == MonsterState.Default)
 		{
 			if (GameField.ClickedObject == null)
@@ -688,6 +700,7 @@ public class Monster : MonoBehaviour
 				if (TypeOfMonster == MonsterType.Bomb)
 				{
 					DestroyMonster();
+					Game.Instance.StartCoroutine(Game.NextTurn());
 					return;
 				}
 				GameField.ClickedObject = GridPosition;

@@ -2,11 +2,14 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class ToMenuButton : MonoBehaviour {
+public class ToMenuButton : MonoBehaviour
+{
 
+	public static ToMenuButton Instance;
 	// Use this for initialization
-	void Start () {
-	
+	void Start ()
+	{
+		Instance = this;
 	}
 	
 	// Update is called once per frame
@@ -17,6 +20,7 @@ public class ToMenuButton : MonoBehaviour {
 	public void GoToMenu()
 	{
 		PlayerPrefs.SetInt("FromGame", 1);
+		PlayerPrefs.Save();
 		SceneManager.LoadScene("MainMenu");
 	}
 }

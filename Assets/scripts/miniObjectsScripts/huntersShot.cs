@@ -15,17 +15,18 @@ public class huntersShot : MonoBehaviour
 	private IEnumerator Shoot()
 	{
 		Game.PlayerIsBlocked = true;
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < 10; i++)
 		{
-			transform.position = transform.position + new Vector3(1.5f/20, 0);		
+			transform.position = transform.position + new Vector3(1.5f/10, 0);		
 			yield return new WaitForSeconds(0.015f);
 		}
 		transform.position = new Vector3(-4.5f, GameField.GetVectorFromCoord(Target.X, Target.Y).y);
 		var distance = transform.position.x - GameField.GetVectorFromCoord(Target.X, Target.Y).x;
-		for (int i = 0; i < Target.Y*5; i++)
+		var trg = GameField.GetVectorFromCoord(Target.X, Target.Y);
+		while (transform.position != trg)
 		{
-			transform.position = transform.position - new Vector3(distance/(Target.Y*5), 0);
-			yield return new WaitForSeconds(0.02f);
+			transform.position = Vector3.MoveTowards(transform.position, trg, 10*Time.deltaTime);
+			yield return null;
 		}
 		GameField.Map[Target.X, Target.Y].DestroyMonster();
 		Game.PlayerIsBlocked = false;

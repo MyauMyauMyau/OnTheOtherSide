@@ -27,6 +27,18 @@ namespace Assets.scripts.Skills
 			Skill2Level = int.Parse(PlayerPrefs.GetString("Skills4").Substring(1, 1));
 			Skill3Level = int.Parse(PlayerPrefs.GetString("Skills4").Substring(2, 1));
 		}
+
+		public bool IsPossibleTarget(Monster monster, int skillNumber)
+		{
+			if (skillNumber == 1)
+			{
+				return (monster.IsMonster() || monster.TypeOfMonster == MonsterType.Bomb);
+			}
+			if (skillNumber == 3)
+				return (monster.IsMonster() && !monster.IsUpgradable());
+			return false;
+		}
+
 		public int TargetsSkill1Lvl1 { get; set; }
 		public int TargetsSkill1Lvl2 { get; set; }
 		public int TargetsSkill1Lvl3 { get; set; }
@@ -80,7 +92,7 @@ namespace Assets.scripts.Skills
 			for (int i = 0; i < Game.MAP_SIZE;i++)
 				for (int j = 0; j < Game.MAP_SIZE && count>0; j++)
 				{
-					if (GameField.Map[i, j] != null && GameField.Map[i, j].TypeOfMonster == MonsterType.Bat)
+					if (GameField.Map[i, j] != null && GameField.Map[i, j].TypeOfMonster == MonsterType.Bat && !GameField.Map[i, j].IsFrozen)
 					{
 						count--;
 						bats.Add(GameField.Map[i, j]);

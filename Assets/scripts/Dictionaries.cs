@@ -87,6 +87,7 @@ namespace Assets.scripts
 			MonsterType.Ghost,
 			MonsterType.Voodoo,
 			MonsterType.Bat,
+			MonsterType.Coocon,
 			MonsterType.Pumpkin1,
 			MonsterType.Pumpkin2,
 			MonsterType.Pumpkin3,
@@ -94,6 +95,7 @@ namespace Assets.scripts
 			MonsterType.Skeleton3,
 			MonsterType.Skeleton2,
 			MonsterType.Skeleton1,
+			MonsterType.Bomb
 		};
 
 		public static readonly List<MonsterType> AnimatedTypes = new List<MonsterType>()

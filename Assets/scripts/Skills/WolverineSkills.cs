@@ -17,7 +17,7 @@ namespace Assets.scripts.Skills
 			TargetsSkill1Lvl3 = 3;
 			TargetsSkill2Lvl1 = 1;
 			TargetsSkill2Lvl2 = 3;
-			TargetsSkill2Lvl3 = 0;
+			TargetsSkill2Lvl3 = 6;
 			TargetsSkill3Lvl1 = 1;
 			TargetsSkill3Lvl2 = 2;
 			TargetsSkill3Lvl3 = 3;
@@ -26,6 +26,23 @@ namespace Assets.scripts.Skills
 			Skill2Level = int.Parse(PlayerPrefs.GetString("Skills3").Substring(1, 1));
 			Skill3Level = int.Parse(PlayerPrefs.GetString("Skills3").Substring(2, 1));
 		}
+
+		public bool IsPossibleTarget(Monster monster, int skillNumber)
+		{
+
+			if (skillNumber == 2)
+			{
+				return (monster.IsFrozen);
+			}
+			if (skillNumber == 1)
+			{
+				return true;
+			}
+			if (skillNumber == 3)
+				return true;
+			return false;
+		}
+
 		public int TargetsSkill1Lvl1 { get; set; }
 		public int TargetsSkill1Lvl2 { get; set; }
 		public int TargetsSkill1Lvl3 { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace Assets.scripts
 		public static GameObject Hero;
 		public static List<int> LineTargets; 
 		public static SkillsController Instance;
+		public static Func<Monster, bool> IsMonsterClickable;
+		public static int CurrentSkillNumber;
 		// Use this for initialization
 		void Start ()
 		{
@@ -36,10 +39,11 @@ namespace Assets.scripts
 			TargetCoordinates = new List<Coordinate>();
 			Brackets = new List<GameObject>();
 			LineTargets = new List<int>();
-			foreach (var coordinate in WaterField.River)
-			{
-				WaterField.Map[coordinate.X, coordinate.Y].GetComponent<CircleCollider2D>().enabled = true;
-			}
+			if (Game.HeroType == HeroType.Hunter && CurrentSkillNumber == 3)
+				foreach (var coordinate in WaterField.River)
+				{
+					WaterField.Map[coordinate.X, coordinate.Y].GetComponent<CircleCollider2D>().enabled = true;
+				}
 
 		}
 		public IEnumerator ThrowFireball(int size)
@@ -61,7 +65,7 @@ namespace Assets.scripts
 				scaleCopy.y += 0.01f/(3f/size);
 				fireball.transform.position = posCopy;
 				fireball.transform.localScale = scaleCopy;
-				yield return new WaitForSeconds(0.01f);
+				yield return null;
 			}
 			fireball.transform.position = new Vector3(-3.47f, 1.84f);
 			fireball.transform.localScale = new Vector3(0.1f, 0.1f, 1f);
@@ -82,10 +86,11 @@ namespace Assets.scripts
 			foreach(var bracket in Brackets)
 				Destroy(bracket);
 			Brackets = new List<GameObject>();
-			foreach (var coordinate in WaterField.River)
-			{
-				WaterField.Map[coordinate.X, coordinate.Y].GetComponent<CircleCollider2D>().enabled = false;
-			}
+			if (Game.HeroType == HeroType.Hunter && CurrentSkillNumber == 3)
+				foreach (var coordinate in WaterField.River)
+				{
+					WaterField.Map[coordinate.X, coordinate.Y].GetComponent<CircleCollider2D>().enabled = false;
+				}
 		}
 		// Update is called once per frame
 		void Update ()
@@ -187,42 +192,54 @@ namespace Assets.scripts
 		{
 			Game.PlayerIsBlocked = true;
 			var iceBallPrefab = Resources.Load("objects/heroes/DeathHero/Ice/IceBall", typeof(GameObject)) as GameObject;
-
-			for (int i = 0; i < TargetCoordinates.Count;i++)
+			var iceBalls = new List<GameObject>();
+			for (int i = 0; i < TargetCoordinates.Count; i++)
 			{
-				var distance = GameField.GetVectorFromCoord(
-					TargetCoordinates.ElementAt(i).X, TargetCoordinates.ElementAt(0).Y) - GameObject.Find("DeathPrefab(Clone)").transform.position;
+				
 				var iceBall =
 					(GameObject)
 						Instantiate(iceBallPrefab, GameObject.Find("DeathPrefab(Clone)").transform.position,
 							Quaternion.Euler(new Vector3()));
-				var posCopy = iceBall.transform.position;
-				var scaleCopy = iceBall.transform.localScale;
-				for (int j = 0; j < 20; j++)
+				
+				iceBalls.Add(iceBall);
+			}
+			for (int j = 0; j < 40; j++)
+			{
+				for (int i = 0; i < iceBalls.Count; i++)
 				{
-					posCopy.x += distance.x / 20;
-					posCopy.y += distance.y / 20;
-					scaleCopy.x += 0.05f;
-					scaleCopy.y += 0.05f;
+					var iceBall = iceBalls.ElementAt(i);
+					var distance = GameField.GetVectorFromCoord(
+						TargetCoordinates.ElementAt(i).X, TargetCoordinates.ElementAt(i).Y) -
+					               GameObject.Find("DeathPrefab(Clone)").transform.position;
+					var posCopy = iceBall.transform.position;
+					var scaleCopy = iceBall.transform.localScale;
+					posCopy.x += distance.x/40;
+					posCopy.y += distance.y/40;
+					scaleCopy.x += 0.024f;
+					scaleCopy.y += 0.024f;
 					iceBall.transform.position = posCopy;
 					iceBall.transform.localScale = scaleCopy;
-					iceBall.transform.Rotate(new Vector3(0,0,0.1f));
+					iceBall.transform.Rotate(new Vector3(0, 0, 10f));
 					yield return new WaitForSeconds(0.01f);
+
 				}
+			}
+			for (int i = 0; i < iceBalls.Count; i++)
+			{
+				var iceBall = iceBalls.ElementAt(i);
 				if (GameField.Map[TargetCoordinates.ElementAt(i).X, TargetCoordinates.ElementAt(i).Y].TypeOfMonster ==
-				    MonsterType.BlackHole)
+				MonsterType.BlackHole)
 				{
 					GameField.Map[TargetCoordinates.ElementAt(i).X, TargetCoordinates.ElementAt(i).Y].State
 						= MonsterState.Deactivated;
 					var iceCellPrefab = Resources.Load("objects/heroes/DeathHero/Ice/IceCell", typeof(GameObject)) as GameObject;
-					Instantiate(iceCellPrefab, GameField.GetVectorFromCoord(TargetCoordinates.ElementAt(i).X, TargetCoordinates.ElementAt(i).Y),
-							Quaternion.Euler(new Vector3()));
+					Instantiate(iceCellPrefab,
+						GameField.GetVectorFromCoord(TargetCoordinates.ElementAt(i).X, TargetCoordinates.ElementAt(i).Y),
+						Quaternion.Euler(new Vector3()));
 				}
 				Destroy(iceBall.gameObject);
 			}
 			Game.PlayerIsBlocked = false;
-
-
 		}
 	}
 }

@@ -26,6 +26,18 @@ namespace Assets.scripts.Skills
 			Skill2Level = int.Parse(PlayerPrefs.GetString("Skills1").Substring(1, 1));
 			Skill3Level = int.Parse(PlayerPrefs.GetString("Skills1").Substring(2, 1));
 		}
+
+		public bool IsPossibleTarget(Monster monster, int skillNumber)
+		{
+			if (skillNumber == 2)
+			{
+				return (monster.IsMonster() && !monster.IsUpgradable());
+			}
+			if (skillNumber == 3)
+				return (monster.TypeOfMonster == MonsterType.Pumpkin1 || monster.TypeOfMonster == MonsterType.Pumpkin2);
+			return false;
+		}
+
 		public int TargetsSkill1Lvl1 { get; set; }
 		public int TargetsSkill1Lvl2 { get; set; }
 		public int TargetsSkill1Lvl3 { get; set; }
@@ -73,7 +85,7 @@ namespace Assets.scripts.Skills
 				}
 			var lightningPrefab = Resources.Load("objects/heroes/Cleric/UndeadRemoval/PriestLightning", typeof(GameObject)) as GameObject;
 
-			for (int i = 0; i < lightningCount; i++)
+			for (int i = 0; i < lightningCount && i < monsterList.Count; i++)
 			{
 				var n = rnd.Next(monsterList.Count);
 				var monster = monsterList.ElementAt(n);

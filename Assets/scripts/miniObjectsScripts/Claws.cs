@@ -35,20 +35,10 @@ public class Claws : MonoBehaviour
 
 	private void DestroyMonsters()
 	{
-		if (Targets.Count == 0)
-			for (int i = 0; i < Game.MAP_SIZE; i++)
-				for (int j = 0; j < Game.MAP_SIZE; j++)
-				{
-					if (GameField.Map[i, j] != null && GameField.Map[i, j].IsFrozen)
-						GameField.Map[i, j].DestroyMonster();
-				}
-		else
+		foreach (var coordinate in Targets)
 		{
-			foreach (var coordinate in Targets)
-			{
-				if (GameField.Map[coordinate.X, coordinate.Y] != null && GameField.Map[coordinate.X, coordinate.Y].IsFrozen)
-					GameField.Map[coordinate.X, coordinate.Y].DestroyMonster();
-			}
+			if (GameField.Map[coordinate.X, coordinate.Y] != null && GameField.Map[coordinate.X, coordinate.Y].IsFrozen)
+				GameField.Map[coordinate.X, coordinate.Y].DestroyMonster();
 		}
 	}
 

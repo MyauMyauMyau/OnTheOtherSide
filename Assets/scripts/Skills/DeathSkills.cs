@@ -12,6 +12,21 @@ namespace Assets.scripts.Skills
 {
 	class DeathSkills : ISkills
 	{
+		public bool IsPossibleTarget(Monster monster, int skillNumber)
+		{
+			if (skillNumber == 2)
+			{
+				return (monster.IsMonster() && !monster.IsUpgradable());
+			}
+			if (skillNumber == 1)
+			{
+				return (monster.IsMonster() && !monster.IsUpgradable());
+			}
+			if (skillNumber == 3)
+				return (monster.TypeOfMonster == MonsterType.BlackHole);
+			return false;
+		}
+
 		public int TargetsSkill1Lvl1 { get; set; }
 		public int TargetsSkill1Lvl2 { get; set; }
 		public int TargetsSkill1Lvl3 { get; set; }

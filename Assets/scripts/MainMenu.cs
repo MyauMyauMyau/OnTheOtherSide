@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Threading;
+using Assets.scripts;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -10,20 +12,31 @@ public class MainMenu : MonoBehaviour
 	public Canvas LevelMenuCanvas;
 	public Canvas HeroMenuCanvas;
 	public Button SoundButton;
+	public static MainMenu Instance;
 	// Use this for initialization
 	void Start()
 	{
+		Instance = this;
 		LevelMenuCanvas.enabled = false;
 		HeroMenuCanvas.enabled = true;
 		if (PlayerPrefs.GetInt("FromGame") == 1)
 		{
 			PlayerPrefs.SetInt("FromGame", 0);
+			PlayerPrefs.Save();
 			GoToLevelMenu();
 		}
 	}
 
 	void Update()
 	{
+		if (Input.GetKeyDown(KeyCode.Escape))
+			if (MainMenuCanvas.enabled)
+				Application.Quit();
+			else if (LevelMenuCanvas.enabled)
+				GoToHeroMenu();
+			else if (HeroMenuCanvas.enabled)
+				GoToMainMenu();
+
 	}
 	// Update is called once per frame
 	public void Quit()
@@ -51,9 +64,15 @@ public class MainMenu : MonoBehaviour
 		LevelMenuCanvas.enabled = false;
 		HeroMenuCanvas.enabled = true;
 	}
-	public static void Play()
+	public void Play()
 	{
-		SceneManager.LoadScene("game");
+		var loadingIconPrefab = Resources.Load("objects/loading/Loading", typeof(GameObject)) as GameObject;
+		var loading = ((GameObject) Instantiate(
+			loadingIconPrefab, new Vector3(Screen.width/2, Screen.height/2), 
+			Quaternion.Euler(new Vector3())));
+		loading.transform.parent = GameObject.Find("LevelMenu").transform;
+		loading.transform.localScale = new Vector3(1,1);
+		SceneManager.LoadSceneAsync("game");
 	}
 
 	public void SwitchSound()

@@ -18,7 +18,6 @@ namespace Assets.scripts
 			var parsed = JSON.Parse(jsonString);
 			var levelInfo = new LevelInfo();
 			levelInfo.Map = parsed["Map"];
-			Debug.Log(levelInfo.Map);
 			levelInfo.Monsters = parsed["Monsters"];
 			levelInfo.Turns = parsed["Turns"].AsInt;
 			var unparsedDict = parsed["Targets"];

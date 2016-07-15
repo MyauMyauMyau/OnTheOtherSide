@@ -29,6 +29,19 @@ namespace Assets.scripts.Skills
 			Skill2Level = int.Parse(PlayerPrefs.GetString("Skills0").Substring(1, 1));
 			Skill3Level = int.Parse(PlayerPrefs.GetString("Skills0").Substring(2, 1));
 		}
+
+		public bool IsPossibleTarget(Monster monster, int skillNumber)
+		{
+			if (skillNumber == 1)
+			{
+				return (monster.IsMonster() && !monster.IsUpgradable());
+			}
+			if (skillNumber == 3)
+				return (!WaterField.IsBridgeOrNull(monster.GridPosition.X, monster.GridPosition.Y));
+			return false;
+
+		}
+
 		public int TargetsSkill1Lvl1 { get; set; }
 		public int TargetsSkill1Lvl2 { get; set; }
 		public int TargetsSkill1Lvl3 { get; set; }
@@ -136,7 +149,7 @@ namespace Assets.scripts.Skills
 		public void DropRaft(Coordinate coord)
 		{
 			var raftPrefab = Resources.Load("objects/heroes/Hunter/Raft/raft", typeof(GameObject)) as GameObject;
-			var raft = (Object.Instantiate(raftPrefab, new Vector3(-1.7f, 5.30f),
+			var raft = (Object.Instantiate(raftPrefab, new Vector3(-2.46f, 4.4f),
 					Quaternion.Euler(new Vector3())) as GameObject).GetComponent<Raft>();
 			raft.TargetCoordinate = coord;
 

@@ -53,11 +53,20 @@ namespace Assets.scripts
 		public void OnClick()
 		{
 			if (Game.IsPlayerBlocked()) return;
+			SkillsController.CurrentSkillNumber = ButtonNumber;
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill" + ButtonNumber + "Ready");
 			GameUI.Instance.ActivatePanel(Skill, NumberOfTargets);
 			SkillsController.TargetBrackets = TargetBrackets;
 			SkillsController.TargetBrackets2 = TargetBrackets2;
 			SkillsController.LineBrackets = LineBrackets;
+			
+			var skills = Dictionaries.HeroTypeToSkills[Game.HeroType];
+			SkillsController.IsMonsterClickable =
+				(m =>
+				{
+					return (bool) skills.GetType().GetMethod("IsPossibleTarget").Invoke(skills, new object[] {m, ButtonNumber});
+
+				});
 		}
 
 		public void Activate()
