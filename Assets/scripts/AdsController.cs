@@ -17,16 +17,17 @@ namespace Assets.scripts
 		void Awake()
 		{
 			revmob = RevMob.Start(REVMOB_APP_IDS, "AdsHolder");
+			//rewardedVideo = revmob.CreateRewardedVideo();
 		}
 
 		void Start()
 		{
 			text = GameObject.Find("AdButton").GetComponentInChildren<Text>();
 		}
-		private RevMobBanner banner;
 		public void ShowRewardedVideo()
 		{
 			rewardedVideo = revmob.CreateRewardedVideo();
+			text.text = Time.time.ToString();
 		}
 
 		public void StopShowingRewardedVideo()
@@ -85,8 +86,9 @@ namespace Assets.scripts
 
 		public void RewardedVideoLoaded()
 		{
-			if (rewardedVideo != null) rewardedVideo.ShowRewardedVideo();
 			text.text = "video loaded full";
+			if (rewardedVideo != null) rewardedVideo.ShowRewardedVideo();
+			
 		}
 
 		public void RewardedVideoNotCompletelyLoaded()
@@ -97,6 +99,7 @@ namespace Assets.scripts
 
 		public void RewardedVideoStarted()
 		{
+			text.text = "started";
 		}
 
 		public void RewardedVideoFinished()
