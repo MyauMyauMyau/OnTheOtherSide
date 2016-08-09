@@ -61,6 +61,7 @@ namespace Assets.scripts.Skills
 		public int Skill3Level { get; set; }
 		public void Skill1()
 		{
+			AudioHolder.PlayClericExile1();
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill1Cast");
 			CastLightnings();
 		}
@@ -96,6 +97,7 @@ namespace Assets.scripts.Skills
 		} 
 		public void Skill2()
 		{
+
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill2Cast");
 			Monster flag = ((GameObject)Object.Instantiate(
 						Game.FlagPrefab, new Vector3(-2.68f, 5.52f), 
@@ -112,7 +114,7 @@ namespace Assets.scripts.Skills
 		public void Skill3()
 		{
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill3Cast");
-
+			AudioHolder.PlayClericPumpkin();
 			CastLight();
 		}
 

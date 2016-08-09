@@ -84,6 +84,7 @@ namespace Assets.scripts.Skills
 				ray.transform.position = ray.transform.position - dist/40;
 				yield return new WaitForSeconds(0.005f);
 			}
+			AudioHolder.PlayMummyBeamDrop();
 			var boomPrefab = Resources.Load("objects/heroes/Mummy/beam/boomPrefab", typeof(GameObject)) as GameObject;
 			var boomList = new List<GameObject>();
 			if (Skill1Level >= 1)

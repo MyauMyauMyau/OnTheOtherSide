@@ -52,6 +52,8 @@ namespace Assets.scripts
 			{ 'I', MonsterType.CandleCell},
 			{'X', MonsterType.BloodVortex},
 			{'M', MonsterType.MagicSkull},
+			{'P' , MonsterType.Plasm },
+			{'N', MonsterType.Snake },
 			{'e', MonsterType.WaterHorizontal },
 			{'f', MonsterType.WaterVertical },
 			{'g', MonsterType.WaterUpperRight },
@@ -95,7 +97,9 @@ namespace Assets.scripts
 			MonsterType.Skeleton3,
 			MonsterType.Skeleton2,
 			MonsterType.Skeleton1,
-			MonsterType.Bomb
+			MonsterType.Bomb,
+			MonsterType.Plasm,
+			MonsterType.Snake,
 		};
 
 		public static readonly List<MonsterType> AnimatedTypes = new List<MonsterType>()
@@ -105,6 +109,8 @@ namespace Assets.scripts
 			MonsterType.Ghost,
 			MonsterType.Voodoo,
 			MonsterType.Bat,
+			MonsterType.Plasm,
+			MonsterType.Snake
 		};
 
 		public static List<char> MonsterGenerationList = new List<char>()

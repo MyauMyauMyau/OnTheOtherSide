@@ -22,6 +22,8 @@ namespace Assets.scripts
 		public static GameObject FlagPrefab;
 		public static GameObject VoodooPrefab;
 		public static GameObject ZombiePrefab;
+		public static GameObject PlasmPrefab;
+		public static GameObject SnakePrefab;
 		public static GameObject GhostPrefab;
 		public static GameObject SpiderPrefab;
 		public static GameObject BombFirePrefab;
@@ -60,6 +62,8 @@ namespace Assets.scripts
 				{MonsterType.Bat, 0},
 				{MonsterType.Ghost, 0},
 				{MonsterType.Coocon, 0},
+				{MonsterType.Plasm, 0},
+				{MonsterType.Snake, 0},
 				{MonsterType.Pumpkin1, 0},
 				{MonsterType.Pumpkin2, 0},
 				{MonsterType.Pumpkin3, 0},
@@ -69,7 +73,6 @@ namespace Assets.scripts
 				{MonsterType.Skeleton4, 0},
 
 			};
-			GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
 			Level = PlayerPrefs.GetInt("CurrentLevel");
 			var path = "levels/" + Level + "";
 			TextAsset file = Resources.Load(path, typeof(TextAsset)) as TextAsset;
@@ -89,6 +92,8 @@ namespace Assets.scripts
 			SpiderPrefab = Resources.Load("objects/spider/Spider", typeof(GameObject)) as GameObject;
 			SkullPrefab = Resources.Load("objects/heroes/Mummy/skull/SkullPrefab", typeof(GameObject)) as GameObject;
 			FlagPrefab = Resources.Load("objects/heroes/Cleric/HolyFlag/Flag", typeof(GameObject)) as GameObject;
+			PlasmPrefab = Resources.Load("objects/plasm/Plasm", typeof(GameObject)) as GameObject;
+			SnakePrefab = Resources.Load("objects/snake/Snake", typeof(GameObject)) as GameObject;
 			BrokenWebPrefab = Resources.Load("objects/web/BrokenWeb", typeof(GameObject)) as GameObject;
 			Monster.EmptyCellSprite = Resources.Load("objects/graves/grave1", typeof(Sprite)) as Sprite;
 			Monster.BombSprite = Resources.Load("Sprites/bomb", typeof(Sprite)) as Sprite;
@@ -116,6 +121,8 @@ namespace Assets.scripts
 			Monster.ZombieSprite = Resources.Load("targetsSprites/zombie", typeof(Sprite)) as Sprite;
 			Monster.VoodooSprite = Resources.Load("targetsSprites/voodoo", typeof(Sprite)) as Sprite;
 			Monster.SpiderSprite = Resources.Load("targetsSprites/spider", typeof(Sprite)) as Sprite;
+			Monster.PlasmSprite = Resources.Load("targetsSprites/plasm", typeof(Sprite)) as Sprite;
+			Monster.SnakeSprite = Resources.Load("targetsSprites/snake", typeof(Sprite)) as Sprite;
 			Monster.CandleCellSprite = Resources.Load("objects/graves/candle", typeof(Sprite)) as Sprite;
 			Monster.EmptyCell2Sprite = Resources.Load("objects/graves/grave2", typeof(Sprite)) as Sprite;
 			Monster.MagicSkullSprite = Resources.Load("objects/heroes/Mummy/skull/scull cell", typeof(Sprite)) as Sprite;
@@ -146,6 +153,8 @@ namespace Assets.scripts
 				{MonsterType.Voodoo, Monster.VoodooSprite},
 				{MonsterType.Spider, Monster.SpiderSprite},
 				{MonsterType.Ghost, Monster.GhostSprite},
+				{MonsterType.Snake, Monster.SnakeSprite},
+				{MonsterType.Plasm, Monster.PlasmSprite},
 				{MonsterType.Bat, Monster.BatSprite},
 				{MonsterType.MagicSkull, Monster.MagicSkullSprite},
 
@@ -266,15 +275,27 @@ namespace Assets.scripts
 					case 'Z':
 						prefab = ZombiePrefab;
 						break;
+					case 'P':
+						prefab = PlasmPrefab;
+						break;
+					case 'N':
+						prefab = SnakePrefab;
+						break;
+				}
+				try
+				{
+					Monster monster = ((GameObject) Instantiate(
+						prefab, GameField.GetVectorFromCoord(x, respY),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<Monster>();
+					monster.Initialise(x, y, type, delay); //?
+					GameField.Map[x, y] = monster;
+				}
+				catch (Exception e)
+				{
+					Debug.Log(e);
 				}
 
-				Monster monster = ((GameObject)Instantiate(
-					prefab, GameField.GetVectorFromCoord(x, respY),
-					Quaternion.Euler(new Vector3())))
-					.GetComponent<Monster>();
-				monster.Initialise(x, y, type, delay); //?
-				GameField.Map[x, y] = monster;
-				
 			}
 			else if (type >= 'e' && type <= 'p')
 			{

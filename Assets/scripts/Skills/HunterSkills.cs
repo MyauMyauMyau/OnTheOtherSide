@@ -72,7 +72,8 @@ namespace Assets.scripts.Skills
 		}
 
 		private IEnumerator StartShooting()
-		{
+		{	
+			AudioHolder.PlayHunterShoot2();
 			var shotPrefab = Resources.Load("objects/heroes/Hunter/Shooting/shot", typeof(GameObject)) as GameObject;
 			foreach (var target in SkillsController.TargetCoordinates)
 			{
@@ -97,6 +98,7 @@ namespace Assets.scripts.Skills
 
 		private IEnumerator BoomBombs(int targetsCount)
 		{
+			AudioHolder.PlayHunterMine();
 			Game.PlayerIsBlocked = true;
 			var boomPrefab = Resources.Load("objects/heroes/Hunter/Mines/boom", typeof(GameObject)) as GameObject;
 			var rnd = new Random();
@@ -129,12 +131,14 @@ namespace Assets.scripts.Skills
 
 		public void Skill3()
 		{
+			AudioHolder.PlayHunterBridge2();
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill3Cast");
 			Game.Instance.StartCoroutine(DropRafts());
 		}
 
 		public IEnumerator DropRafts()
 		{
+			
 			Game.PlayerIsBlocked = true;
 			for (int i = 0; i < SkillsController.TargetCoordinates.Count; i++)
 			{

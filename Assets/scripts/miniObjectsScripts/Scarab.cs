@@ -11,6 +11,7 @@ namespace Assets.scripts.miniObjectsScripts
 		// Use this for initialization
 		void Start ()
 		{
+			AudioHolder.PlayMummyScarabs1();
 			EndPoint = GameField.GetVectorFromCoord(Target.X, Target.Y);
 		}
 
@@ -50,6 +51,7 @@ namespace Assets.scripts.miniObjectsScripts
 			}
 			if (GameField.Map[Target.X, Target.Y].TypeOfMonster == MonsterType.Coocon)
 			{
+				AudioHolder.PlayMummyScarabs2();
 				GameField.Map[Target.X, Target.Y].Destroy();
 				Dictionaries.MonsterCounter[MonsterType.Coocon]++;
 			}

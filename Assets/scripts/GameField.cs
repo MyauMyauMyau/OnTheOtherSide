@@ -54,6 +54,10 @@ namespace Assets.scripts
 		}
 		public static void Shuffle()
 		{
+
+			var noMovePrefab = Resources.Load("objects/noMove/noMove", typeof(GameObject)) as GameObject;
+			Instantiate(noMovePrefab, new Vector3(-1.7f, 1), Quaternion.Euler(new Vector3()));
+
 			var rnd = new Random();
 			var asteroidsCoordinates = new List<Coordinate>();
 			for (int i = 0; i < Map.GetLength(0); i++)

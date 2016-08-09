@@ -73,6 +73,7 @@ namespace Assets.scripts.Skills
 
 		public void Skill2()
 		{
+			AudioHolder.PlayVampireHunger();
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill2Cast");
 			Game.Instance.StartCoroutine(EatBats());
 		}
@@ -126,6 +127,7 @@ namespace Assets.scripts.Skills
 					Quaternion.Euler(new Vector3(0,0, 180f)))).GetComponent<bloodDrop>();
 				bloodDrop.Target = targetCoordinate;
 			}
+			AudioHolder.PlayVampireStick();
 		}
 	}
 }

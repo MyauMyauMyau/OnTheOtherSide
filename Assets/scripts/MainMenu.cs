@@ -12,13 +12,18 @@ public class MainMenu : MonoBehaviour
 	public Canvas LevelMenuCanvas;
 	public Canvas HeroMenuCanvas;
 	public Button SoundButton;
+	public Button SoundButton2;
+	public Button SoundButton3;
 	public static MainMenu Instance;
+	public bool IsPaused;
 	// Use this for initialization
 	void Start()
 	{
 		Instance = this;
 		LevelMenuCanvas.enabled = false;
 		HeroMenuCanvas.enabled = true;
+		SwitchSound();
+		SwitchSound();
 		if (PlayerPrefs.GetInt("FromGame") == 1)
 		{
 			PlayerPrefs.SetInt("FromGame", 0);
@@ -29,6 +34,7 @@ public class MainMenu : MonoBehaviour
 
 	void Update()
 	{
+		if (IsPaused) return;
 		if (Input.GetKeyDown(KeyCode.Escape))
 			if (MainMenuCanvas.enabled)
 				Application.Quit();
@@ -38,6 +44,16 @@ public class MainMenu : MonoBehaviour
 				GoToMainMenu();
 
 	}
+
+	public void GoBack()
+	{
+		if (MainMenuCanvas.enabled)
+			Application.Quit();
+		else if (LevelMenuCanvas.enabled)
+			GoToHeroMenu();
+		else if (HeroMenuCanvas.enabled)
+			GoToMainMenu();
+	}
 	// Update is called once per frame
 	public void Quit()
 	{
@@ -46,6 +62,7 @@ public class MainMenu : MonoBehaviour
 
 	public void GoToMainMenu()
 	{
+		AudioHolder.PlayMenuTheme();
 		MainMenuCanvas.enabled = true;
 		LevelMenuCanvas.enabled = false;
 		HeroMenuCanvas.enabled = false;
@@ -53,6 +70,7 @@ public class MainMenu : MonoBehaviour
 
 	public void GoToLevelMenu()
 	{
+		AudioHolder.PlayMainTheme();
 		MainMenuCanvas.enabled = false;
 		LevelMenuCanvas.enabled = true;
 		HeroMenuCanvas.enabled = false;
@@ -60,6 +78,7 @@ public class MainMenu : MonoBehaviour
 
 	public void GoToHeroMenu()
 	{
+		AudioHolder.PlayMainTheme();
 		MainMenuCanvas.enabled = false;
 		LevelMenuCanvas.enabled = false;
 		HeroMenuCanvas.enabled = true;
@@ -82,13 +101,18 @@ public class MainMenu : MonoBehaviour
 		{
 			PlayerPrefs.SetInt("Sound", 1);
 			SoundButton.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOn");
+			SoundButton2.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOn");
+			SoundButton3.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOn");
 		}
 		else
 		{
 			PlayerPrefs.SetInt("Sound", 0);
 			SoundButton.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOff");
+			SoundButton2.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOff");
+			SoundButton3.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOff");
 		}
-		GameObject.Find("Menu").GetComponent<AudioSource>().volume = PlayerPrefs.GetInt("Sound")/2f;
+		GameObject.Find("AudioHolder").GetComponents<AudioSource>()[0].volume = PlayerPrefs.GetInt("Sound")/2f;
+		GameObject.Find("AudioHolder").GetComponents<AudioSource>()[1].volume = PlayerPrefs.GetInt("Sound") / 2f;
 		PlayerPrefs.Save();
 	}
 }

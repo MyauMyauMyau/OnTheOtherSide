@@ -12,6 +12,8 @@ namespace Assets.scripts
 		Bat,
 		Ghost,
 		Zombie,
+		Snake,
+		Plasm,
 		BlackHole,
 		Coocon,
 		EmptyCell,

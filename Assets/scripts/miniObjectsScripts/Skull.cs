@@ -35,6 +35,7 @@ public class Skull : MonoBehaviour
 				if (GameField.Map[TargetCoordinate.X, TargetCoordinate.Y].IsFrozen)
 					GameField.Map[TargetCoordinate.X, TargetCoordinate.Y].DestroyMonster();
 				GameField.Map[TargetCoordinate.X, TargetCoordinate.Y].DestroyMonster();
+				AudioHolder.PlayMummySkullDrop();
 			}
 			else
 				GameField.Map[TargetCoordinate.X, TargetCoordinate.Y].Destroy();

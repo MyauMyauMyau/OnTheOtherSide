@@ -66,6 +66,7 @@ namespace Assets.scripts.Skills
 		public int Skill3Level { get; set; }
 		public void Skill1()
 		{
+			AudioHolder.PlayWolfRoar2();
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill1Cast");
 			foreach (var lineTarget in SkillsController.LineTargets)
 			{
@@ -75,6 +76,7 @@ namespace Assets.scripts.Skills
 
 		public void Skill2()
 		{
+			AudioHolder.PlayWolfClutches();
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill2Cast");
 			var clawsPrefab = Resources.Load("objects/heroes/Wolverine/claw/Claws", typeof(GameObject)) as GameObject;
 			var claws = ((GameObject)Object.Instantiate(clawsPrefab, new Vector3(0,0),
@@ -86,7 +88,7 @@ namespace Assets.scripts.Skills
 		{
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill3Cast");
 
-
+			AudioHolder.PlayWolfHowl();
 			foreach (var line in SkillsController.LineTargets)
 			{
 				var wolfPrefab = Resources.Load("objects/heroes/Wolverine/summon/Wolf", typeof(GameObject)) as GameObject;

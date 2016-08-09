@@ -22,6 +22,7 @@ public class PriestLightning : MonoBehaviour
 		}
 
 		GetComponentsInChildren<SpriteRenderer>()[1].enabled = true;
+		AudioHolder.PlayClericExile2();
 		yield return new WaitForSeconds(0.5f);
 		GameField.Map[Target.X, Target.Y].DestroyMonster();
 		Game.PlayerIsBlocked = false;

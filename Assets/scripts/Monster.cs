@@ -25,6 +25,8 @@ public class Monster : MonoBehaviour
 	public static Sprite GhostSprite;
 	public static Sprite VoodooSprite;
 	public static Sprite SpiderSprite;
+	public static Sprite SnakeSprite;
+	public static Sprite PlasmSprite;
 	public static Sprite CooconSprite;
 	public static Sprite BombSprite;
 	public static Sprite MagicSkullSprite;
@@ -94,6 +96,7 @@ public class Monster : MonoBehaviour
 		transform.position = curPos;
 		if (transform.position == GameField.GetVectorFromCoord(GridPosition.X, GridPosition.Y))
 		{
+			AudioHolder.PlayClericFlag2();
 			IsFlagPlaced = true;
 			if (GameField.Map[GridPosition.X, GridPosition.Y].IsFrozen)
 				GameField.Map[GridPosition.X, GridPosition.Y].DestroyMonster();
@@ -155,6 +158,7 @@ public class Monster : MonoBehaviour
 	public void DestroyMonster()
 	{
 		if (!IsMonster()) return;
+		Game.Instance.LastAdviceTime = Time.time + 5f;
 		if (IsFrozen)
 		{
 			IsFrozen = false;
@@ -375,9 +379,9 @@ public class Monster : MonoBehaviour
 				TypeOfMonster == MonsterType.Skeleton4)
 				SendToBasket();
 			if (TypeOfMonster == MonsterType.Spider || TypeOfMonster == MonsterType.Bat ||
-				TypeOfMonster == MonsterType.Pumpkin3)
+				TypeOfMonster == MonsterType.Pumpkin3 || TypeOfMonster == MonsterType.Snake)
 				SendToPot();
-			if (TypeOfMonster == MonsterType.Ghost)
+			if (TypeOfMonster == MonsterType.Ghost || TypeOfMonster == MonsterType.Plasm)
 				SendToPortal();
 			if (TypeOfMonster == MonsterType.Coocon || TypeOfMonster == MonsterType.Bomb)
 				Destroy(gameObject);
@@ -648,34 +652,33 @@ public class Monster : MonoBehaviour
 		        || TypeOfMonster == MonsterType.WaterHorizontal || TypeOfMonster == MonsterType.WaterVertical
 		        || TypeOfMonster == MonsterType.WaterUpperLeft || TypeOfMonster == MonsterType.WaterUpperRight);
 	}
-	private IEnumerator ThrowLightning()
-	{
-		AudioHolder.PlayElectricity();
-		PlayerPrefs.SetInt("Achievement5Unlocked", 1);
-		Game.PlayerIsBlocked = true;
-		var hero = GameObject.Find("hero");
-		var l1 = hero.transform.FindChild("Lightning").gameObject;
-		var l2 = hero.transform.FindChild("Lightning2").gameObject;
-		for (int i = 0; i < 6; i++)
-		{
-			if (l1.activeSelf)
-			{
-				l2.SetActive(true);
-				l1.SetActive(false);
-			}
-			else
-			{
-				l2.SetActive(false);
-				l1.SetActive(true);
-			}
-			yield return new WaitForSeconds(0.1f);
-		}
-		l2.SetActive(false);
-		Game.PlayerIsBlocked = false;
-//		SkillButton.Deactivate(SkillButtonType.Electro);
-		GameField.DestroyAllOf(TypeOfMonster);
-		AudioHolder.PlayMassRemove();
-	}
+//	private IEnumerator ThrowLightning()
+//	{
+//		AudioHolder.PlayDeathElectricity();
+//		Game.PlayerIsBlocked = true;
+//		var hero = GameObject.Find("hero");
+//		var l1 = hero.transform.FindChild("Lightning").gameObject;
+//		var l2 = hero.transform.FindChild("Lightning2").gameObject;
+//		for (int i = 0; i < 6; i++)
+//		{
+//			if (l1.activeSelf)
+//			{
+//				l2.SetActive(true);
+//				l1.SetActive(false);
+//			}
+//			else
+//			{
+//				l2.SetActive(false);
+//				l1.SetActive(true);
+//			}
+//			yield return new WaitForSeconds(0.1f);
+//		}
+//		l2.SetActive(false);
+//		Game.PlayerIsBlocked = false;
+////		SkillButton.Deactivate(SkillButtonType.Electro);
+//		GameField.DestroyAllOf(TypeOfMonster);
+//		AudioHolder.PlayMassRemove();
+//	}
 
 	void OnMouseDown()
 	{

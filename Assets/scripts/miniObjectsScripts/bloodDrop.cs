@@ -33,6 +33,7 @@ public class bloodDrop : MonoBehaviour
 		transform.Rotate(new Vector3(0,0,5f));
 		if (transform.position == GameField.GetVectorFromCoord(Target.X, Target.Y))
 		{
+			AudioHolder.PlayVampireBloodDrop();
 			var bloodVortex = ((GameObject)Instantiate(BloodVortexPrefab, GameField.GetVectorFromCoord(Target.X, Target.Y), Quaternion.Euler(new Vector3()))
 				).GetComponent<Monster>();
 			if (GameField.Map[Target.X, Target.Y].IsFrozen)

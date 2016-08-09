@@ -67,6 +67,7 @@ namespace Assets.scripts.Skills
 		}
 		public void Skill1()
 		{
+			AudioHolder.PlayDeathFireBall();
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill1Cast");
 			SkillsController.Instance.StartCoroutine
 				(SkillsController.Instance.ThrowFireball(Skill1Level));
@@ -83,7 +84,7 @@ namespace Assets.scripts.Skills
 
 		private void CastLightning()
 		{
-			
+			AudioHolder.PlayDeathElectricity();
 			var x = SkillsController.TargetCoordinates.ElementAt(0).X;
 			var y = SkillsController.TargetCoordinates.ElementAt(0).Y;
 			var typeOfMonster =
@@ -123,6 +124,7 @@ namespace Assets.scripts.Skills
 		public void Skill3()
 		{
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill3Cast");
+			AudioHolder.PlayDeathWind();
 			SkillsController.Instance.StartCoroutine
 				(SkillsController.Instance.ThrowIceBall(Skill3Level));
 		}

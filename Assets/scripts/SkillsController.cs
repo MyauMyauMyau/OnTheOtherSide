@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.scripts.Skills;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -34,21 +35,35 @@ namespace Assets.scripts
 
 		public static void Activate(int numOfTargets)
 		{
+			
 			IsActive = true;
 			MaxTargets = numOfTargets;
 			TargetCoordinates = new List<Coordinate>();
 			Brackets = new List<GameObject>();
 			LineTargets = new List<int>();
 			if (Game.HeroType == HeroType.Hunter && CurrentSkillNumber == 3)
+			{
+				AudioHolder.PlayHunterBridge1();
 				foreach (var coordinate in WaterField.River)
 				{
 					WaterField.Map[coordinate.X, coordinate.Y].GetComponent<CircleCollider2D>().enabled = true;
 				}
+			}
+			if (Game.HeroType == HeroType.Hunter && CurrentSkillNumber == 1)
+				AudioHolder.PlayHunterShoot1();
+			if (Game.HeroType == HeroType.Cleric && CurrentSkillNumber == 2)
+				AudioHolder.PlayClericFlag1();
+			if (Game.HeroType == HeroType.Vampire && CurrentSkillNumber == 1)
+				AudioHolder.PlayVampireHypnosis();
+			if (Game.HeroType == HeroType.Wolverine && (CurrentSkillNumber == 1 || CurrentSkillNumber == 2))
+				AudioHolder.PlayWolfRoar1();
+			if (Game.HeroType == HeroType.Mummy)
+				AudioHolder.PlayMummyWait();
 
 		}
 		public IEnumerator ThrowFireball(int size)
 		{
-			AudioHolder.PlayFireBall();
+			AudioHolder.PlayDeathFireBall();
 			Game.PlayerIsBlocked = true;
 			var fireball = GameObject.Find("DeathPrefab(Clone)").transform.FindChild("FireBall").gameObject;
 			fireball.SetActive(true);
@@ -87,10 +102,20 @@ namespace Assets.scripts
 				Destroy(bracket);
 			Brackets = new List<GameObject>();
 			if (Game.HeroType == HeroType.Hunter && CurrentSkillNumber == 3)
+			{
+				AudioHolder.StopPlayHunterBridge1();
 				foreach (var coordinate in WaterField.River)
 				{
 					WaterField.Map[coordinate.X, coordinate.Y].GetComponent<CircleCollider2D>().enabled = false;
 				}
+			}
+			if (Game.HeroType == HeroType.Vampire && CurrentSkillNumber == 1)
+				AudioHolder.StopPlayVampireHypnosis();
+			if (Game.HeroType == HeroType.Wolverine && (CurrentSkillNumber == 1 || CurrentSkillNumber == 2))
+				AudioHolder.StopPlayWolfRoar1();
+			if (Game.HeroType == HeroType.Mummy)
+				AudioHolder.StopPlayMummyWait();
+
 		}
 		// Update is called once per frame
 		void Update ()
@@ -239,6 +264,7 @@ namespace Assets.scripts
 				}
 				Destroy(iceBall.gameObject);
 			}
+			AudioHolder.PlayDeathIce();
 			Game.PlayerIsBlocked = false;
 		}
 	}
