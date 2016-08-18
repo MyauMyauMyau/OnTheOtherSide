@@ -16,6 +16,11 @@ public class MainMenu : MonoBehaviour
 	public Button SoundButton3;
 	public static MainMenu Instance;
 	public bool IsPaused;
+
+	void Awake()
+	{
+		LevelGrave.Candle = Resources.Load("objects/graveCandle/candle", typeof(GameObject)) as GameObject;
+	}
 	// Use this for initialization
 	void Start()
 	{

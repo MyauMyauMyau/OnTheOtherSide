@@ -19,21 +19,24 @@ public class WinLoseController : MonoBehaviour
 			return;
 		if (CheckWin())
 		{
-			Debug.Log("1");
 			Game.PlayerIsBlocked = true;
 			if (!GameField.IsAnyMoving())
 			{
-				Debug.Log("2");
 				Game.GameIsFinished = true;
 				IsFinished = true;
 				AudioHolder.PlayWin();
-				ShowFlag(true);
+
 				if (PlayerPrefs.GetInt("LevelUnlocked") == Game.Level)
 				{
+					if (PlayerPrefs.GetInt("LevelUnlocked") % 25 == 0)
+						FacebookSharer.Instance.ShareYourResult(PlayerPrefs.GetInt("LevelUnlocked"));
 					PlayerPrefs.SetInt("LevelUnlocked", Game.Level + 1);
+					Debug.Log(Game.Level + " " + PlayerPrefs.GetInt("LevelUnlocked"));
 					PlayerPrefs.Save();
 				}
+				ShowFlag(true);
 			}
+			Game.PlayerIsBlocked = false;
 		}
 		else if (Game.TurnsLeft == 0)
 		{
@@ -46,6 +49,8 @@ public class WinLoseController : MonoBehaviour
 				Game.GameIsFinished = true;
 				IsFinished = true;
 				AudioHolder.PlayLose();
+				if (Game.CandlesLeft == 1)
+					Game.BurnCandle(3);
 				ShowFlag(false);
 			}
 		}
@@ -55,6 +60,46 @@ public class WinLoseController : MonoBehaviour
 	{
 		var flagName = isWin ? "WinFlag" : "LoseFlag";
 		transform.FindChild(flagName).GetComponent<Animation>().Play();
+		if (!isWin)
+			transform.FindChild(flagName).FindChild("Heart").GetComponent<Animator>().SetTrigger("AnimTrigger");
+		else
+		{
+			var candles = GameObject.Find("WinCandles");
+			for (int i = 0; i < 3  - Game.CandlesLeft; i++)
+			{
+				var candle = candles.transform.GetChild(i);
+				candle.GetComponent<Image>().overrideSprite = Game.OffCandleSprite;
+				candle.GetComponent<Image>().SetNativeSize();
+				candle.transform.position -= new Vector3(0, +0.15f);
+				var smoke = ((GameObject)Instantiate(
+					Game.SmokePrefab, candle.transform.position + new Vector3(0f, 0.5f),
+					Quaternion.Euler(new Vector3())));
+				smoke.transform.parent = candle;
+				smoke.transform.localScale = new Vector3(1, 1, 1);
+			}
+			//reward
+			var candlesInfo = PlayerPrefs.GetString("LevelCandles");
+			int coins = 1;
+			if (candlesInfo.Length > Game.Level)
+			{
+				var candlesLastResult = int.Parse(candlesInfo.ElementAt(Game.Level).ToString());
+				coins = (Game.CandlesLeft - candlesLastResult)*2;
+				if (coins < 0) coins = 0;
+				if (Game.CandlesLeft - candlesLastResult > 0)
+					PlayerPrefs.SetString("LevelCandles", candlesInfo.ReplaceAt(Game.Level,1,Game.CandlesLeft.ToString()));
+			}
+			else
+			{
+				if (Game.CandlesLeft == 2) coins = 3;
+				if (Game.CandlesLeft == 3) coins = 5;
+				PlayerPrefs.SetString("LevelCandles", candlesInfo + Game.CandlesLeft);
+			}
+			PlayerPrefs.Save();
+			PlayerPrefs.SetInt("Gold", PlayerPrefs.GetInt("Gold") + coins);
+			transform.FindChild(flagName).FindChild("CoinsReward").GetComponent<Text>().text = coins.ToString();
+
+
+		}
 	}
 
 	

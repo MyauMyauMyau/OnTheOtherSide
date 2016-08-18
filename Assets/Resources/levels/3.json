@@ -3,4 +3,6 @@
   "Monsters" : "SBG",
   "Turns": 100,
   "Targets": { 'S' : 30 },
+  "Candles1" : 5,
+  "Candles2" : 10
 }

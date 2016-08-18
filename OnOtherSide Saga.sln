@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnOtherSide Saga.CSharp.Plu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnOtherSide Saga.CSharp", "OnOtherSide Saga.CSharp.csproj", "{56226833-9306-7DC5-79E7-5323D2729BDF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnOtherSide Saga.CSharp.Editor", "OnOtherSide Saga.CSharp.Editor.csproj", "{11C1B702-FE8C-AC77-2219-869F04017E83}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{56226833-9306-7DC5-79E7-5323D2729BDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56226833-9306-7DC5-79E7-5323D2729BDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56226833-9306-7DC5-79E7-5323D2729BDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11C1B702-FE8C-AC77-2219-869F04017E83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11C1B702-FE8C-AC77-2219-869F04017E83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11C1B702-FE8C-AC77-2219-869F04017E83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11C1B702-FE8C-AC77-2219-869F04017E83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

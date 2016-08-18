@@ -72,9 +72,9 @@ public class SwipeController : MonoBehaviour {
 					startPos = touch.position;
 					startTime = Time.time;
 					break;
-				case TouchPhase.Stationary:
-					couldBeSwipe = false;
-					break;
+				//case TouchPhase.Stationary:
+					//couldBeSwipe = false;
+					//break;
 				case TouchPhase.Ended:
 					if (couldBeSwipe && GameField.ClickedObject != null)
 					{

@@ -28,6 +28,7 @@ namespace Assets.scripts
 		public static GameObject SpiderPrefab;
 		public static GameObject BombFirePrefab;
 		public static GameObject SkullPrefab;
+		public static GameObject SmokePrefab;
 		public const int MAP_SIZE = 8;
 		public static LevelInfo LevelInformation;
 		public static int TurnsLeft;
@@ -44,8 +45,10 @@ namespace Assets.scripts
 		public static bool GameIsFinished;
 		public static bool DropIsBlocked = true;
 		public static HeroType HeroType;
+		public static int CandlesLeft;
 		private void Awake()
 		{
+			CandlesLeft = 3;
 			HeroType = (HeroType)PlayerPrefs.GetInt("CurrentHero");
 			LastAdviceTime = Time.time;
 			//PlayerPrefs.DeleteAll();							   
@@ -83,6 +86,7 @@ namespace Assets.scripts
 		private void Start()
 		{
 			ClickType = ClickState.Default;
+			SmokePrefab = Resources.Load("objects/smoke/smokePrefab", typeof(GameObject)) as GameObject;
 			BombFirePrefab = Resources.Load("BombFire", typeof(GameObject)) as GameObject;
 			MonsterPrefab = Resources.Load("MonsterObject", typeof (GameObject)) as GameObject;
 			BatPrefab = Resources.Load("objects/bat/Bat", typeof(GameObject)) as GameObject;
@@ -97,6 +101,8 @@ namespace Assets.scripts
 			BrokenWebPrefab = Resources.Load("objects/web/BrokenWeb", typeof(GameObject)) as GameObject;
 			Monster.EmptyCellSprite = Resources.Load("objects/graves/grave1", typeof(Sprite)) as Sprite;
 			Monster.BombSprite = Resources.Load("Sprites/bomb", typeof(Sprite)) as Sprite;
+			OffCandleSprite = Resources.Load("GameSprites/candleOff", typeof(Sprite)) as Sprite;
+			OnCandleSprite = Resources.Load("GameSprites/candleOn", typeof(Sprite)) as Sprite;
 			Monster.BlackHoleSprite = Resources.Load("Sprites/3Black_hole_02", typeof(Sprite)) as Sprite;
 			Monster.CooconSprite = Resources.Load("objects/cocoon/cocoon", typeof(Sprite)) as Sprite;
 			Monster.WaterHSprite = Resources.Load("objects/river/WaterH", typeof(Sprite)) as Sprite;
@@ -193,13 +199,12 @@ namespace Assets.scripts
 			GameField.CheckUpperBorder();
 			if (!GameField.IsAnyMoving())
 			{
-				if (!GameField.IsAnyCorrectMove() && !DropIsBlocked)
-					GameField.Shuffle();
 				GameField.UpdateField();
-
+				if (!GameField.IsAnyMovingOrDestroying() && !GameField.IsAnyCorrectMove() && !DropIsBlocked && !PlayerIsBlocked)
+					GameField.Shuffle();
 				if (Time.time > LastAdviceTime + 5f)
 				{
-					LastAdviceTime = Time.time + 10f;
+					LastAdviceTime = Time.time + 5f;
 					GameField.GetAdvice();
 				}
 			}
@@ -336,20 +341,46 @@ namespace Assets.scripts
 
 		public static IEnumerator NextTurn()
 		{
-			TurnsLeft--;
-			if (TurnsLeft == 0) yield break;
+			TurnsLeft--;		
+			if (TurnsLeft == 0)
+			{				
+				yield break;
+			}
 			Instance.LastAdviceTime = Time.time + 5f;
-			while (GameField.IsAnyMoving())
+			while (GameField.IsAnyMovingOrDestroying())
 			{
 				yield return null;
 			}
+			if (GameIsFinished) yield break;
+			if (CandlesLeft == 3 && (LevelInformation.Turns - TurnsLeft) >= LevelInformation.Candles1)
+				BurnCandle(1);
+			if (CandlesLeft == 2 && (LevelInformation.Turns - TurnsLeft) >= LevelInformation.Candles2)
+				BurnCandle(2);
 			WaterField.ShiftBridges();
-			while (GameField.IsAnyMoving())
+			while (GameField.IsAnyMovingOrDestroying())
 			{
 				yield return null;
 			}
 			ActivateFlagsAndVortexes();
 			GameField.MoveIsFinished = true;
+			
+		}
+
+		public static Sprite OffCandleSprite;
+		public static Sprite OnCandleSprite;
+		
+		public static void BurnCandle(int candleToBurn)
+		{
+			CandlesLeft--;
+			var candle = GameObject.Find("CandlesCounter").transform.GetChild(candleToBurn - 1);
+			candle.GetComponent<Image>().overrideSprite = OffCandleSprite;
+			candle.GetComponent<Image>().SetNativeSize();
+			candle.transform.position-=new Vector3(0,+0.15f);
+			var smoke = ((GameObject) Instantiate(
+				SmokePrefab, candle.transform.position + new Vector3(0f,0.5f),
+				Quaternion.Euler(new Vector3())));
+			//smoke.transform.parent = candle;
+			//smoke.transform.localScale = new Vector3(1,1,1);
 		}
 
 		private static void ActivateFlagsAndVortexes()

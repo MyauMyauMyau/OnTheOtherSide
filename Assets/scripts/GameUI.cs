@@ -48,8 +48,11 @@ public class GameUI : MonoBehaviour
 
 		var buttonsName = "Buttons" + PlayerPrefs.GetInt("CurrentHero");
 		var buttonCanvas = (GameObject) GetType().GetField(buttonsName).GetValue(this);
-		Instantiate(buttonCanvas,
-			new Vector3(0, -4), Quaternion.Euler(new Vector3(0, 0)));
+		var buttons = (GameObject)Instantiate(buttonCanvas,
+			new Vector3(0, 0), Quaternion.Euler(new Vector3(0, 0)));
+		buttons.transform.parent = transform;
+		buttons.transform.localScale = new Vector3(1,1,1);
+		buttons.GetComponent<Canvas>().overrideSorting = true;
 		SetSoundButton();
 		UpdateTurnsLeft();
 		UpdateGold();
@@ -75,13 +78,13 @@ public class GameUI : MonoBehaviour
 		SkillsController.Activate(numOfTargets);
 		SkillToCast = skill;
 		Game.PlayerIsBlocked = true;
-		GetComponentsInChildren<Animation>()[2].Play("activatePanel");
+		GetComponentsInChildren<Animation>()[0].Play("activatePanel");
 	}
 
 	public void DeactivatePanel()
 	{
 		SkillsController.Hero.GetComponent<Animator>().SetTrigger("Default");
-		GetComponentsInChildren<Animation>()[2].Play("deactivatePanel");
+		GetComponentsInChildren<Animation>()[0].Play("deactivatePanel");
 		Game.PlayerIsBlocked = false;
 		SkillsController.Deactivate();
 	}
@@ -143,7 +146,8 @@ public class GameUI : MonoBehaviour
 			PlayerPrefs.SetInt("Sound", 0);
 			SoundButton.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>("ButtonsSprites/soundOff");
 		}
-		GameObject.Find("GameManager").GetComponentInChildren<AudioSource>().volume = PlayerPrefs.GetInt("Sound") / 2f;
+		GameObject.Find("AudioHolder").GetComponents<AudioSource>()[0].volume = PlayerPrefs.GetInt("Sound") / 2f;
+		GameObject.Find("AudioHolder").GetComponents<AudioSource>()[1].volume = PlayerPrefs.GetInt("Sound") / 2f;
 		PlayerPrefs.Save();
 	}
 

@@ -530,15 +530,32 @@ namespace Assets.scripts
 
 		public static bool IsAnyMoving()
 		{
-			for (int i = 0; i < Game.MAP_SIZE; i++)
-				for (int j = 0; j < Game.MAP_SIZE; j++)
-					if (Map[i,j] != null && 
-						(Map[i, j].State == MonsterState.Dropping 
-						|| Map[i, j].State == MonsterState.Moving
-						|| Map[i, j].State == MonsterState.Decreasing
-						|| Map[i, j].State == MonsterState.WaitingForActivation
-						|| Map[i,j].State == MonsterState.Destroying))
+			foreach (var monster in GameObject.FindObjectsOfType(typeof(Monster)))
+			{
+				var parsedMonster = monster as Monster;
+				if (parsedMonster.State == MonsterState.Dropping
+						|| parsedMonster.State == MonsterState.Moving
+						|| parsedMonster.State == MonsterState.Decreasing
+						|| parsedMonster.State == MonsterState.WaitingForActivation
+						)
 							return true;
+			}
+
+			return false;
+		}
+		public static bool IsAnyMovingOrDestroying()
+		{
+			foreach (var monster in GameObject.FindObjectsOfType(typeof(Monster)))
+			{
+				var parsedMonster = monster as Monster;
+				if (parsedMonster.State == MonsterState.Dropping
+						|| parsedMonster.State == MonsterState.Moving
+						|| parsedMonster.State == MonsterState.Decreasing
+						|| parsedMonster.State == MonsterState.WaitingForActivation
+						|| parsedMonster.State == MonsterState.Destroying)
+					return true;
+			}
+
 			return false;
 		}
 

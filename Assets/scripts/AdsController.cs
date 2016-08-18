@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +18,30 @@ namespace Assets.scripts
 		void Awake()
 		{
 			revmob = RevMob.Start(REVMOB_APP_IDS, "AdsHolder");
-			//rewardedVideo = revmob.CreateRewardedVideo();
+		}
+
+		private float LoadingStartTime;
+		void Update()
+		{
+			if (Input.GetKeyDown(KeyCode.Escape) && Loading != null)
+				DeactivateLoading(true);
+		}
+
+		public GameObject StopLoadingText;
+		private void DeactivateLoading(bool IsExplicit)
+		{
+			if (!IsExplicit)
+			{
+				var flyingText = ((GameObject)Instantiate(
+						StopLoadingText, new Vector3(Screen.width / 2, Screen.height / 2),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<FlyingText>();
+				flyingText.transform.parent = GameObject.Find("MainMenu").transform;
+				flyingText.GetComponent<Text>().text = "No ads available!";
+			}
+			StopShowingRewardedVideo();
+			Destroy(Loading.gameObject);
+			Loading = null;
 		}
 
 		void Start()
@@ -27,12 +51,23 @@ namespace Assets.scripts
 		public void ShowRewardedVideo()
 		{
 			rewardedVideo = revmob.CreateRewardedVideo();
-			text.text = Time.time.ToString();
+			ShowLoading();
+		}
+
+		private GameObject Loading;
+		private void ShowLoading()
+		{
+			var loadingIconPrefab = Resources.Load("objects/loading/Loading", typeof(GameObject)) as GameObject;
+			Loading = ((GameObject)Instantiate(
+				loadingIconPrefab, new Vector3(Screen.width / 2, Screen.height / 2),
+				Quaternion.Euler(new Vector3())));
+			Loading.transform.parent = GameObject.Find("MainMenu").transform;
+			Loading.transform.localScale = new Vector3(1, 1);
 		}
 
 		public void StopShowingRewardedVideo()
 		{
-			rewardedVideo.Release();			
+			if (rewardedVideo != null) rewardedVideo.Release();			
 		}
 		public void SessionIsStarted()
 		{			
@@ -40,7 +75,6 @@ namespace Assets.scripts
 
 		public void SessionNotStarted(string message)
 		{
-			text.text = "session not started" + Time.time;
 		}
 
 		public void AdDidReceive(string revMobAdType)
@@ -49,7 +83,7 @@ namespace Assets.scripts
 
 		public void AdDidFail(string revMobAdType)
 		{
-			text.text = "fail" + Time.time;
+			DeactivateLoading(false);
 		}
 
 		public void AdDisplayed(string revMobAdType)
@@ -71,7 +105,7 @@ namespace Assets.scripts
 
 		public void VideoNotCompletelyLoaded()
 		{
-			throw new NotImplementedException();
+			DeactivateLoading(false);
 		}
 
 		public void VideoStarted()
@@ -86,20 +120,20 @@ namespace Assets.scripts
 
 		public void RewardedVideoLoaded()
 		{
-			text.text = "video loaded full";
-			if (rewardedVideo != null) rewardedVideo.ShowRewardedVideo();
-			
+			if (rewardedVideo != null)
+			{
+				DeactivateLoading(true);
+				rewardedVideo.ShowRewardedVideo();
+			}
 		}
 
 		public void RewardedVideoNotCompletelyLoaded()
 		{
-			text.text = "not full loaded";
-			if (rewardedVideo != null) rewardedVideo.ShowRewardedVideo();
+			DeactivateLoading(false);
 		}
 
 		public void RewardedVideoStarted()
 		{
-			text.text = "started";
 		}
 
 		public void RewardedVideoFinished()
@@ -109,6 +143,12 @@ namespace Assets.scripts
 		public void RewardedVideoCompleted()
 		{
 			PlayerPrefs.SetInt("Gold", PlayerPrefs.GetInt("Gold") + 1);
+			var flyingText = ((GameObject)Instantiate(
+						StopLoadingText, new Vector3(Screen.width / 2, Screen.height / 2),
+						Quaternion.Euler(new Vector3())))
+						.GetComponent<FlyingText>();
+			flyingText.transform.parent = GameObject.Find("MainMenu").transform;
+			flyingText.GetComponent<Text>().text = "+1 Gold!";
 		}
 
 		public void RewardedPreRollDisplayed()

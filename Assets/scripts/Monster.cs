@@ -78,7 +78,7 @@ public class Monster : MonoBehaviour
 	public int AnimationStartTime;
 	public bool IsMonster()
 	{
-		return Dictionaries.MonsterTypes.Contains(TypeOfMonster);
+		return Dictionaries.MonsterTypes.Contains(TypeOfMonster) && TypeOfMonster != MonsterType.Coocon;
 	}
 
 	public void Click()
@@ -108,10 +108,12 @@ public class Monster : MonoBehaviour
 	}
 	public IEnumerator AnimateAdvice()
 	{
+		if (State == MonsterState.Destroying) yield break;
 		var bufState = State;
 		State = MonsterState.Animating;
 		for (int i = 0; i < 10; i++)
 		{
+			
 			transform.position = new Vector3(transform.position.x , transform.position.y + 0.03f);
 			yield return null;
 		}
@@ -157,7 +159,7 @@ public class Monster : MonoBehaviour
 	}
 	public void DestroyMonster()
 	{
-		if (!IsMonster()) return;
+		if (!IsMonster() && TypeOfMonster != MonsterType.Coocon) return;
 		Game.Instance.LastAdviceTime = Time.time + 5f;
 		if (IsFrozen)
 		{
