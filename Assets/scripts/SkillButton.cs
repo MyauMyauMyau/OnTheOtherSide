@@ -18,11 +18,13 @@ namespace Assets.scripts
 		public GameObject TargetBrackets;
 		public GameObject TargetBrackets2;
 		public GameObject LineBrackets;
+		
+
 		// Use this for initialization
 		void Start ()
 		{
+			
 			FillAmount = 1f;
-
 			var skills = Dictionaries.HeroTypeToSkills[Game.HeroType];
 			Skill = () =>
 			{
@@ -52,6 +54,7 @@ namespace Assets.scripts
 
 		public void OnClick()
 		{
+			Debug.Log(-2);
 			if (Game.IsPlayerBlocked()) return;
 			SkillsController.CurrentSkillNumber = ButtonNumber;
 			SkillsController.Hero.GetComponent<Animator>().SetTrigger("Skill" + ButtonNumber + "Ready");

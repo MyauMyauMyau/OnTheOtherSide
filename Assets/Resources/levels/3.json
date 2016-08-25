@@ -1,8 +1,8 @@
 ﻿{
   "Map": "EJBBGSJE EJSGGBJE EJBBSBJE EJSGSGJE eeeeeeek EJGSSBJE EJGBGBJE EJJJJJJE",
-  "Monsters" : "SBG",
+  "Monsters" : "SBGV",
   "Turns": 100,
-  "Targets": { 'S' : 30 },
+  "Targets": { "S" : 30 },
   "Candles1" : 5,
   "Candles2" : 10
 }

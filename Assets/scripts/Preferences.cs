@@ -5,33 +5,37 @@ using Assets.scripts;
 public class Preferences : MonoBehaviour {
 
 	// Use this for initialization
-	void Start () {
-		if (!PlayerPrefs.HasKey("LevelCandles"))
+	void Awake () {
+		if (!PlayerPrefs.HasKey("xxx"))
 		{
 			PlayerPrefs.SetInt("Sound", 1);
-			PlayerPrefs.SetInt("LevelUnlocked", 1);
+			PlayerPrefs.SetInt("LevelUnlocked", 50);
 			PlayerPrefs.SetString("LevelCandles", "~");	
 			if (!PlayerPrefs.HasKey("FromGame"))
 				PlayerPrefs.SetInt("FromGame",0);
-			PlayerPrefs.SetInt("Gold", 50);
+			PlayerPrefs.SetInt("Gold", 5000);
 			PlayerPrefs.SetInt("Lives", 5);
 			//heroes hunter, cleric, mummy, wolverine, vampire, death
-			PlayerPrefs.SetString("Heroes","000000");
+			PlayerPrefs.SetString("Heroes","100000");
 			PlayerPrefs.SetInt("CurrentHero", 0);
 			
 			//upgrades
-			PlayerPrefs.SetString("Skills0", "311");
-			PlayerPrefs.SetString("Skills1", "331");
-			PlayerPrefs.SetString("Skills2", "333");
-			PlayerPrefs.SetString("Skills3", "333");
-			PlayerPrefs.SetString("Skills4", "222");
-			PlayerPrefs.SetString("Skills5", "332");
+			PlayerPrefs.SetString("Skills0", "111");
+			PlayerPrefs.SetString("Skills1", "000");
+			PlayerPrefs.SetString("Skills2", "000");
+			PlayerPrefs.SetString("Skills3", "000");
+			PlayerPrefs.SetString("Skills4", "000");
+			PlayerPrefs.SetString("Skills5", "000");
 			for (int i = 1; i < 4; i++)
 				PlayerPrefs.SetFloat("Skill" + i, 1f);
 			PlayerPrefs.Save();
 		}
 	}
-	
+
+	void Start()
+	{
+		
+	}
 	// Update is called once per frame
 	void Update () {
 	}

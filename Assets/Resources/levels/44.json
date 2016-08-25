@@ -1,6 +1,7 @@
 ﻿{
-  "Map": "EJZVSVJE EZVZVSSE JJZVSVJJ JEESSEEJ EJVZVSJE JVZVSVVJ SCZCCSCS VZSVVZVV",
-  "Monsters" : "ZSV",
-  "Turns": 100,
-  "Targets": { 'V' : 75 },
+"Map": "EJZVSVJE EGVZGSSE JJZVSVJJ JEESSEEJ EJVZGGJE JGZVSVVJ SCZCCSCS VGSVGZVV",
+"Monsters" : "ZSVG",
+"Turns": 100,
+"Targets": { "V" : 75 }
+
 }

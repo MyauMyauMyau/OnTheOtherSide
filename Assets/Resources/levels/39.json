@@ -1,6 +1,7 @@
 ﻿{
-  "Map": "ZBJSZVJB VZIBSBIV ZSJSZVJB VBMBSVMZ ZSJZSBJZ VSISZZIB VBJSCVJB BVEBBVES",
-  "Monsters" : "ZSVB",
-  "Turns": 100,
-  "Targets": { 'S' : 35, "V" : 35 },
+"Map": "ZBJSZVJB VZIBSBIV ZSJSZVJB VBMBSVMZ ZSJZSBJZ VSISZZIB VBJSCVJB BVEBBVES",
+"Monsters" : "ZSVB",
+"Turns": 100,
+"Targets": { "S" : 30, "V" : 30, "Z" : 30 }
+
 }

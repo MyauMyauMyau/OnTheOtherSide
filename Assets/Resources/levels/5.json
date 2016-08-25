@@ -1,8 +1,8 @@
 ﻿{
-  "Map": "JSBGESSB JBGSMBSG JGBSEGGB JEMEEEME JSGGEGSS JSBBMSBB JGSBEGGB JJJJJJJJ",
-  "Monsters" : "SBG",
-  "Turns": 100,
-  "Targets": { 'B' : 10, "S" :  10 },
+  "Map": "JSBGESVB JBGSMBSG JGBVEGGB JEMEEEME JSGVEGSS JSBBMSBV JGSBEGGV JJJJJJJJ",
+"Monsters" : "SBGV",
+"Turns": 100,
+"Targets": { "B" : 10, "S" : 10, "V" : 15 },
   "Candles1" : 5,
   "Candles2" : 10
 }

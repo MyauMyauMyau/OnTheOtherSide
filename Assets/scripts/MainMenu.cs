@@ -20,6 +20,9 @@ public class MainMenu : MonoBehaviour
 	void Awake()
 	{
 		LevelGrave.Candle = Resources.Load("objects/graveCandle/candle", typeof(GameObject)) as GameObject;
+		SkillLevel.Level1Sprite = Resources.Load("objects/skillsLevel/lvl1", typeof(Sprite)) as Sprite;
+		SkillLevel.Level2Sprite = Resources.Load("objects/skillsLevel/lvl2", typeof(Sprite)) as Sprite;
+		SkillLevel.Level3Sprite = Resources.Load("objects/skillsLevel/lvl3", typeof(Sprite)) as Sprite;
 	}
 	// Use this for initialization
 	void Start()

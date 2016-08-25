@@ -1,6 +1,6 @@
 ﻿{
-  "Map": "BBSSGBSB SBGBGBGG SGEEEESS GGEJJEBG SSEJJEBB BGWEEWSB SBGGBSBG BBSSGGBB",
-  "Monsters" : "SBG",
-  "Turns": 100,
-  "Targets": { 'G' : 30 },
+"Map": "BBSSZBSB SBGBGBGG SZEEEESS GGEJJEBG ZSEJJEZB BGWEEWSB SBGGBSBG BZSZZGBB",
+"Monsters" : "SBGZ",
+"Turns": 100,
+"Targets": { "G" : 30, "Z" : 30 }
 }

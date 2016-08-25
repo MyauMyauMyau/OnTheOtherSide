@@ -228,7 +228,7 @@ namespace Assets.scripts
 			for (int i = 0; i < Game.MAP_SIZE; i++)
 				for (int j = 0; j < Game.MAP_SIZE - 2; j++)
 				{
-					if (Map[i, j] != null && Map[i, j + 1] != null && Map[i, j + 2] != null && Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster))
+					if (Map[i,j] != null && Dictionaries.MonstersUpgradeDictionary.ContainsKey(Map[i, j].TypeOfMonster) && Map[i,j + 1] != null && Map[i, j + 2] != null)
 					{
 						if (Map[i, j].TypeOfMonster == Map[i, j + 1].TypeOfMonster &&
 						    Map[i, j].TypeOfMonster == Map[i, j + 2].TypeOfMonster &&

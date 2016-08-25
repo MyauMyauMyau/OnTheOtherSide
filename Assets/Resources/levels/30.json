@@ -3,6 +3,6 @@
   "Monsters" : "ZSVBG",
   "Turns": 100,
   "Targets": {
-    'C': 2, "Z" :  20, "G" : 20
+    'C': 2, "Z" :  20, "G" : 20, "S" : 20
   },
 }

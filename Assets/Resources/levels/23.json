@@ -1,6 +1,7 @@
 ﻿{
-  "Map": "SBSVVSBS BSWSGWGV VGEVBEBG ESGBVGBE EGWVSWSE SVEBGEGV GVBSSVVB GBVEEGSB",
-  "Monsters" : "SVBG",
-  "Turns": 100,
-  "Targets": { 'S' : 35, "V" :  35 },
+"Map": "SBSVVSBS BSWSGWGV VGEVBEBG ESGBVGBE EGWVSWSE SVEBGEGV GVBSSVVB GBVEEGSB",
+"Monsters" : "SVBG",
+"Turns": 100,
+"Targets": { "S" : 35, "V" : 35, "B" : 35 }
+
 }

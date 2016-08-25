@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Assets.scripts.miniObjectsScripts;
@@ -28,6 +29,7 @@ namespace Assets.scripts.Skills
 			Skill1Level = int.Parse(PlayerPrefs.GetString("Skills0").Substring(0, 1));
 			Skill2Level = int.Parse(PlayerPrefs.GetString("Skills0").Substring(1, 1));
 			Skill3Level = int.Parse(PlayerPrefs.GetString("Skills0").Substring(2, 1));
+
 		}
 
 		public bool IsPossibleTarget(Monster monster, int skillNumber)

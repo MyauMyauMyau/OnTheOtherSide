@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using Assets.scripts;
 using Assets.scripts.Enums;
+using Assets.scripts.Skills;
 using SimpleJSON;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -133,6 +134,15 @@ namespace Assets.scripts
 			Monster.EmptyCell2Sprite = Resources.Load("objects/graves/grave2", typeof(Sprite)) as Sprite;
 			Monster.MagicSkullSprite = Resources.Load("objects/heroes/Mummy/skull/scull cell", typeof(Sprite)) as Sprite;
 			Cursor.SetCursor(MainCursor, new Vector2(0,0), CursorMode.Auto);
+			Dictionaries.HeroTypeToSkills = new Dictionary<HeroType, ISkills>
+			{
+				{HeroType.Death, new DeathSkills()},
+				{HeroType.Hunter, new HunterSkills()},
+				{HeroType.Cleric, new ClericSkills()},
+				{HeroType.Vampire, new VampireSkills()},
+				{HeroType.Mummy, new MummySkills() },
+				{HeroType.Wolverine, new WolverineSkills()}
+			};
 			Dictionaries.TypesToSprites = new Dictionary<MonsterType, Sprite>
 			{
 				{MonsterType.EmptyCell, Monster.EmptyCellSprite},

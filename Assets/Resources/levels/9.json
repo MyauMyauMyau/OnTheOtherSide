@@ -1,6 +1,6 @@
 ﻿{
-  "Map": "ZSVVSZVV SZVSZVZS SESEZEVE VEZESEZE SVVZSZVS ZSZSVZSV ZVSZVSZS JJJJJJJJ",
-  "Monsters" : "ZSV",
-  "Turns": 100,
-  "Targets": { 'V' : 20 },
+"Map": "ZSVVSGVV SZGSZVZS SESEZEGE GEZESEZE SVVGSZGS ZSZSGZSV ZGSZVSGS JJJJJJJJ",
+"Monsters" : "ZSVG",
+"Turns": 100,
+"Targets": { "V" : 20, "S" : 30 }
 }

@@ -1,8 +1,8 @@
 ﻿{
-  "Map": "EESEEGEE EEEEESEE JJBBGSJJ EESGSBEE EEBGBSEE EEJEEJEE EEEJJEEE EEJEEJEE",
+  "Map": "EESBGGEE EEGSBSEE JJBBGSJJ EESGSBEE EEBGBSEE EEJEEJEE EEEJJEEE EEJEEJEE",
   "Monsters" : "SBG",
-  "Turns": 10,
-  "Targets": { "B" : 9, "G" : 9 },
+  "Turns": 100,
+  "Targets": { "B" : 25, "G" : 25 },
   "Candles1" : 3,
   "Candles2" : 7
 }

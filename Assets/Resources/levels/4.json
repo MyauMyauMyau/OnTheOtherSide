@@ -1,8 +1,8 @@
 ﻿{
   "Map": "ESSGBBJJ EGGBGGJJ eeehSBJJ ESGeeekk EBBGSBJJ ESGSBGJJ EGBSGSJJ EEEEEEJJ",
-  "Monsters" : "SBG",
+  "Monsters" : "SBGV",
   "Turns": 100,
-  "Targets": { 'S' : 15, "B" : 15, "G" : 30 },
+  "Targets": { "S" : 15, "B" : 15, "G" : 30 },
   "Candles1" : 5,
   "Candles2" : 10
 }
