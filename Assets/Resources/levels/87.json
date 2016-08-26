@@ -1,0 +1,8 @@
+﻿{
+"Map": "EGGZSVVE BIBGZBIG GZESVEZZ ZSVBGBSG BGZVSBBZ GCZJJZCV GZGIIVVZ BVZJJSGS",
+"Monsters" : "ZSVBG",
+"Turns": 100,
+"Targets": { "V" : 5, "Z" : 15, "B" : 25, "G" : 45 }
+
+
+}

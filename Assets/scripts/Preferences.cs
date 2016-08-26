@@ -9,7 +9,7 @@ public class Preferences : MonoBehaviour {
 		if (!PlayerPrefs.HasKey("xxx"))
 		{
 			PlayerPrefs.SetInt("Sound", 1);
-			PlayerPrefs.SetInt("LevelUnlocked", 50);
+			PlayerPrefs.SetInt("LevelUnlocked", 90);
 			PlayerPrefs.SetString("LevelCandles", "~");	
 			if (!PlayerPrefs.HasKey("FromGame"))
 				PlayerPrefs.SetInt("FromGame",0);

@@ -179,7 +179,7 @@ public class Monster : MonoBehaviour
 		//make 1st layer
 		foreach (var spriteRenderer in GetComponentsInChildren<SpriteRenderer>())
 		{
-			spriteRenderer.sortingOrder = 3;
+			spriteRenderer.sortingOrder = spriteRenderer.sortingOrder + 2;
 		}
 		var bottomBoundX = Math.Max(0, GridPosition.X - 1);
 		var bottomBoundY = Math.Max(0, GridPosition.Y - 1);
@@ -224,6 +224,7 @@ public class Monster : MonoBehaviour
 		}
 		GameField.Map[GridPosition.X, GridPosition.Y] = null;
 		ToBasketStartTime = Time.time;
+		Debug.Log(TypeOfMonster);
 		Dictionaries.MonsterCounter[TypeOfMonster]++;
 		State = MonsterState.Destroying;
 

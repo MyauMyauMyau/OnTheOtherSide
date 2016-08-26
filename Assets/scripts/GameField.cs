@@ -288,6 +288,7 @@ namespace Assets.scripts
 			Map[finish.X, finish.Y] = null;
 			if (type == MonsterType.Pumpkin1)
 				TransformPumpkin1((start.X + finish.X) / 2, (start.Y + finish.Y) / 2);
+			Debug.Log(Dictionaries.MonstersUpgradeDictionary[type]);
 			Game.MonsterCreate((start.X + finish.X) / 2, (start.Y + finish.Y) / 2, Dictionaries.MonstersUpgradeDictionary[type]);
 			Game.PlayerIsBlocked = false;
 		}
@@ -316,6 +317,7 @@ namespace Assets.scripts
 			face.GetComponent<SpriteRenderer>().sprite = Monster.PumpkinFaceSprite;
 			face.State = MonsterState.Destroying;
 			face.ToBasketStartTime = Time.time;
+			Dictionaries.MonsterCounter[MonsterType.Pumpkin3] -= 2;
 
 		}
 
